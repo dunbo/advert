@@ -1,0 +1,156 @@
+<div class="navigation">
+	<div class="title">
+		<a class="title_main" href="{{ url('account/finance') }}">财务信息</a>
+	</div>
+	{{ partial('public/top_sidebar') }}
+</div>
+
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<div class="form_item">
+				<div class="form_label">
+					<label>账号余额：{{ number_format(mount) }}元</label>
+					<label id="money" money="{{ number_format(tx_amount) }}" style="margin-left: 20px;">
+						可提现金额：{{ number_format(tx_amount) }}元
+					</label>
+					<label style="margin-left:5rem"><button class="btn_orange" onclick="put_forward()">申请提现</button></label>
+				</div>
+			</div>
+			<div class="clear"></div>
+		</div>
+		<div class="table_box">
+			<ul class="nav nav-tabs" style="padding-top:20px">
+	        <li ><a href="{{ url('account/finance') }}" aria-expanded="false">收入明细</a></li>
+	        <li class="active"><a href="{{ url('account/finance?lt=tx') }}">提现明细</a></li>
+		</ul>
+			<table cellpadding="0" cellspacing="0" class="tables">
+				<thead>
+					<tr>
+						<th width="10%">申请时间</th>
+						<th width="10%">提现ID</th>
+						<th width="10%">提现金额</th>
+						<th width="10%">提现账单</th>
+						<th width="10%">结算函</th>
+						<th width="10%">付款金额</th>
+						<th width="10%">状态</th>
+					</tr>
+				</thead>
+				<tbody>
+				 {% if list is not empty %}
+				 	{% for key,val in list %}
+						<tr>
+							<td>{{ val['apply_date'] }}</td>
+							<td>{{ val['id'] }}</td>
+							<td>￥{{ number_format(val['withdraw_amount']) }}</td>
+							<td>{{ val['bill_amount'] }}</td>
+							<td>
+								{% if val['audit_status'] == 3 or val['audit_status'] == 4 or val['audit_status'] == 7 %}
+								<a href="{{ url('account/down?id='~val['id']~'&type=0' ) }}" class="blue" target="_blank">下载</a>
+								{% endif %}	
+							</td>
+							<td>{{ val['pay_amount']?number_format(val['pay_amount']):'' }}</td>
+							<td>
+								{% if val['audit_status'] == 1 %}
+									待审核
+								{% elseif val['audit_status'] == 2 %}
+									复审
+								{% elseif val['audit_status'] == 3 %}
+									待结算
+								{% elseif val['audit_status'] == 4 %}
+									冻结
+								{% elseif val['audit_status'] == 7 %}
+									已结算
+								{% else %}
+									状态有误
+								{% endif %}	
+							</td>
+						</tr>
+					{% endfor %}
+				 {% else %}
+						<tr>
+	                          <td colspan="7">暂无数据</td>
+	                    </tr>
+				 {% endif %}
+				</tbody>
+			</table>
+	 		{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+	</div>
+</div>
+<!-- 提现弹窗 -->
+<div class="modal" id="money_alert" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">提现申请</h4>
+			</div>
+			<form action="{{ url('account/put_forward') }}" method="post" onsubmit="return submit()" id="bh_form">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<div class="clear"></div>
+				<input type='hidden' name='type' value='pr' />
+				<input type='hidden' class="ids" name="ids" value="" />
+				<p class="notice_block">可提现金额少于100，不可提现</p>
+				<div class="success_block">
+					<div>
+						<div class="form_label">
+							<label >媒体主名称：</label>
+						</div>
+						<div class="form_label">
+							<label >{{ media_name }}</label>
+						</div>
+					</div>
+					<div>
+						<div class="form_label">
+							<label >结算账单：</label>
+						</div>
+						<div class="form_label">
+							<label>{{ bill }}</label>
+						</div>
+					</div>
+					<div>
+						<div class="form_label">
+							<label >提现金额：</label>
+						</div>
+						<div class="form_label">
+							<label id="cur_money">{{ number_format(tx_amount) }}元</label>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer success_block">
+				<input type="submit" class="btn btn_orange" style="width:100px;" value="确定" />&nbsp;&nbsp;
+				<button type="button" class="btn btn-default"  style="width:100px;" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<script>
+function put_forward(){
+	var money = $("#money").attr("money")
+	if(money < 100) {
+		$(".notice_block").show()
+		$(".success_block").hide()
+	}else{
+		$(".notice_block").hide()
+		$(".success_block").show()
+	}
+	$('#money_alert').modal('show');
+}
+
+var submit_count = 0;
+function submit(){
+	if(submit_count == 0) {
+		return true
+	}else {
+		alert("请勿重复提交")
+		return false	
+	}
+}
+</script>

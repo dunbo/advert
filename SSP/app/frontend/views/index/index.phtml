@@ -1,0 +1,377 @@
+<div class="navigation">
+	<div class="title">
+		<a class="title_main" href="{{ url('index/index') }}">媒体列表</a>
+	</div>
+	{{ partial('public/top_sidebar') }}
+</div>
+
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			 <form action="{{ url('index/index') }}" method="get">
+				<div class="form_item">
+					<div class="form_label">
+						<label>媒体名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="keyword" value="{{ keyword }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>媒体ID：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="mmid" value="{{ mmid }}" class="inputtext" placeholder="请输入ID">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<button class="btn_orange">搜索</button>
+					</div>
+				</div>
+				<a href="{{ url('index/add') }}" class="btn_orange pull_right">新建媒体</a>
+				<div class="clear"></div>
+			</form>
+		</div>
+		<div class="table_box">
+			<table cellpadding="0" cellspacing="0" class="tables">
+				<thead>
+					<tr>
+						<th width="5%">媒体ID</th>
+						<th width="15%">媒体名称</th>
+						<th width="12%">创建时间</th>
+						<th width="8%">媒体类型</th>
+						<th width="8%">投放方式</th>
+						<th width="20%">接入参数</th>
+						<th width="10%">状态</th>
+						<th width="10%">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				 {% if list is not empty %}
+				 	{% for key,val in list %}
+						<tr>
+							<td>{{ val['mmid'] }}</td>
+							<td>{{ val['name'] }}</td>
+							<td>{{ date('Y-m-d H:i:s', val['create_tm']) }}</td>
+							<td>
+								{% if val['type'] == 1 %}
+									Android
+								{% elseif val['type'] == 2 %}
+									H5
+								{% else %}
+									类型有误
+								{% endif %}
+							</td>
+							<td>
+								{% if val['type'] == 1 %}
+									{% if val['tf_type'] == 1 %}
+										SDK
+									{% elseif val['tf_type'] == 2 %}
+										{% if val['api_type'] == 1 %}
+											通用API
+										{% elseif val['api_type'] == 2 %}
+											互动API
+										{% endif %}
+									{% endif %}
+								{% elseif val['type'] == 2 %}
+									商业内容API
+								{% endif %}
+							</td>
+							<td>
+								{% if val['examine_status'] == 1 %}
+									{% if val['type'] == 1 %}
+										<span class="blue">APPkey：{{ val['appkey'] }}</span>
+									{% elseif val['type'] == 2 %}
+										<a class="blue" href="javascript:show_param('{{ val['appkey'] }}', '{{ val['secret'] }}','{{ val['token_url'] }}')">
+										APPkey：{{ val['appkey'] }}<br/>
+										Secret：******<br/>
+										回调地址：
+										{{ str_sub(val['token_url'], 25) }}
+										</a>
+									{% endif %}
+								{% endif %}
+							</td>
+							<td>
+								{% if val['examine_status'] == 0 %}
+									<span style="color:	#EAC100">待审核</span>
+								{% elseif val['examine_status'] == 1 %}
+									<span style="color:	#00DB00">审核通过</span>
+								{% elseif val['examine_status'] == 2 %}
+									<span style="color:	red">审核未通过</span>
+									{% if val['bh_reason'] is not empty %}
+											<br/>驳回理由：
+											{% if val['bh_reason'] == 1 %}
+												应用过于简陋，交互界面、服务功能单一、且实用性、创新性较低。
+											{% elseif val['bh_reason'] == 2 %}
+												您提交的应用名称、简介描述和实质内容不符或简介为非中文描述。请重新修改为 您提交应用相对应的描述后再次提交。
+											{% elseif val['bh_reason'] == 3 %}
+												您的应用部分频道无内容或内容过于单一，我们暂时不能通过您的申请，建议您完善后再申请此项业务。 
+											{% elseif val['bh_reason'] == 4 %}
+												无法认证应用市场应用的信息，请提供有效的应用详情页地址
+											{% elseif val['bh_reason'] == 5 %}
+												您提交的媒体已存在，请修改好再次提交。
+											{% elseif val['bh_reason'] == 6 %}
+												您提交的媒体信息与内容实致性不符。
+											{% endif %}	
+											<br/>
+									{% endif %}
+									{% if val['bh_explain'] is not empty %}
+										详细说明：{{val['bh_explain']}}
+									{% endif %}
+								{% elseif val['examine_status'] == 3 %}
+									{% if val['apk_status'] == 0 %}
+									<span style="color:	#EAC100">待认证</span>
+									{% elseif val['apk_status'] == 1 %}
+									<span style="color:	#EAC100">已通过认证</span>
+									{% elseif val['apk_status'] == 2 %}
+									<span style="color:	#EAC100">待审核</span>
+									{% elseif val['apk_status'] == 3 %}
+									<span style="color:	#EAC100">认证未通过</span>
+									{% endif %}
+								{% else %}
+									状态有误
+								{% endif %}	
+							</td>
+							<td>
+								{% if val['examine_status'] == 1 and val['type'] == 2 %}
+									<a href="javascript:up_token({{ val['mmid'] }}, '{{ val['token_url'] }}')" class="blue">编辑接入参数</a>
+								{% elseif val['examine_status'] == 2 %}
+									<a href="{{ url('index/add?mmid='~val['mmid']) }}" class="blue">修改</a>
+								{% elseif val['examine_status'] == 3 and val['type'] == 1 and val['tf_type'] == 1 %}
+									{% if val['apk_status'] == 0 %}
+										<a href="javascript:up_pkg({{ val['mmid'] }}, '{{ val['dsp_path'] }}')" class="blue">认证</a>
+									{% elseif val['apk_status'] == 3 %}
+										<a href="javascript:up_pkg({{ val['mmid'] }}, '{{ val['dsp_path'] }}')" class="blue">重新认证</a>
+									{% endif %}
+								{% endif %}	
+							</td>
+						</tr>
+					{% endfor %}
+				 {% else %}
+						<tr>
+	                          <td colspan="7">暂无数据</td>
+	                    </tr>
+				 {% endif %}
+				</tbody>
+			</table>
+	 		{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+	</div>
+</div>
+
+<!--弹窗-->
+<div class="modal" id="up_pkg" tabindex="-1" role="dialog"  aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">应用认证</h4>
+			</div>
+			<form action="{{ url('Index/author') }}" method="post"   onsubmit="return bh_submit()" id="bh_form">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' id="mmid" value="" name="mmid" />
+				<input type='hidden' id="dsp_path" value="" name="dsp_path" />
+				<div class="form_item">
+					<div class="form_label">
+						<label>下载签名文件：</label>
+					</div>
+					<div class="form_label">
+		               <a href="javascript:down_pkg()" class="blue">空包文件</a>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>上传文件：</label>
+					</div>
+					<div class="form_control">
+						<input type="hidden" name="apk_path" id="apk_path" value="" >
+						<input type="file" name="apk" id="apk" value="" onchange="apk_file()" class="inputtext"  accept="apk" >
+						<span>请上传空包签名后的应用文件</span>
+						<span id="is_up" style="color:red"></span>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn_orange" id="pkg_btn" style="width:100px;" value="上传" />&nbsp;&nbsp;
+				<button type="button" class="btn btn-default" style="width:100px;" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- 接入参数 -->
+<div class="modal" id="up_token" tabindex="-1" role="dialog"  aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">接入参数</h4>
+			</div>
+			<form action="{{ url('Index/token_url') }}" method="post"   onsubmit="return token_submit()" id="bh_form">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' id="mmid_2" value="" name="mmid_2" />
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>回调地址：</label>
+					</div>
+					<div class="form_control">
+						<textarea name="token_url" id="token_url" ></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn_orange" id="pkg_btn" style="width:100px;" value="提交" />&nbsp;&nbsp;
+				<button type="button" class="btn btn-default" style="width:100px;" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!-- 接入参数 -->
+<div class="modal" id="show_param" tabindex="-1" role="dialog"  aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">接入参数</h4>
+			</div>
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_control">
+						<textarea id="copy_data" style="width:390px;border:none;resize:none;height:60px;overflow:hidden;"></textarea>
+					</div>
+					<div class="form_label">
+						<label><a class="blue copy" data-clipboard-action="copy" data-clipboard-target="#copy_data"> 复制</a></label>
+					</div>
+				</div>
+
+				
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>回调地址：</label>
+					</div>
+					<div class="form_label">
+						<label id="show_token_url" ></label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+function up_pkg(id, dsp_path){
+	$("#mmid").val(id);
+	$("#dsp_path").val(dsp_path);
+	if(dsp_path == "") {
+		alert('请联系商务获取空包文件')
+		return false
+	}
+	$('#up_pkg').modal({
+		keyboard: true
+	})
+}
+
+function up_token(id, url){
+	$("#mmid_2").val(id);
+	$("#token_url").val(url);
+	$('#up_token').modal({
+		keyboard: true
+	})
+}
+
+function show_param(appkey, secret, token_url){
+	// $("#show_appkey").text(appkey);
+	// $("#show_secret").text(secret);
+	$("#show_token_url").text(token_url);
+	$("#copy_data").val("APPkey :  "+appkey+"   "+"secret :    "+secret)
+	$('#show_param').modal({
+		keyboard: true
+	})
+}
+
+function down_pkg() {
+	var dsp_path = $("#dsp_path").val()
+	if(dsp_path == '') {
+		alert('请联系商务获取空包文件')
+	}else {
+		location.href="http://honor.cdn.anzhi.com/"+dsp_path;
+	}
+}
+
+//上传apk
+function apk_file(){
+	var apk = $("input[name='apk']").val();
+	if( apk == "" ) {
+		alert('请上传apk');
+		return false
+	}
+    if( apk && !apk.match(/.apk/i)){
+     	alert("上传apk格式有误");
+	    return false;
+    }
+    $("#pkg_btn").val('上传中')
+	$.ajaxFileUpload(
+	{
+		url:"{{ url('Index/up_package') }}", //你处理上传文件的服务端
+		secureuri:false,
+		fileElementId:'apk',
+		dataType: 'json',
+		success: function (data){
+			if(data.code == 1){
+				$("#pkg_btn").val('提交')
+				$('#is_up').html(data.msg);
+				$('#apk_path').val(data.data);
+				return false;
+			}else{
+				$("#pkg_btn").val('上传')
+				$('#is_up').html(data.msg);
+				alert(data.msg);
+				return false;
+			}
+	   }
+	})
+}
+
+function bh_submit()
+{
+	var apk_path = $('#apk_path').val()
+	if(apk_path == "" || apk_path == unfinded) {
+		alert('请上传apk');
+		return false
+	}
+	return true
+}
+
+function token_submit()
+{
+	var token_url = $('#token_url').val()
+	if(token_url == "" ) {
+		alert('请填写回调地址');
+		return false
+	}
+	if( !is_url(token_url) ) {
+		alert('回调地址格式有误', 'error')
+		return false
+	}
+	return true
+}
+
+var clipboard = new Clipboard('.copy');
+clipboard.on('success', function(e) {
+   alert("接入参数复制成功！");
+    e.clearSelection();
+});
+clipboard.on('error', function(e) {
+    alert("接入参数复制失败！");
+});
+</script>

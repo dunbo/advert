@@ -1,0 +1,49 @@
+<div class="pagebars">
+    <div class="pagebars_l">
+       <p>当前显示<span>{{ (page -1)*pagesize + cur_page_num }}</span>/<span>{{ paginator.total_items }}</span>条</p>
+    </div>
+    <div class="pagebars_r">
+        {% if paginator.first == paginator.current %}
+            <a href="javascript:void(0);" class="page_a disabled">&lt;</a>
+        {% else %}
+            <a href="{{get_page_url(paginator.before, pagesize)}}" class="page_a" rel="prev">&lt;</a>
+        {% endif %}
+        {% for p in pageNum %}
+            <a href="{{get_page_url(p, pagesize)}}" {% if paginator.current == p %}class="page_a active"{% else %}class="page_a"{% endif %} rel="index">
+                {{ p }}
+            </a>
+        {% endfor %}
+        {% if paginator.last == paginator.current %}
+            <a href="javascript:void(0);" class="page_a disabled">&gt;</a>
+        {% else %}
+            <a href="{{get_page_url(paginator.next, pagesize)}}" class="page_a" rel="next">&gt;</a>
+        {% endif %}
+        <form method="get" style="display: inline;">
+        <div class="dropup" id="page_dropdown" style="display: inline-block;">
+            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                <i><?php echo  isset($_GET['pagesize'])?$_GET['pagesize']:10 ?> 条/页</i>
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="{{get_page_url(paginator.current,10)}}">10 条/页</a></li>
+                <li><a href="{{get_page_url(paginator.current,20)}}">20 条/页</a></li>
+                <li><a href="{{get_page_url(paginator.current,50)}}">50 条/页</a></li>
+                <li><a href="{{get_page_url(paginator.current,100)}}">100 条/页</a></li>
+                <li><a href="{{get_page_url(paginator.current,500)}}">500 条/页</a></li>
+                <li><a href="{{get_page_url(paginator.current,1000)}}">1000 条/页</a></li>
+            </ul>
+        </div>
+        <div class="page_jumper">
+            跳至<input type="text" name="page" value="{{ paginator.current }}" />页
+            {{ get_jump_param() }}
+            <input type="submit"  value="Go" alt="跳转" title="跳转">
+        </div>
+        </form>
+    </div>
+    <div class="clear"></div>
+</div>
+
+
+
+
+

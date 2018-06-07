@@ -1,0 +1,70 @@
+<meta charset="UTF-8">
+<title>{{ title }}</title>
+{% if prefix == 'index' %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css?v3') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css?v3') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/ajaxfileupload.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/clipboard.js')}}"></script>
+{% elseif prefix == 'position' %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/bootstrapSwitch.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/radio/build.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/radio/default.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/radio/Font-Awesome/css/font-awesome.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/bootstrapSwitch.js')}}"></script>
+<script type="text/javascript" src="{{ static_url('js/clipboard.js')}}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+{% elseif prefix == 'strategy'  %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/bootstrapSwitch.js')}}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+{% elseif prefix == 'strategy_add'  %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+{% elseif prefix == 'statistics_md'  %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/echarts.min.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/My97DatePicker/WdatePicker.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+{% elseif prefix == 'statistics_ad'  %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/echarts.min.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/My97DatePicker/WdatePicker.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+{% elseif prefix == 'account_user'  %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css?v3') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css?v3') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/viewer.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/viewer.js') }}"></script>
+{% elseif prefix == 'account_finance' %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css?v3') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css?v3') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+{% elseif prefix == 'sdk'  %}
+<link type="text/css" href="{{ static_url('css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('js/pubic.js') }}"></script>
+{% endif %}
+
+
+

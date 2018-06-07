@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{{ title }}</title>
+        <link type="text/css" href="{{ static_url('css/bootstrap.css') }}" rel="stylesheet" />
+        <link type="text/css" href="{{ static_url('css/index.css') }}" rel="stylesheet" />
+    </head>
+    <body>
+    <div class="main">
+        <div class="login_wrap">
+            <form action="{{ url('passport/login') }}" method="post">
+                <div class="form_item">
+                    <div class="form_control">
+                        <input type="text"  name="username" placeholder="登录名" class="inputtext" />
+                    </div>
+                </div>
+                <div class="form_item">
+                    <div class="form_control">
+                        <input type="password" name="password" placeholder="密码" class="inputtext" />
+                    </div>
+                </div>
+                <button class="btn btn-success btn_login">登录</button>
+            </form>
+        </div>
+    </div>
+    <div class="alert-tips" id="alert-tips">
+     <?php $this -> flashSession -> output();  ?>
+    </div>
+    </body>
+    <script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js') }}"></script>
+    <script type="text/javascript" src="{{ static_url('/js/common.js') }}"></script>
+</html>

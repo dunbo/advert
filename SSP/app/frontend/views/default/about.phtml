@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>智盟广告</title>
+		<link type="text/css" href="{{ static_url('asset/css/jquery.fullPage.css') }}" rel="stylesheet" />
+		<link type="text/css" href="{{ static_url('asset/css/swiper.css') }}" rel="stylesheet" />
+		<link type="text/css" href="{{ static_url('asset/css/index.css'~'?v3') }}" rel="stylesheet" />
+	</head>
+	<body>
+		<div class="nav_wrap fixed">
+			<div class="wrapper_inner">
+				<h1 class="logo">
+					<a href="/" title="智盟广告">智盟广告</a>
+				</h1>
+				<ul class="nav">
+					<li><a href="default.html">流量变现</a></li>
+					<li><a href="atv.html">青苗计划</a></li>
+					<li class="current"><a href="about.html">关于我们</a></li>
+					<li><a href="qa.html">常见问题</a></li>
+					<li><a href="http://dev.anzhi.com/" target="_blank">开发者平台</a></li>
+				</ul>
+				{% if is_login == 1 %}
+				<div class="login_info" style="width:69px">
+					<a href="{{ url('index/index') }}">媒体管理</a>
+				</div>
+				{% else %}
+				<div class="login_info" >
+					<a href="{{ login_url['login'] }}">登录</a>
+					<a href="{{ login_url['register'] }}" class="register_index">注册</a>
+				</div>
+				{% endif %}
+				<div class="clear"></div>
+			</div>
+		</div>
+	  
+
+ 		<div class="aboutus">
+	    	<div class="wrapper_inner">
+	    		<div class="comment fl">
+					<h1 class="intro">
+						<span>关于我们</span>
+					</h1>
+					<p>我们是一个互动式效果广告平台，致力于运用精准投放技术，通过海量媒体的人群细分覆盖为广告主提供优质的品牌营销与产品推广服务，同时我们长期坚持完善客户服务效果，用心为每一位合作媒体营销价值，帮助开发者获得丰富稳定的广告收益，为客户提供更好的流量变现效率和用户体验。</p>
+					<h1 class="intro" style="margin-top:20px">
+						<span>智盟商务合作</span>
+					</h1>
+					<ul class="contact_list" style="margin-right: 80px;">
+						<li class="contact_name">晓波</li>
+						<li class="contact_qq">2495875288</li>
+						<li class="contact_tel">15811238140</li>
+					</ul>
+					<ul class="contact_list">
+						<li class="contact_name">静静</li>
+						<li class="contact_qq">2814445045</li>
+						<li class="contact_tel">15600133189</li>
+					</ul>
+	    		</div>
+				<div class="picture fr">
+					<img class="mountains" src="{{ static_url('asset/images/aboutus.jpg') }}">
+				</div>
+				<div class="clear"></div>
+	    	</div>
+	    </div>
+
+
+
+		<div class="footer_wrap">
+			<div class="footer wrapper_inner">
+				<h3><span>联</span>系我们</h3>
+				<ul class="footer_r">
+				    <li>
+				    	<h4>企业QQ、邮箱</h4>
+				        <div class="footer_qq">
+				        	<a href="#" target="blank"><script type="text/javascript" src="http://static.b.qq.com/account/bizqq/js/wpa.js?type=1&amp;kfuin=800004609&amp;ws=www.anzhi.com&amp;btn1=%E4%BC%81%E4%B8%9AQQ%E4%BA%A4%E8%B0%88"></script><iframe id="iframediv1513586413530" scrolling="no" frameborder="0" width="102" height="24" allowtransparency="true" src="about:blank"></iframe></a>
+				        </div>
+				        <div class="footer_email">
+				        	<a href="mailto:zhimeng@anzhi.com">zhimeng@anzhi.com </a>
+				        </div>
+				    </li>
+	    		</ul>
+	    		<ul class="footer_l">
+	    			<li>
+	    				<img src="{{ static_url('asset/images/code_01.png') }}">
+	    				<span>关注公共号</span>
+	    			</li>
+	    			<li>
+	    				<img src="{{ static_url('asset/images/code_02.png') }}">
+	    				<span>关注公共号</span>
+	    			</li>
+	    			<li class="nomargin">
+	    				<img src="{{ static_url('asset/images/code_03.png') }}">
+	    				<span>关注微博</span>
+	    			</li>
+	    		</ul>
+			</div>
+		</div>
+
+		<div class="footer_anzhi">
+			<div class="footer_bg_anzhi">
+			</div>
+			<p>
+				北京力天无限网络技术有限公司 版权所有<br>地址：北京市海淀区西小口路66号中关村东升科技园A-1号楼一层103  违法和不良信息举报电话：010-56358201　13366144805
+		 举报邮箱：kefu@anzhi.com<br>
+				<a href="http://www.anzhi.com/aboutus.php">关于我们</a>　|　<a href="http://www.anzhi.com/contact.php">联系我们</a>　|　<a href="http://www.anzhi.com/zp.php">安智社招</a>　|　<a href="http://campus.anzhi.com" target="_blank">安智校招</a>　|　<a href="http://www.anzhi.com/jzjk/index.htm" target="_blank">家长监护</a>  |　<a href="http://www.anzhi.com/sitemap/" target="_blank">网站地图</a> |　<a href="http://www.anzhi.com/cnaac.php">网民须知</a><br>
+				京 ICP 证 101039 号  |  <a href="http://www.miitbeian.gov.cn" target="_blank">京ICP备10031276号-2</a>  |  <a href="/images/copyright1.jpg?v2" target="_blank">京网文[2015]0642-272号</a>  |  <script src="http://s19.cnzz.com/stat.php?id=3216547&amp;web_id=3216547&amp;show=pic1" language="JavaScript"></script><script src="http://c.cnzz.com/core.php?web_id=3216547&amp;show=pic1&amp;t=z" charset="utf-8" type="text/javascript"></script><a href="http://www.cnzz.com/stat/website.php?web_id=3216547" target="_blank" title="站长统计"><img border="0" hspace="0" vspace="0" src="http://icon.cnzz.com/img/pic1.gif"></a>
+		<img src="{{ static_url('asset/images/beian.png') }}" style="display: inline-block">
+		<a target="_blank" href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=11010802021371" style="display:inline-block;text-decoration:none;height:20px;line-height:20px;">京公网安备 11010802021371号</a>
+			</p>
+			<div class="believe_links">
+				<a class="anva_logo" href="http://white.anva.org.cn" target="_blank" style="display:block; width:55px; height:55px; margin:5px auto 0; background:url( {{ static_url('asset/images/anva_logo.png') }}) no-repeat;"></a>
+			</div>
+		</div>
+
+	</body>
+</html>

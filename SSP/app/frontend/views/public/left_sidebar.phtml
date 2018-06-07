@@ -1,0 +1,73 @@
+<div class="sider">
+	<div class="logo">
+		<a href="/index/index">LOGO</a>
+	</div>
+	<ul class="menu">
+		<li class="menu_main_item selected">
+			<div class="menu_title">
+				<i class="menu_icon glyphicon glyphicon-random"></i>
+				<span>媒体管理</span>
+			</div>
+			<ul class="menu_sub">
+				<li class="{{ prefix=='index' ? 'selected':'' }}">
+					<a href="{{ url('index/index') }}">媒体列表</a>
+				</li>
+			</ul>
+		</li>
+		<li class="menu_main_item">
+			<div class="menu_title">
+				<i class="menu_icon glyphicon glyphicon-random"></i>
+				<span>广告位管理</span>
+			</div>
+			<ul class="menu_sub">
+				<li class="{{ prefix=='position' ? 'selected':'' }}" >
+					<a href="{{ url('position/index') }}">广告位列表</a>
+				</li>
+				<!-- <li class="{{ prefix=='strategy' ? 'selected':'' }}">
+					<a href="{{ url('strategy/index') }}">屏蔽策略管理</a>
+				</li> -->
+			</ul>
+		</li>
+
+		<li class="menu_main_item">
+			<div class="menu_title">
+				<i class="menu_icon glyphicon glyphicon-random"></i>
+				<span>技术对接</span>
+			</div>
+			<ul class="menu_sub">
+				<li class="{{ prefix=='sdk' ? 'selected':'' }}">
+					<a href="{{ url('sdk/index') }}">SDK文档</a>
+				</li>
+			</ul>
+		</li>
+
+		<li class="menu_main_item">
+			<div class="menu_title">
+				<i class="menu_icon glyphicon glyphicon-random"></i>
+				<span>账号管理</span>
+			</div>
+			<ul class="menu_sub">
+				<li class="{{ prefix=='account_user' ? 'selected':'' }}">
+					<a href="{{ url('account/index') }}">账户信息</a>
+				</li>
+				<li class="{{ prefix=='account_finance' ? 'selected':'' }}">
+					<a href="{{ url('account/finance') }}">财务管理</a>
+				</li>
+			</ul>
+		</li>
+		<li class="menu_main_item">
+			<div class="menu_title">
+				<i class="menu_icon glyphicon glyphicon-random"></i>
+				<span>结算数据</span>
+			</div>
+			<ul class="menu_sub">
+				<li class="{{ prefix=='statistics_md' ? 'selected':'' }}">
+					<a href="{{ url('statistics/media') }}">媒体数据</a>
+				</li>
+				<li class="{{ prefix=='statistics_ad' ? 'selected':'' }}">
+					<a href="{{ url('statistics/advert') }}">广告位数据</a>
+				</li>
+			</ul>
+		</li>
+	</ul>
+</div>

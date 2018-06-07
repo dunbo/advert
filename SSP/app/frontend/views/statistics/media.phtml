@@ -1,0 +1,349 @@
+<div class="navigation">
+	<div class="title">
+		<a class="title_main" href="{{ url('statistics/media') }}">媒体数据</a>
+	</div>
+	{{ partial('public/top_sidebar') }}
+</div>
+
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('statistics/media') }}" id="search_form" method="get">
+				<div class="form_item">
+					<div class="form_label">
+						<label>查询时间：</label>
+					</div>
+					<div class="form_control">	
+						<input class="inputtext" name="start_tm" id="start_tm" value="{{ start_tm }}" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'end_tm\')}',dateFmt:'yyyy-MM-dd'})" onchange="search_form()" />
+						<span class='space'>~</span>			
+						<input class="inputtext" name="end_tm" id="end_tm"  value="{{ end_tm }}"  onFocus="WdatePicker({minDate:'#F{$dp.$D(\'start_tm\')}',maxDate:'{{ end_tm }}',dateFmt:'yyyy-MM-dd'})" onchange="search_form()" />
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<a class="btn_orange" href="{{ url('statistics/media?export=1'~'&start_tm='~start_tm~'&end_tm='~end_tm~'&order_type='~order_type~'&order=') }} {{ order?0:1 }}" >导出</a>
+					</div>
+				</div>
+				<div class="clear"></div>
+			</form>
+		</div>
+		<div class="chart_box">
+			<ul id="chart_lenge">
+				<li data-index="0" >
+					<span class="chart_check">
+						<i></i>
+						<input type="checkbox" name="check1">
+					</span>
+					<span class="chart_item">收益</span>
+				</li>
+				<li data-index="1" >
+					<span class="chart_check">
+						<i></i>
+						<input type="checkbox" name="check1">
+					</span>
+					<span class="chart_item">点击量</span>
+				</li>
+				<li data-index="2" >
+					<span class="chart_check">
+						<i></i>
+						<input type="checkbox" name="check1" >
+					</span>
+					<span class="chart_item">点击率</span>
+				</li>
+				<li data-index="3"  >
+					<span class="chart_check">
+						<i></i>
+						<input type="checkbox" name="check1" >
+					</span>
+					<span class="chart_item">曝光量</span>
+				</li>
+				<li data-index="4" class="selected">
+					<span class="chart_check">
+						<i></i>
+						<input type="checkbox" name="check1" checked="checked">
+					</span>
+					<span class="chart_item">eCPM</span>
+				</li>
+			</ul>
+			<div id="chart_ad" style="height: 400px; -webkit-tap-highlight-color: transparent; user-select: none; position: relative; background: transparent;" _echarts_instance_="ec_1505469362281">
+		</div>
+		</div>
+		<div class="table_box">
+			<table cellpadding="0" cellspacing="0" class="tables">
+				<thead>
+					<tr>
+						<th>媒体ID</th>
+						<th>媒体名称</th>
+						<th>平台</th>
+						<th>
+							<!-- 曝光量 -->
+							{% if order_type == 'exp' %}
+									<a href="{{ url('statistics/media?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&order_type=exp&order='~order) }}">曝光量
+									{% if order  == 1 %}
+									<span class="blue">↑</span>↓
+									{% else %}
+									<span class="blue">↓</span>↑
+									{% endif %}
+									</a>
+							{% else %}
+								<a href="{{ url('statistics/media?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&order_type=exp&order='~order) }}">曝光量↓↑</a>
+							{% endif %}
+						</th>
+						<th>
+							<!-- 点击量 -->
+							{% if order_type == 'click' %}
+									<a href="{{ url('statistics/media?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&order_type=click&order='~order) }}">点击量
+									{% if order  == 1 %}
+									<span class="blue">↑</span>↓
+									{% else %}
+									<span class="blue">↓</span>↑
+									{% endif %}
+									</a>
+							{% else %}
+								<a href="{{ url('statistics/media?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&order_type=click&order='~order) }}">点击量↓↑</a>
+							{% endif %}
+						</th>
+						<th>点击率</th>
+						<th>
+							<!-- 预计收益 -->
+							{% if order_type == 'ear' %}
+									<a href="{{ url('statistics/media?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&order_type=ear&order='~order) }}">预计收益
+									{% if order  == 1 %}
+									<span class="blue">↑</span>↓
+									{% else %}
+									<span class="blue">↓</span>↑
+									{% endif %}
+									</a>
+							{% else %}
+								<a href="{{ url('statistics/media?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&order_type=ear&order='~order) }}">预计收益↓↑</a>
+							{% endif %}
+						</th>
+						<th>eCPM</th>
+						<th>每日数据</th>
+					</tr>
+				</thead>
+				<tbody>
+			{% if list is not empty %}
+				{% set exposure = 0,click=0,earnings=0 %}
+				 {% for key,val in list %}
+				 	{% set exposure = exposure + val['exposure'] %}
+				 	{% set click = click + val['click'] %}
+				 	{% set earnings = earnings + val['earnings'] %}
+					<tr>
+						<td>{{ val['mmid'] }}</td>
+						<td>{{ val['mname'] }}</td>
+						<td>{{ val['platform'] }}</td>
+						<td>{{ val['exposure'] }}</td>
+						<td>{{ val['click'] }}</td>
+						<td>{{ click_rate(val['click'],val['exposure'])}}%</td>
+						<td>￥{{ number_format(val['earnings']) }}</td>
+						<td>{{ ecpm(val['exposure'],val['earnings']) }}</td>
+						<td>
+							<a href="{{ url('statistics/mediadays?mmid='~val['mmid']~'&platform='~val['platform']~'&start_tm='~start_tm~'&end_tm='~end_tm) }}" target="_blank" class="blue">每日数据</a>
+						</td>
+					</tr>
+				{% endfor %}
+					<tr>
+						<td>总计</td>
+						<td>-</td>
+						<td>-</td>
+						<td>{{ exposure }}</td>
+						<td>{{ click }}</td>
+						<td>{{ click_rate(click,exposure) }}%</td>
+						<td>￥{{ number_format(earnings) }}</td>
+						<td>{{ ecpm(exposure,earnings) }}</td>
+						<td>-</td>
+					</tr>
+			{% else %}
+					<tr>
+	                     <td colspan="7">暂无数据</td>
+	                </tr>
+			{% endif %}
+				</tbody>
+			</table>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+		
+	</div>
+	</div>
+
+
+<script>
+var char_json =	{{ char_json }}
+
+var char_date =	{{ char_date }}
+
+$(function(){
+	var attr = [4];
+	var data = char_json
+	//默认显示第一个数据
+	char(attr)
+	$('#chart_lenge li').click(function(){
+		var index = $(this).attr('data-index');
+		var $obj = $(this).find('input');
+		if(typeof($obj.attr("checked"))=="undefined"){
+			$obj.prop('checked',true);
+			$obj.attr('checked',true);
+			$(this).addClass('selected');
+			attr.push(index);
+			if(attr.length>2){
+				var indexN = attr[0];
+				$('#chart_lenge li').eq(indexN).find('input').removeAttr('checked');
+				$('#chart_lenge li').eq(indexN).removeClass('selected');
+				attr.splice(0, 1);
+			}
+		}
+		else{
+			if(attr.length==2){
+				$obj.removeProp('checked');
+				$obj.removeAttr('checked');
+				$(this).removeClass('selected');
+				for(var i =0; i<attr.length; i++){
+					if(attr[i]==index){
+						attr.del(i);
+						attr = attr.del(i);
+					}
+				}
+			
+			}	
+		}
+		char(attr)
+	})
+})
+//删除数组某个值
+Array.prototype.del = function t(n) {									
+	if (n < 0){
+		return this;}
+	else {
+		return this.slice(0, n).concat(this.slice(n + 1, this.length));
+	}
+}
+//echars绘制图表
+function char(attr){
+	var myChart = echarts.init(document.getElementById('chart_ad'));
+	var data = char_json
+	if(attr.length ==1){
+		var index = attr[0];
+		option = {
+			tooltip : {   //设置提示框
+		        trigger: 'axis'
+		    },
+		    grid:{    //设置图表左右上下边距
+                x:80,
+                y:50,
+                x2:80,
+                y2:60
+            },
+			legend: {  
+				data:[data[index].title],
+				show:false
+			},
+			toolbox: {
+				show : false,
+				feature : {
+				    mark : {show: true},
+				    dataView : {show: true, readOnly: false},
+				    magicType : {show: true, type: ['line', 'bar']},
+				    restore : {show: true},
+				    saveAsImage : {show: true}
+				},
+			},
+			calculable : true,
+			xAxis : [
+				{
+				    type : 'category',
+				    boundaryGap : false,
+				    data : char_date,
+				     axisLabel :{  
+					    interval:0  //x轴间隔多少个类别画栅格
+					} 
+				}
+			],
+		    yAxis : [
+				{
+				    name:data[index].title,
+				    type : 'value'
+				}
+			],
+			series : [
+				{
+				    name:data[index].title,
+				    type:'line',
+				    data:data[index].data
+				}
+			]
+		};
+		myChart.setOption(option,true);
+	}
+	if(attr.length==2){
+		var index1 = attr[0];
+		var index2 = attr[1];
+		option = {
+			tooltip : {
+		        trigger: 'axis'
+		    },
+			legend: {
+				data:[data[index1].title,data[index2].title],
+				show:false
+			},
+			toolbox: {
+				show : false,
+				feature : {
+				    mark : {show: true},
+				    dataView : {show: true, readOnly: false},
+				    magicType : {show: true, type: ['line', 'bar']},
+				    restore : {show: true},
+				    saveAsImage : {show: true}
+				}
+			},
+			calculable : true,
+			xAxis : [
+				{
+				    type : 'category',
+				    boundaryGap : false,
+				     data : {{ char_date }},
+				     axisLabel :{  
+					    interval:0   
+					} 
+				}
+			],
+		    yAxis : [
+				{
+				    name:data[index1].title,
+				    type : 'value'
+				},
+				{
+					name:data[index2].title,
+				    type : 'value'
+				}
+			],
+			series : [
+				{
+				    name:data[index1].title,
+				    type:'line',
+				    data:data[index1].data,
+				    yAxisIndex:0
+				},
+				{
+					name:data[index2].title,
+				    type:'line',
+				    data:data[index2].data,
+				    yAxisIndex:1
+				}
+			]
+		};
+		myChart.setOption(option);
+	}
+}
+
+function search_form(){
+	var start_tm = $('#start_tm').val();
+	var end_tm   = $('#end_tm').val();
+	if( start_tm !='' && end_tm !="" ) {
+		$('#search_form').submit();
+	}
+	return false;
+}
+</script>

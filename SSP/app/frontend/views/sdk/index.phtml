@@ -1,0 +1,73 @@
+<div class="navigation">
+	<div class="title">
+		<a class="title_main" href="{{ url('sdk/index') }}">SDK文档</a>
+	</div>
+	{{ partial('public/top_sidebar') }}
+</div>
+
+<div class="content_inner">
+	<h3 class="sdk_title">SDK文档</h3>
+	<!-- <div class="sdk_wrap">
+		<div class="sdk_wrap_inner">
+			<div class="sdk_icon"></div>
+			<a href="{{ static_url('sdk/安智广告SDK开发文档-2.2.pdf') }}" target="_blank">对接文档</a>
+			<a href="{{ static_url('sdk/包含全部广告样式SDK.zip') }}" >SDK下载</a>
+			<div class="clear"></div>
+			<p>说明：此SDK包含<span>横幅、开屏、插屏、视频贴片,原生广告，奖励视频</span>等6类广告</p>
+		</div>
+	</div>
+	<div class="sdk_wrap">
+		<div class="sdk_wrap_inner">
+			<div class="sdk_icon"></div>
+			<a href="{{ static_url('sdk/安智广告SDK开发文档-2.2.pdf') }}" target="_blank">对接文档</a>
+			<a href="{{ static_url('sdk/只包含视频广告SDK.zip') }}" >SDK下载</a>
+			<div class="clear"></div>
+			<p>说明：此SDK包含<span>奖励视频</span>广告</p>
+		</div>
+	</div> -->
+	<div class="sdk_wrap" style="margin-right:0">
+		<div class="sdk_wrap_inner">
+			<div class="sdk_icon"></div>
+			<a href="{{ static_url('sdk/安智广告SDK开发文档-2.2.pdf') }}" target="_blank">对接文档</a>
+			<a href="{{ static_url('sdk/不包含视频广告SDK.zip') }}" >SDK下载</a>
+			<div class="clear"></div>
+			<p>说明：此SDK包含<span>横幅、开屏、插屏、视频贴片</span>广告</p>
+		</div>
+	</div>
+	<div class="clear"></div>
+	<h3 class="sdk_title">API文档</h3>
+	<div class="api_wrap">
+		<div class="sdk_wrap">
+			<div class="sdk_wrap_inner">
+				<div class="api_icon">通用<br/>API</div>
+				<a href="{{ static_url('sdk/通用广告接入说明文档.doc') }}" target="_blank">对接文档</a>
+				<div class="clear"></div>
+			</div>
+		</div>
+		<div class="sdk_wrap">
+			<div class="sdk_wrap_inner">
+				<div class="api_icon">互动<br/>API</div>
+				<a href="{{ static_url('sdk/互动广告接入说明文档.doc') }}" target="_blank">对接文档</a>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+	<div class="clear"></div>
+
+
+	<div class="api_wrap">
+		<div class="sdk_wrap">
+			<div class="sdk_wrap_inner">
+				<div class="api_icon">商业<br/>内容</div>
+				<a href="{{ static_url('sdk/智盟商业内容AP接入说明.zip') }}" target="_blank">对接文档</a>
+				<div class="clear"></div>
+			</div>
+		</div>
+	</div>
+
+</div>
+<script type="text/javascript">
+	function onFileChange(obj){
+		$(obj).siblings('span').html("<img src="+$(obj).val()+" />")
+	}
+</script>

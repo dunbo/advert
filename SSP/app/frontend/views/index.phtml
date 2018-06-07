@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	{{ partial('public/header') }}
+</head>
+<body>
+	{{ partial('public/left_sidebar') }}
+	<div class="main">
+		<div class="content">
+			{{content()}}
+		</div>		
+	</div>
+	{{ partial('public/alert') }}
+	{{ partial('public/footer') }}
+</body>
+</html>

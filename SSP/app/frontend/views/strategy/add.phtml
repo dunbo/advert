@@ -1,0 +1,561 @@
+<div class="navigation">
+	<div class="title">
+		<a class="title_main" href="{{ url('index/index') }}">媒体列表</a>
+		<i></i>
+		<a class="title_sub_title" href="#">
+			{% if id is not empty %}
+				编辑屏蔽策略
+			{% else %}
+				新建屏蔽策略
+			{% endif %}
+		</a>
+	</div>
+	{{ partial('public/top_sidebar') }}
+</div>
+
+<div class="content_inner">
+				<div class="single_info block_info">
+					<form action="{{ url('strategy/publish') }}" class="media_info" method="post" onsubmit="return checksubmit()" >
+						<input type="hidden" value="{{ rows['strategyid'] }}" name="id" />
+						<!-- 名称 -->
+						<div class="form_item">
+							<div class="form_label">
+								<label>名称：</label>
+							</div>
+							<div class="form_control">
+								<input type="text" name="name" value="{{ rows['name'] }}" placeholder="请输入屏蔽策略名称，不超过20字" class="inputtext">
+							</div>
+						</div>
+
+						<!-- 行业 -->
+						<div class="form_item" id="block2">
+							<div class="form_label">
+								<label>行业屏蔽：</label>
+							</div>
+							<div class="form_control">
+								<label class="label_group {{ rows['shield_industry']==0?'label_selected':'' }} ">
+									<span class="radio_icon">
+										<span class="radio_inner"></span>
+										<input type="radio" name="shield_industry" onclick="select_type(1,0)" value="0" class="radio_input"  {{ rows['shield_industry']==0?'checked':'' }}>
+									</span>
+									<span class="radio_txt">不屏蔽</span>
+								</label>
+								<label class="label_group {{ rows['shield_industry']==1?'label_selected':'' }}">
+									<span class="radio_icon">
+										<span class="radio_inner"></span>
+										<input type="radio" name="shield_industry" onclick="select_type(1,1)" value="1" {{ rows['shield_industry']==1?'checked':'' }} class="radio_input">
+									</span>
+									<span class="radio_txt">屏蔽</span>
+								</label>
+							</div>
+
+							<div class="multiselect" id="select_block_1" {{ rows['shield_industry']==0?'style="display:none"':'' }}>
+								<select id="select_sel" class="select_industry" style="display:none">
+									{% for key,val in industry %}
+										<optgroup value="{{ val['id'] }}" {{ val['selected']?"selected='selected'":'' }} label="{{ val['parent_name'] }}">
+											{% for k,v in val['sub'] %}
+											<option value="{{ v['id'] }}" {{ v['selected']?"selected='selected'":''  }}>{{ v['sub_name'] }}</option>
+											{% endfor %}
+										</optgroup>
+									{% endfor %}
+								</select>
+
+								<div class="select_table">
+									<div class="select_table_group">
+										<div class="select_table_head">
+											<span>选择行业({{ industry_sy_num }})</span>
+											<a href="javascript:;" class="select_add_all">添加全部</a>
+										</div>
+										<div class="select_table_search">
+											<input type="text" class="search_input search_input1 inputtext" placeholder="搜索">
+											<i class="anticon_search glyphicon glyphicon-search"></i>
+										</div>
+									</div>
+									
+									<ul class="ms_list">
+										{% for key,val in industry %}
+										<li class="ms_list_mainli">
+											<h3 style="{{  !val['selected_left']?'display:none':'' }}">{{ val['parent_name'] }}</h3>
+											<ul class="ms_list_sub">
+											{% for k,v in val['sub'] %}
+											<li style="{{ v['selected']?'display:none':'' }}" >{{ v['sub_name'] }}</li>
+											{% endfor %}
+											</ul>
+										</li>
+										{% endfor %}
+									</ul>
+
+								</div>
+								<div class="ms_selection">
+									<div class="select_table_group">
+										<div class="select_table_head">
+											<span>选择行业({{ industry_select_num }})</span>
+											<a href="javascript:;" class="select_delete">删除全部</a>
+										</div>
+										<div class="select_table_search">
+											<input type="text" class="search_input search_input2 inputtext" placeholder="搜索">
+											<i class="anticon_search"></i>
+										</div>
+									</div>
+
+									<ul class="ms_list">
+										{% for key,val in industry %}
+										<li class="ms_list_mainli">
+											<h3 style="{{ val['selected']?'display:block':'' }}">{{ val['parent_name'] }}</h3>
+											<ul class="ms_list_sub">
+											{% for k,v in val['sub'] %}
+											<li class="selected" style="{{ v['selected']?'display:list-item':'' }}">{{ v['sub_name'] }}</li>
+											{% endfor %}
+											</ul>
+										</li>
+										{% endfor %}
+									</ul>
+
+								</div>
+								<div class="clear"></div>
+							</div>
+						</div>
+
+						<!-- 标签 -->
+						<div class="form_item" id="block1">
+							<div class="form_label">
+								<label>活动标签：</label>
+							</div>
+							<div class="form_control">
+								<label class="label_group {{ rows['shield_tag']==0?'label_selected':'' }}">
+									<span class="radio_icon">
+										<span class="radio_inner"></span>
+										<input type="radio" name="shield_tag" value="0" onclick="select_type(2,0)" {{ rows['shield_tag']==0?'checked':'' }} class="radio_input" >
+									</span>
+									<span class="radio_txt">不屏蔽</span>
+								</label>
+								<label class="label_group {{ rows['shield_tag']==1?'label_selected':'' }}">
+									<span class="radio_icon">
+										<span class="radio_inner"></span>
+										<input type="radio" name="shield_tag" onclick="select_type(2,1)" value="1" {{ rows['shield_tag']==1?'checked':'' }} class="radio_input">
+									</span>
+									<span class="radio_txt">屏蔽</span>
+								</label>
+							</div>
+
+							<div class="multiselect" id="select_block_2" {{ rows['shield_tag']==0?'style="display:none"':'' }}>
+								<select id="select_sel" class="select_tag"  style="display:none">
+									{% for key,val in list %}
+										<optgroup value="{{ val['group_id'] }}" {{ val['selected']?"selected='selected'":'' }} label="{{ val['name'] }}">
+											{% for k,v in val['tags'] %}
+											<option value="{{ v['tag_id'] }}" {{ v['selected']?"selected='selected'":'' }} >{{ v['tag_name'] }}</option>
+											{% endfor %}
+										</optgroup>
+									{% endfor %}
+								</select>
+
+								<div class="select_table">
+									<div class="select_table_group">
+										<div class="select_table_head">
+											<span>选择标签({{ tags_sy_num }})</span>
+											<a href="javascript:;" class="select_add_all">添加全部</a>
+										</div>
+										<div class="select_table_search">
+											<input type="text" class="search_input search_input1 inputtext" placeholder="搜索">
+											<i class="anticon_search glyphicon glyphicon-search"></i>
+										</div>
+									</div>
+
+									<ul class="ms_list">
+										{% for key,val in list %}
+										<li class="ms_list_mainli">
+											<h3 style="{{ !val['selected_left']?'display:none':'' }}">{{ val['name'] }}</h3>
+											<ul class="ms_list_sub">
+											{% for k,v in val['tags'] %}
+											<li style="{{ v['selected']?'display:none':'' }}">{{ v['tag_name'] }}</li>
+											{% endfor %}
+											</ul>
+										</li>
+										{% endfor %}
+									</ul>
+
+								</div>
+								<div class="ms_selection">
+									<div class="select_table_group">
+										<div class="select_table_head">
+											<span>选择标签({{ tags_select_num }})</span>
+											<a href="javascript:;" class="select_delete">删除全部</a>
+										</div>
+										<div class="select_table_search">
+											<input type="text" class="search_input search_input2 inputtext" placeholder="搜索">
+											<i class="anticon_search"></i>
+										</div>
+									</div>
+
+									<ul class="ms_list">
+										{% for key,val in list %}
+										<li class="ms_list_mainli">
+											<h3 style="{{ val['selected']?'display:block':'' }}">{{ val['name'] }}</h3>
+											<ul class="ms_list_sub">
+											{% for k,v in val['tags'] %}
+											<li {{ v['selected']?'class="selected"':'' }}  style="{{ v['selected']?'display:block':'' }}">{{ v['tag_name'] }}</li>
+											{% endfor %}
+											</ul>
+										</li>
+										{% endfor %}
+									</ul>
+
+								</div>
+								<div class="clear"></div>
+							</div>
+						</div>
+
+						<!-- 广告主url -->
+						<div class="form_item">
+							<div class="form_label">
+								<label>广告主url屏蔽：</label>
+							</div>
+							<div class="form_control">
+								<label class="label_group {{ !rows['url']?'label_selected':'' }}">
+									<span class="radio_icon">
+										<span class="radio_inner"></span>
+										<input type="radio" name="shield_url" onclick="select_type(3,0)" value="0" class="radio_input"  {{ !rows['url']?'checked':'' }} >
+									</span>
+									<span class="radio_txt">不屏蔽</span>
+								</label>
+								<label class="label_group {{ rows['url']?'label_selected':'' }}">
+									<span class="radio_icon">
+										<span class="radio_inner"></span>
+										<input type="radio" name="shield_url"  onclick="select_type(3,1)" value='1' {{ rows['url']?'checked':'' }} class="radio_input">
+									</span>
+									<span class="radio_txt">屏蔽</span>
+								</label>
+			                    <div class="clear"></div>
+			                    <textarea id="select_block_3" {{ !rows['url']?'style="display:none"':'' }} name="url" style="margin-top:12px" placeholder="请输入要屏蔽的广告主url(如www.**.com)，如果有多个请回车换行后输入另一个url。">{{ rows['url'] }}</textarea>
+							</div>
+						</div>
+						<div class="form_btn_foot" style="margin-left:30px">
+							<button class="btn btn_orange" style="width:100px;" type="submit">提交</button>&nbsp;&nbsp;
+							<a class="btn btn-default" style="width:100px;" href="{{ url('strategy/index') }}" >取消</a>
+						</div>
+
+						<input type="hidden" value=""  id="industry" name="industry">
+						<input type="hidden" value=""  id="tag_parent" name="tag_parent">
+						<input type="hidden" value=""  id="tag_sub" name="tag_sub">
+					</form>
+				</div>
+			</div>
+
+<script>
+function checksubmit(){
+	var name  = $("input[name='name']").val();
+	if( name == "" ) {
+		tips_message('名称不能为空', 'error')
+		return false
+	}
+	if( !max_length(name, 40) ) {
+		tips_message('名称不能超过20个字', 'error')
+		return false
+	}
+
+	var group_arr =  Array();
+	var id_arr    =	 Array();
+	$('.select_tag optgroup').each(function(k){
+		//alert($(this).attr('value'))
+		 if( $(this).attr('selected')=='selected' ) {
+		 	var gid = $(this).attr('value')
+		 	group_arr.push(gid)
+		 	var id = Array();
+		 	$(this).find('option').each(function(key){
+		 		if($(this).attr('selected')=='selected'){
+					id.push($(this).attr('value'));
+				}
+		 	})
+		 	id_arr.push(id)
+		 }
+	})
+	
+	var group_json = JSON.stringify(group_arr);
+	var id_json    = JSON.stringify(id_arr);
+	$('#tag_parent').val(group_json)
+	$('#tag_sub').val(id_json)
+
+	var group_ind_arr =  Array()
+	$('.select_industry optgroup').each(function(){
+		//alert($(this).attr('value'))
+		 if( $(this).attr('selected')=='selected' ) {
+		 	var gid = $(this).attr('value')
+		 	group_ind_arr.push(gid)
+		 	var id =  Array();
+		 	$(this).find('option').each(function(){
+		 		if($(this).attr('selected')=='selected'){
+					id.push($(this).attr('value'));
+				}
+		 	})
+		 	group_ind_arr.push(id)
+		 }
+	})
+
+	var industry_json = JSON.stringify(group_ind_arr);
+	$('#industry').val(industry_json)
+	return true
+}
+
+function select_type(type, is_display){
+	if( type == 1 ) {
+		if( is_display ) {
+			$('#select_block_1').show();
+		}else {
+			$('#select_block_1').hide();
+		}
+	}else if( type == 2 ) {
+		if( is_display ) {
+			$('#select_block_2').show();
+		}else {
+			$('#select_block_2').hide();
+		}
+	}else if( type == 3 ) {
+		if( is_display ) {
+			$('#select_block_3').show();
+		}else {
+			$('#select_block_3').hide();
+		}
+	}
+}
+
+$(function(){
+	//block 1选择标题不全选  2选定标题整组移动
+	var block1 = new Block('#block1',1);
+	var block2 = new Block('#block2',2);
+	/*block search*/
+	$('#block1 .search_input1').bind('input',function(){
+		search_block1('#block1',this)
+	})
+	$('#block1 .search_input2').bind('input',function(){
+		search_block2('#block1',this)
+	})
+	$('#block2 .search_input1').bind('input',function(){
+		search_block1('#block2',this)
+	})
+	$('#block2 .search_input2').bind('input',function(){
+		search_block2('#block2',this)
+	})
+})
+function Block(obj,order){
+	this.blockSelNum =0;
+	this.blockNum = 0;
+	this.totalNum = $(obj+' .select_table .ms_list_sub li').length;
+	this.hover(obj);
+	this.selectLeft(obj,order);
+	this.selectRight(obj,order);
+	if(order == 2){
+		this.selTitleLeft(obj,order);
+		this.selTitleRight(obj,order);
+	}
+	this.selDeleAll(obj,order);
+	this.selAddAll(obj,order);
+}
+Block.prototype.hover = function(obj){
+	$(obj+' .ms_list_sub li').hover(function(){
+		$(this).addClass('ms_hover');
+	},function(){
+		$(this).removeClass('ms_hover');
+	});
+}
+Block.prototype.selectLeft = function(obj,order){
+	var _this = this;
+	$(obj+' .select_table .ms_list_sub li').each(function(index){
+		this.order = index;
+		$(this).bind('click',function(){
+			$(obj+ ' #select_sel option').eq(this.order).attr('selected','selected');
+			$(obj+ ' #select_sel option').eq(this.order).parent().attr('selected','selected');
+			$(this).hide();
+			var diy_none = true;
+			$(this).parent().find('li').each(function(){
+				if($(this).css('display') != 'none')
+				{diy_none = false;}
+			})
+			if(diy_none==true){
+				$(this).parent().siblings('h3').hide()
+			}
+			$(obj+ ' .ms_selection .ms_list_sub li').eq(this.order).parent().siblings('h3').show();
+			$(obj+ ' .ms_selection .ms_list_sub li').eq(this.order).show();
+			$(obj+ ' .ms_selection .ms_list_sub li').eq(this.order).addClass('selected');
+			_this.selNum(obj,order);
+		})
+	})
+}
+Block.prototype.selectRight = function(obj,order){
+	var _this = this;
+	$(obj+' .ms_selection .ms_list_sub li').each(function(index){
+		this.order = index;
+		$(this).bind('click',function(){
+			$(obj+ ' #select_sel option').eq(this.order).removeAttr('selected');
+			$(this).hide();
+			var diy_none = true;
+			$(this).parent().find('li').each(function(){
+				if($(this).css('display') != 'none')
+				{diy_none = false;}
+			})
+			if(diy_none==true){
+				$(this).parent().siblings('h3').hide();
+				$(obj+ ' #select_sel option').eq(this.order).parent().removeAttr('selected');
+			}
+			$(obj+' .select_table .ms_list_sub li').eq(this.order).parent().siblings('h3').show();
+			$(obj+' .select_table .ms_list_sub li').eq(this.order).show();
+			$(obj+' .ms_selection .ms_list_sub li').eq(this.order).removeClass('selected');
+			_this.selNum(obj,order);
+		})
+	})
+}
+Block.prototype.selTitleLeft = function(obj,order){
+	var _this = this;
+	$(obj+' .select_table .ms_list_mainli h3').each(function(index){
+		this.order = index;
+		$(this).bind('click',function(){
+			$(this).hide();
+			$(this).siblings('.ms_list_sub').find('li').hide();
+			var selGrNum = $(this).siblings('.ms_list_sub').find('li').length;
+			$(obj+' .ms_selection .ms_list_mainli').eq(this.order).find('h3').show();
+			$(obj+' .ms_selection .ms_list_mainli').eq(this.order).find('li').show();
+			$(obj+' .ms_selection .ms_list_mainli').eq(this.order).find('li').addClass('selected');
+			$(obj+' #select_sel optgroup').eq(this.order).find('option').attr('selected','selected');
+			$(obj+' #select_sel optgroup').eq(this.order).attr('selected','selected');
+			_this.selNum(obj,order);
+		})
+	})
+}
+Block.prototype.selTitleRight = function(obj,order){
+	var _this = this;
+	$(obj+' .ms_selection .ms_list_mainli h3').each(function(index){
+		this.order = index;
+		$(this).bind('click',function(){
+			$(this).hide();
+			$(this).siblings('.ms_list_sub').find('li').hide();
+			var selGrNum = $(this).siblings('.ms_list_sub').find('li').length;
+			$(obj+' .select_table .ms_list_mainli').eq(this.order).find('h3').show();
+			$(obj+' .select_table .ms_list_mainli').eq(this.order).find('li').show();
+			$(obj+' .ms_selection .ms_list_mainli').eq(this.order).find('li').removeClass('selected');
+			$(obj+' #select_sel optgroup').eq(this.order).find('option').removeAttr('selected');
+			$(obj+' #select_sel optgroup').eq(this.order).removeAttr('selected');
+			_this.selNum(obj,order);
+		})
+	})
+}
+Block.prototype.selDeleAll = function(obj,order){
+	var _this = this;
+	$(obj+' .select_delete').bind('click',function(){
+		$(obj+' .ms_selection').find('h3').hide();
+		$(obj+' .ms_selection .ms_list_sub').find('li').hide();
+		$(obj+' .select_table').find('h3').show();
+		$(obj+' .select_table .ms_list_sub').find('li').show();
+		if( order == 1 ) {
+			sel_title = '选择标签'
+		}else{
+			sel_title = '选择行业'
+		}
+		_this.blockSelNum = 0;
+		$(obj+' .ms_selection .select_table_head span').html(sel_title+'('+_this.blockSelNum+')');
+		_this.blockNum = $(obj+' .select_table .ms_list_sub li').length;
+		$(obj+' .select_table .select_table_head span').html(sel_title+'('+_this.blockNum+')');
+		$(obj+' #select_sel option').each(function(){
+			$(this).removeAttr('selected');
+			$(this).parent().removeAttr('selected');
+		})
+		$(obj+' .ms_selection .ms_list_sub li').each(function(){
+			$(this).removeClass('selected');
+		})
+	})
+}
+Block.prototype.selAddAll = function(obj,order){
+	var _this = this;
+	$(obj+' .select_add_all').bind('click',function(){
+		$(obj+' .ms_selection').find('h3').show();
+		$(obj+' .ms_selection .ms_list_sub').find('li').show();
+		$(obj+' .select_table').find('h3').hide();
+		$(obj+' .select_table .ms_list_sub').find('li').hide();
+		var sel_title = '';
+		if( order == 1 ) {
+			sel_title = '选择标签'
+		}else{
+			sel_title = '选择行业'
+		}
+		_this.blockSelNum = $(obj+' .select_table .ms_list_sub li').length;
+		$(obj+' .ms_selection .select_table_head span').html(sel_title+'('+_this.blockSelNum+')');
+		_this.blockNum = 0;
+		$(obj+' .select_table .select_table_head span').html(sel_title+'('+_this.blockNum+')');
+
+		$(obj+' #select_sel option').each(function(){
+			$(this).attr('selected','selected');
+			$(this).parent().attr('selected','selected');
+		})
+		$(obj+' .ms_selection .ms_list_sub li').each(function(){
+			$(this).addClass('selected');
+		})
+	})
+}
+Block.prototype.selNum = function(obj,order){
+	var _this = this;
+	this.blockSelNum = 0;
+	$(obj+' #select_sel option').each(function(){
+		if($(this).attr('selected')=='selected'){
+			_this.blockSelNum ++;
+		}
+	})
+	if( order == 1 ) {
+		sel_title = '选择标签'
+	}else{
+		sel_title = '选择行业'
+	}
+	this.blockNum = this.totalNum - this.blockSelNum;
+	$(obj+' .ms_selection .select_table_head span').html(sel_title+'('+this.blockSelNum+')');
+	$(obj+' .select_table .select_table_head span').html(sel_title+'('+this.blockNum+')');
+}
+/*block search*/
+function search_block1(obj,input){
+	var value = $(input).val();
+	if(value!=""){
+		var $li = $(input).parents('.select_table').find('.ms_list_sub li:contains('+value.trim()+')');
+		if($li.length==0){
+			$(input).parents('.select_table').find('.ms_list_sub li').hide();
+		}
+		else{
+			$(input).parents('.select_table').find('.ms_list_sub li').hide();
+			$li.show();
+		}
+	}
+	else{
+		$(input).parents('.select_table').find('.ms_list_sub li').show();
+	}
+	$(obj+' #select_sel option').each(function(index){
+		if($(this).attr('selected')=='selected'){
+			$(obj+' .select_table .ms_list_sub li').eq(index).hide()
+		}
+	})
+}
+function search_block2(obj,input){
+	var value = $(input).val();
+	var selNum = 0;
+	$(obj+' #select_sel option').each(function(index){
+		if($(this).attr('selected')=='selected'){
+			selNum++
+		}
+	})
+	if(value!=""&&selNum>0){
+		var $li = $(input).parents('.ms_selection').find('.ms_list_sub li.selected:contains('+value.trim()+')');
+		if($li.length==0){
+			$(input).parents('.ms_selection').find('.ms_list_sub li').hide();
+		}
+		else{
+			$(input).parents('.ms_selection').find('.ms_list_sub li').hide();
+			$li.show()
+		}
+	}
+	else{
+		$(input).parents('.ms_selection').find('.ms_list_sub li').hide();
+		$(obj+' #select_sel option').each(function(index){
+			if($(this).attr('selected')=='selected'){
+				$(obj+' .ms_selection .ms_list_sub li').eq(index).show()
+			}
+		})
+	}
+}
+String.prototype.trim = function() { 
+	return this.replace(/(^\s*)|(\s*$)/g, ''); 
+};
+</script>

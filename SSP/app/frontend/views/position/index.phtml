@@ -1,0 +1,328 @@
+<div class="navigation">
+	<div class="title">
+		<a class="title_main" href="{{ url('position/index') }}">广告位列表</a>
+	</div>
+	{{ partial('public/top_sidebar') }}
+</div>
+
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('position/index') }}" method="get">
+				<div class="form_item">
+					<div class="form_label">
+						<label>媒体名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="mname" value="{{ mname }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告位名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="aname" value="{{ aname }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告位ID：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="id" value="{{ id }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>状态：</label>
+					</div>
+					<div class="form_control">
+						<select name="switch" class="inputtext">
+							<option {{ switch==2?'selected':'' }}  value="2">全部</option>
+							<option {{ switch==0?'selected':'' }} value="0">关闭</option>
+							<option {{ switch==1?'selected':'' }} value="1">开启</option>
+						</select>
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<button class="btn_orange">搜索</button>
+					</div>
+				</div>
+				<a href="{{ url('position/add') }}" class="btn_orange pull_right">新建广告位</a>
+				<div class="clear"></div>
+			</form>
+		</div>
+		<div class="table_box">
+			<table cellpadding="0" cellspacing="0" class="tables">
+				<thead>
+					<tr>
+						<th width="8%">广告位ID</th>
+						<th width="12%">广告位名称</th>
+						<th width="12%">媒体名称</th>
+						<th width="8%">投放方式</th>
+						<th width="10%">广告规则（样式）</th>
+						<!-- <th width="8%">投放类型</th> -->
+						<!-- <th width="5%">APP_key</th> -->
+						<!-- <th width="8%">屏蔽规则</th> -->
+						<th width="10%">修改时间</th>
+						<th width="5%">状态</th>
+						<th width="10%">广告位审核状态</th>
+						<th width="12%">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% if list is not empty %}
+				 	{% for key,val in list %}
+					<tr>
+						<td>{{ val['id'] }}</td>
+						<td>{{ val['name'] }}</td>
+						<td>
+							<p>{{ val['media_name'] }}</p>
+							<p>ID:{{ val['mmid'] }}</p>
+						</td>
+						<td>
+							{% if val['type'] == 1 %}
+								{% if val['tf_type'] == 1 %}
+									SDK
+								{% elseif val['tf_type'] == 2 %}
+									{% if val['api_type'] == 1 %}
+										通用API
+									{% elseif val['api_type'] == 2 %}
+										互动API
+									{% endif %}
+								{% endif %}
+							{% elseif val['type'] == 2 %}
+								商业内容API
+							{% endif %}
+						</td>
+						<td>
+							<p>
+								{% if val['t_pid'] is not empty and val['t_id'] is not empty  %}
+									{{ val['tmp_parent_name'] }} 
+									({{ val['tmp_sub_name'] }})
+								{% else %}
+									默认
+								{% endif %}	
+							</p>
+						</td>
+						<!-- <td>
+							{% if val['tf_type'] == 1 %}
+								JS投放
+							{% elseif val['tf_type'] == 2 %}
+								直投
+							{% elseif val['tf_type'] == 3 %}
+								SDK投放	
+							{% endif %} 
+						</td> -->
+						<!-- <td>
+							{% if val['appkey'] and val['tf_type'] == 3 %}
+							<a class="blue copy" data-clipboard-text="{{ val['appkey'] }}">复制</a>
+							{% endif %}
+						</td> -->
+						<!-- <td>
+							{% if val['strategyid'] %}
+							<a href="{{ url('strategy/add?id='~val['strategyid']) }}" class="blue">屏蔽策略
+							</a>
+							{% endif %}
+						</td> -->
+						<td>{{ date('Y-m-d H:i:s', val['update_tm']) }}</td>
+						<td>
+							<div class="switch_group {{ val['switch']?'switch_checked':''}}"  data-status="{{ val['switch'] }}" onclick="on_off(this,{{ val['id'] }})">
+								<span>{{ val['switch']?'开':'关' }}</span>
+								<input type="checkbox" checked="checked">
+							</div>
+						</td>
+						<td>
+							{% if val['examine_status'] == 0 %}
+								<span style="color:	#EAC100">审核中</span>
+							{% elseif val['examine_status'] == 1 %}
+								<span style="color:	#00DB00">审核通过</span>
+							{% elseif val['examine_status'] == 2 %}
+								<span style="color:	red">审核未通过</span>
+							{% else %}
+								状态有误
+							{% endif %}	
+						</td>
+						<td>
+							{% if val['examine_status'] == 2 %}
+							<a href="{{ url('position/add?id='~val['id']) }}" class="blue">修改</a>
+							<a href="javascript:del_position({{ val['id'] }})" class="blue">删除</a>
+							{% endif %}
+							{% if val['examine_status'] == 1 %}
+								<!-- {% if val['tf_type'] == 1 %}
+								<a href="javascript:get_code({{val['id']}},{{val['mmid']}})" class="blue" >获取代码</a>
+								{% elseif val['tf_type'] == 2 %}
+								<a class="blue copy" data-clipboard-text="http://u.anzhi.com/ui/index/go_activity/?app_id={{val['id']}}">获取链接</a>
+								{% elseif val['tf_type'] == 3 %}
+								<a class="blue" href="{{ url('position/downloadSDK?id='~val['id']) }}">下载SDK</a>
+								{% endif %} -->
+								{% if val['tf_type'] == 1 %}
+								<a class="blue" href="{{ url('sdk/index') }}">下载SDK</a>
+								{% elseif val['tf_type'] == 2 %}
+									{% if val['api_type'] == 2 %}
+										<a href="javascript:get_code({{val['id']}},{{val['mmid']}})" class="blue" >获取代码</a>
+									{% else %}
+										<a class="blue" href="{{ url('sdk/index') }}">获取代码</a>
+									{% endif %}
+								{% endif %}
+							<a href="javascript:del_position({{ val['id'] }})" class="blue">删除</a>
+							{% endif %}
+						</td>
+					</tr>
+					{% endfor %}
+				 {% else %}
+						<tr>
+	                          <td colspan="7">暂无数据</td>
+	                    </tr>
+				 {% endif %}
+				</tbody>
+			</table>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+		
+	</div>
+</div>
+
+
+
+<!--获取代码弹窗-->
+<div class="modal" id="modal_code" tabindex="-1" role="dialog" aria-labelledby="modal_code_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">获取代码</h4>
+			</div>
+			<div class="modal-body form_control" style="width:100%">
+			<textarea type="textarea" rows="12" id="code"></textarea>
+			</div>
+			<div class="modal-footer code-footer" style="text-align:right">
+				<button type="button" onclick="copy_code()" class="btn btn_orange">复制代码</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<input type="hidden" id="modal_confirm_btn" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal_confirm">
+<div class="modal" id="modal_confirm" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-body confirm_body" style="width:100%">
+				<p class="title"></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn_orange ok" data-dismiss="modal">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<input type="hidden" id="modal_confirm_btn_two" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#modal_confirm_two">
+<div class="modal" id="modal_confirm_two" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-body confirm_body" style="width:100%">
+				<p class="title"></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default cancel" data-dismiss="modal">取消</button>
+				<button type="button" class="btn btn_orange ok" data-dismiss="modal">确定</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+function copy_code()
+{
+ 	var Url2=document.getElementById("code");
+ 		Url2.select(); 
+  		document.execCommand("Copy"); 
+ 	 	alert("已复制好，可贴粘。");
+ }
+
+function get_code(id,mmid){
+	$.getJSON("{{ url('position/getCode') }}", { id: id,mmid: mmid },function(data){
+          if(data.code == 1) {
+          	$('#code').val(data.data)
+          	$('#modal_code').modal({
+				keyboard: true
+			})
+          }else {
+          	alert(data.msg)
+          }
+	});
+}
+
+function on_off(obj, id){
+	var sta = $(obj).attr('data-status');
+	if(sta== 0) {
+		status = 1
+		title = "确定开启广告位"
+	}else {
+		status = 0
+		title = "确定禁止广告位"
+	}
+	var res = Common.confirm({
+	      title: title,
+	      operate: function (reselt, opt) {
+	          if (reselt) {
+					$.getJSON("{{ url('position/onOff') }}", { id: id, status: status },function(data){
+				          if(data.code == 1) {
+				          	switch_group(obj, status);
+				          	$(obj).attr('data-status', status)
+				          }else {
+				          	alert(data.msg)
+				          	location.reload();
+				          }
+					});
+	          } 
+	      }
+	  })
+}
+
+
+var Common_two = {
+    confirm:function(params){
+        var model = $("#modal_confirm_two");
+        model.find(".title").html(params.title)
+        $("#modal_confirm_btn_two").click()
+        model.find(".ok").one("click",function(){
+            params.operate(true)
+        })
+        model.find(".cancel").one("click",function(){
+            params.operate(false)
+        })
+    }
+}
+
+function del_position(id){
+	if(id <= 0) {
+		alert('参数有误')
+		return 
+	}
+	var res = Common_two.confirm({
+	      title: '确定删除广告位',
+	      operate: function (reselt, opt) {
+	          if (reselt) {
+				window.location.href = "{{ url('position/delete?id=') }}"+id;
+	          } 
+	      }
+	  })
+}
+
+var clipboard = new Clipboard('.copy');
+clipboard.on('success', function(e) {
+   alert("复制成功！");
+
+    e.clearSelection();
+});
+clipboard.on('error', function(e) {
+    alert("复制失败！");
+});
+</script>

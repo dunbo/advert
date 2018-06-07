@@ -1,0 +1,602 @@
+<div class="navigation">
+	<div class="title">
+		<a class="title_main" href="{{ url('account/index') }}">账户信息</a>
+	</div>
+	{{ partial('public/top_sidebar') }}
+</div>
+<div class="content_inner">
+<form action="{{ url('Account/publish') }}" method="post" enctype="multipart/form-data" onsubmit="return checksubmit()">
+	<input type="hidden" name="muid" id='muid' value="{{ user['muid'] }}">
+	<div class="single_info account_info">
+		<div class="form_item alert {{ user['cw_status']==2?'alert-warning':'alert-success' }}">
+			{% if user['status'] == 1 and user['cw_status'] == 1 %}
+				审核已通过，如需修改请联系商务
+			{% elseif user['cw_status'] == 0 and user['open_account'] is not empty %}
+				合作申请已发出，请等待商务人员审核
+			{% elseif user['cw_status'] == 0 and user['open_account'] is empty  %}
+				审核通过后，如需修改请联系商务
+			{% elseif user['cw_status'] == 2 %}
+				驳回理由：
+				{% if user['bh_reason'] == 1 %}
+						媒体关键词问题
+					{% elseif user['bh_reason'] == 2 %}
+						媒体简介问题
+					{% elseif user['bh_reason'] == 3 %}
+						软件包名问题 
+					{% elseif user['bh_reason'] == 4 %}
+						下载地址问题
+					{% endif %}	
+				{% if user['bh_explain'] is not empty %}
+					<br/>
+					详细说明：{{user['bh_explain']}}
+				{% endif %}
+			{% endif %}
+		</div>
+
+		<h3>媒体信息</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>媒体类型：</label>
+			</div>
+			<div class="form_control">
+				<select name="media_type" id="media_type" onchange="select_media_type(this.value)" class="inputtext">
+					<option {{ user['media_type']==1?'selected':'' }} value="1">个人</option>
+					<option {{ user['media_type']==2?'selected':'' }} value="2">公司</option>
+				</select>
+			</div>
+		</div>
+
+	<!-- 个人 -->
+		<div class="form_item person" style='{{ user["media_type"]==1 or user is empty ?"":"display:none" }}' >
+			<div class="form_label">
+				<label><font color="red">*</font>姓名：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="identity_name" value="{{ user['identity_name'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item person" style='{{ user["media_type"]==1 or user is empty ?"":"display:none" }}'>
+			<div class="form_label">
+				<label><font color="red">*</font>身份证号：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="identity_num" value="{{ user['identity_num'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item person" style='{{ user["media_type"]==1 or user is empty ?"":"display:none" }}'>
+			<div class="form_label">
+				<label><font color="red">*</font>身份证正面：</label>
+			</div>
+			<div class="form_control">
+				<input type="hidden" name="identity_front_img" id="identity_front_img" value="{{user['identity_front_img']}}" />
+				<input type="file" name="identity_front_img" id="identity_front_img_cur" onchange="onUploadImgChange(this, 'identity_front_img_cur', 'identity_front_img_div','identity_front_img')" />
+				<div>
+					<img id="identity_front_img_div" {% if user['identity_front_img'] is not empty %}src="{{ IMG_HOST~user['identity_front_img'] }}" style="width:300px;height:200px"{% endif %} class='image' />
+				</div>
+				{% if user['identity_front_img'] is not empty %}
+				<button type="button" id="identity_front_img_del" type="button" onclick="del_img('identity_front_img');">删除</button>
+				{% endif %} 
+			</div>
+		</div>
+		<div class="form_item person" style='{{ user["media_type"]==1 or user is empty ?"":"display:none" }}'>
+			<div class="form_label">
+				<label><font color="red">*</font>身份证反面：</label>
+			</div>
+			<div class="form_control">
+				<input type="hidden" name="identity_back_img" id="identity_back_img" value="{{user['identity_back_img']}}" />
+				<input type="file" name="identity_back_img" id="identity_back_img_cur" onchange="onUploadImgChange(this, 'identity_back_img_cur', 'identity_back_img_div','identity_back_img')" />
+				<div>
+					<img id="identity_back_img_div" {% if user['identity_back_img'] is not empty %}src="{{ IMG_HOST~user['identity_back_img'] }}" style="width:300px;height:200px"{% endif %} class='image' />
+				</div>
+				{% if user['identity_back_img'] is not empty %}
+				<button type="button" id="identity_back_img_del" type="button" onclick="del_img('identity_back_img');">删除</button>
+				{% endif %}
+			</div>
+		</div>
+
+	<!-- 公司 -->
+		<div class="form_item company" style='{{ user["media_type"]==2?"":"display:none" }}'>
+			<div class="form_label">
+				<label><font color="red">*</font>公司全称：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="company_name" value="{{ user['company_name'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item company" style='{{ user["media_type"]==2?"":"display:none" }}'>
+			<div class="form_label">
+				<label><font color="red">*</font>注册地址：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="reg_address" value="{{ user['reg_address'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item company" style='{{ user["media_type"]==2?"":"display:none" }}'>
+			<div class="form_label">
+				<label><font color="red">*</font>注册号：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="reg_number" value="{{ user['reg_number'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item company" style='{{ user["media_type"]==2?"":"display:none" }}'>
+			<div class="form_label">
+				<label><font color="red">*</font>营业执照照片：</label>
+			</div>
+			<div class="form_control">
+				<input type="hidden" name="license_img" id="license_img" value="{{user['license_img']}}" />
+				<input type="file" name="license_img" id="license_img_cur"  onchange="onUploadImgChange(this, 'license_img_cur', 'license_img_div','license_img')" />
+				<div>
+					<img id="license_img_div" {% if user['license_img'] is not empty %}src="{{ IMG_HOST~user['license_img'] }}" style="width:300px;height:200px"{% endif %} class='image' />
+				</div>
+				{% if user['license_img'] is not empty %}
+				<button type="button" id="license_img_del" type="button" onclick="del_img('license_img');">删除</button>
+				{% endif %} 
+			</div>
+		</div>
+
+		<h3>财务信息</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>收款账户：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="open_account" value="{{ user['open_account'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>开户地：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="open_address" value="{{ user['open_address'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>收款银行：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="open_bank" value="{{ user['open_bank'] }}" class="inputtext">
+				<br/><span class="blue">Eg：建设银行-北京分行上地支行</span>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>银行账号：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="bank_account" value="{{ user['bank_account'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item from_company_div" >
+			<div class="form_label">
+				<label><font color="red">*</font>发票类型：</label>
+			</div>
+			<div class="form_control">
+					<label class="label_group {{ user['invoice_type']==1?'label_selected':'' }}">
+						<span class="radio_icon">
+							<span class="radio_inner"></span>
+							<input type="radio" name="invoice_type" value="1" class="radio_input" onclick="select_invoice_type(1)" {{ user['invoice_type']==1?'checked="checked"':'' }}>
+						</span>
+						<span class="radio_txt">增值税普通发票</span>
+					</label>
+					<label class="label_group {{ user['invoice_type']==2?'label_selected':'' }}">
+						<span class="radio_icon">
+							<span class="radio_inner"></span>
+							<input type="radio" name="invoice_type" value="2" class="radio_input" onclick="select_invoice_type(2)" {{ user['invoice_type']==2?'checked="checked"':'' }}>
+						</span>
+						<span class="radio_txt">增值税专用发票</span>
+					</label>
+				</div>
+		</div>
+
+		<div class="form_item  tar_rate_div_1 " {{ user['invoice_type']!=1?'style="display:none"':'' }}>
+			<div class="form_label">
+			</div>
+			<div class="form_control">
+				<div class="alert alert-success" role="alert">若只能提供普通发票，收入金额将扣除6.72%税点</div>
+			</div>
+		</div>
+
+		<div class="form_item  tar_rate_div_2" {{ user['invoice_type']!=2?'style="display:none"':'' }}>
+			<div class="form_label">
+				<label><font color="red">*</font>税率：</label>
+			</div>
+			<div class="form_control">
+				<select name="tax_rate" id="" class="inputtext" onchange="select_tax_rate(this)">
+					<option {{ user['tax_rate']==6?'selected':'' }} value="6">6%</option>
+					<option {{ user['tax_rate']==3?'selected':'' }} value="3">3%</option>
+				</select>
+			</div>
+		</div>
+		
+		<div class="form_item  tar_rate_div_2" {{ user['invoice_type']!=2?'style="display:none"':'' }} >
+			<div class="form_label">
+			</div>
+			<div class="form_control">
+				<div class="alert alert-success tax_rate_alert" role="alert">
+					{% if user['tax_rate'] == 3 %}
+						若可提供3%的增值税专用发票，收入金额将扣除3.36%税点
+					{% else %}
+						若可提供6%的增值税专用发票，收入金额不扣税点；（推荐提供）
+					{% endif %}
+				</div>
+			</div>
+		</div>
+
+		<div class="form_item from_personal_div ">
+			<div class="form_label">
+			</div>
+			<div class="form_control">
+				<div class="alert alert-success" role="alert">若结算方为个人，收入金额将扣除6.72%税点，且需要代扣代缴个人所得税</div>
+			</div>
+		</div>
+
+
+		<h3>联系人信息</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label>联系人姓名：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="contact_name" value="{{ user['contact_name'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label>联系人邮箱：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="email" value="{{ user['email'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label>手机号：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="phone" value="{{ user['phone'] }}" class="inputtext">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label>QQ号码：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="qq" value="{{ user['qq'] }}" class="inputtext">
+			</div>
+		</div>
+		{% if user['status'] == 1 and user['cw_status'] != 1 %}
+		<div class="form_btn_foot">
+			<button class="btn btn_orange" style="width:100px;" type="submit">提交</button>&nbsp;&nbsp;
+		</div>
+		{% endif %}
+	</div>
+</form>
+</div>
+
+<script>
+var media_type = "{{ user['media_type'] }}";
+select_media_type(media_type);
+function select_media_type(media_type){
+	if(media_type == 1){
+		$('.person').show();
+		$('.company').hide();
+		$(".from_personal_div").show()
+		$(".from_company_div").hide()
+		$(".tar_rate_div_1").hide()
+		$(".tar_rate_div_2").hide()
+		$("input[name=invoice_type]").attr('checked', false);
+		$(".label_selected").removeClass('label_selected');
+	}else{
+		$('.person').hide();
+		$('.company').show();
+		$(".from_personal_div").hide()
+		$(".from_company_div").show()
+	}
+}
+
+function select_invoice_type(type){
+	if(type == 1) {
+		$(".tar_rate_div_1").show()
+		$(".tar_rate_div_2").hide()
+	}else if(type == 2) {
+		$(".tar_rate_div_1").hide()
+		$(".tar_rate_div_2").show()
+	}
+}
+
+function select_tax_rate(obj){
+	var tax_rate = $(obj).val();
+	if(tax_rate == 6) {
+		$(".tax_rate_alert").text('若可提供6%的增值税专用发票，收入金额不扣税点；（推荐提供）');
+	}else if(tax_rate == 3) {
+		$(".tax_rate_alert").text('若可提供3%的增值税专用发票，收入金额将扣除3.36%税点');
+	}
+}
+
+function checksubmit() {
+ 	var muid 	   = $("#muid").val();
+ 	var media_type = $("#media_type").val()
+
+ 	if( media_type == 1 ) {
+ 		var identity_name = $("input[name='identity_name']").val()
+ 		if(identity_name == ''  ) {
+			tips_message('姓名不能为空', 'error') 			
+ 			return false
+ 		}
+		if(identity_name !='' && !max_length(identity_name, 80) ){
+			tips_message('姓名长度不能超过40个字符','error');
+			return false;
+		}
+
+ 		var identity_num  = $("input[name='identity_num']").val()
+		if(identity_num == '') {
+			tips_message('请填写身份证', 'error') 			
+ 			return false
+ 		}
+ 		if( identity_num !='' ) {
+			var reg = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;  
+		    if(reg.test(identity_num) === false) {  
+		       tips_message('身份证输入不合法', 'error') 
+		       return  false;  
+		    } 
+ 		}
+	 	var identity_front_img = $("input[name='identity_front_img']").val()
+	    if(identity_front_img !='' && !/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(identity_front_img) ){
+	     	tips_message("身份证正面图片格式错误", 'error');
+		    return false;
+	    }
+	    var identity_back_img = $("input[name='identity_back_img']").val()
+	    if(identity_back_img !='' && !identity_back_img.match(/.jpg|.gif|.png|.jpeg/i)){
+	     	tips_message("身份证反面图片格式错误", 'error');
+		    return false;
+	    }
+ 	}else {
+ 		var company_name = $("input[name='company_name']").val()
+ 		if(company_name == '') {
+			tips_message('公司全称不能为空', 'error') 			
+ 			return false
+ 		}
+ 		if( !max_length(company_name, 80)){
+			tips_message('公司全称长度不能超过40个字符','error');
+			return false;
+		}
+ 		var reg_address = $("input[name='reg_address']").val()
+ 		if(reg_address == '') {
+			tips_message('注册地址不能为空', 'error') 			
+ 			return false
+ 		}
+ 		if( reg_address !='' ) {
+ 			if( !max_length(reg_address, 80)){
+				tips_message('注册地址长度不能超过40个字符','error');
+				return false;
+			}
+ 		}
+ 		var reg_number = $("input[name='reg_number']").val()
+ 		if(reg_number == '') {
+			tips_message('注册号不能为空', 'error') 			
+ 			return false
+ 		}
+ 		if( reg_number !='' ) {
+ 			if( !max_length(reg_number, 80)){
+				tips_message('注册地址长度不能超过40个字符','error');
+				return false;
+			}
+			if (/^[a-z0-9]+$/i.test(reg_number) == false) {
+	        	tips_message("注册号格式错误",'error');
+	        	return false;
+	   		}
+ 		}
+		var license_img = $("input[name='license_img']").val()
+	    if(license_img !='' && !license_img.match(/.jpg|.gif|.png|.jpeg/i)){
+	     	tips_message("营业执照照片格式错误", 'error');
+		    return false;
+	    }
+	    var invoice_type = $("input[name=invoice_type]:checked").val()
+	 	if(invoice_type == undefined) {
+	 		tips_message("请选择发票类型",'error');
+		    return false;
+	 	}
+ 	}
+
+ 	var open_account = $("input[name='open_account']").val()
+	if(open_account == "") {
+		tips_message('收款账户不能为空', 'error') 			
+ 		return false
+	}
+	if( open_account !='' && !max_length(open_account, 80)){
+		tips_message('收款账户长度不能超过40个字符','error');
+		return false;
+	}
+	var open_address = $("input[name='open_address']").val()
+	if(open_address == "") {
+		tips_message('开户地不能为空', 'error') 			
+ 		return false
+	}
+	if(open_address !='' && !max_length(open_address, 80)){
+		tips_message('所在地长度不能超过40个字符','error');
+		return false;
+	}
+
+	var open_bank = $("input[name='open_bank']").val()
+	if(open_bank == "") {
+		tips_message('收款银行不能为空', 'error') 			
+ 		return false
+	}
+	if(open_bank !='' && !max_length(open_bank, 80)){
+		tips_message('收款银行长度不能超过40个字符','error');
+		return false;
+	}
+
+	var bank_account = $("input[name='bank_account']").val()
+	if(bank_account == "") {
+		tips_message('银行账号不能为空', 'error') 			
+ 		return false
+	}
+ 	if( bank_account !='' ) {
+   		if(bank_account.length < 16 || bank_account.length > 19) {
+      		tips_message("银行账号长度必须在16到19之间",'error');
+	        return false;
+	    }
+		var num = /^\d*$/;//全数字
+		if(!num.exec(bank_account)) {
+		 	tips_message("银行账号必须全为数字",'error');
+		  	return false;
+		}
+		//开头6位
+		var strBin = "10,18,30,35,37,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,58,60,62,65,68,69,84,87,88,94,95,98,99";
+		if(strBin.indexOf(bank_account.substring(0, 2)) == -1) {
+		  	tips_message("银行账号开头6位不符合规范",'error');
+		  	return false;
+		}
+ 	}
+
+	//联系人姓名
+	var contact_name = $("input[name='contact_name']").val()
+	if( contact_name !='' ) {
+		if( !max_length(contact_name, 80) ){
+			tips_message('联系人姓名长度不能超过40个字符','error');
+			return false;
+		}
+	}
+ 	var email  = $("input[name='email']").val()
+ 	if( email != '' ) {
+		var myreg = /^([0-9A-Za-z\-_\.]+)@([0-9a-z]+\.[a-z]{2,3}(\.[a-z]{2})?)$/g;
+	      if(!myreg.test(email))
+	      {
+	          tips_message('邮箱输入不合法', 'error') 
+	          return false;             
+	      }
+ 	}
+ 	var phone  = $("input[name='phone']").val()
+ 	if( phone != '' ) {
+	 	if(!(/^1(3|4|5|7|8)\d{9}$/.test(phone))){ 
+	        tips_message('手机号输入不合法', 'error')  
+	        return false; 
+	    } 
+	}
+	var qq  = $("input[name='qq']").val()
+ 	if( qq != '' ) {
+	 	if(!(/^[1-9]\d{4,15}$/.test(qq))){ 
+	        tips_message('QQ号输入不合法', 'error')  
+	        return false; 
+	    } 
+	}
+ }
+
+//图片预览
+ $(function(){
+	$('.image').viewer();
+})
+//图片验证
+function test(file_name){
+	var result = /\.[^\.]+/.exec(file_name);
+	return result;
+}
+function onUploadImgChange(sender,img,obj,del_img){
+	if(!$("#"+img).val()){
+		return false;
+	}
+    if( $("#"+img).val() && !sender.value.match(/.jpg|.gif|.png|.bmp|.jpeg/i) ){
+        alert('图片格式无效！');
+		remove_file(img);
+        return false;
+    }
+    var uid = $('#uid').val();
+	// 图片名称后缀必须为小写，大些报错
+	var b = test(sender.value);
+	if( $("#"+img).val() && b!=".jpg" && b!=".gif" && b!=".png" && b!=".bmp" && b!=".jpeg" ){
+		alert('后缀只支持小写格式！');
+		if(!uid){
+			remove_file(img);
+		}else{
+			var file = $("#"+img);
+			file.after(file.clone().val(""));
+			file.remove();
+		}
+		return false;
+	}
+	$('#'+file).siblings('input[type=hidden]').val('');
+	var imgSrc = check_img(sender);
+    var img_url = imgSrc;
+    var newimg = new Image();
+    newimg.src = img_url;
+    // 加载完成执行
+    newimg.onload = function(){
+		/*var w = newimg.width;
+		var h = newimg.height;
+		if( (img == 'ap_imgurl' || img == 'bg_img' || img == 'bottom_color') && w!=640 ){
+			alert('宽必须640');
+			remove_file(img);
+			return false;
+		}*/
+		var objPreview = document.getElementById(obj);
+		$('#'+del_img+'_del').remove();
+		str = '<button id="'+del_img+'_del" type="button" onclick="del_img(\''+del_img+'\');" >删除</button>';
+		$('#'+obj).closest('img').after(str);
+		var imgs = document.getElementById(img);
+		if( sender.files && sender.files[0] ){
+			objPreview.style.display = 'block';
+			objPreview.style.width = '300px';
+			objPreview.style.height = '200px';
+			objPreview.src = window.URL.createObjectURL(imgs.files[0]);
+		}
+	}	
+} 	
+function del_img(img){
+	if(confirm('是否确认删除？')) {
+		remove_file(img);
+	}
+}
+function remove_file(file){
+	$('#'+file).siblings('input[type=hidden]').val('');
+	$('#'+file+'_div').removeAttr('src').css('display','none');
+	$('#'+file+'_del').remove();
+	 $("#"+file+"_cur").val("");
+	var file = $("#"+file);
+	file.after(file.clone().val(""));
+	file.remove();
+	return false;
+}
+function check_img(obj){
+   	var imgSrc = '';
+  	if( obj.files && obj.files[0] ){
+        if(getOs() == 'Chrome'){
+            imgSrc = window.URL.createObjectURL(obj.files[0]);
+        }else{
+            imgSrc = window.URL.createObjectURL(obj.files[0]);
+        }
+    }else{
+        //IE下，使用滤镜
+        obj.select();
+        //解决IE9下document.selection拒绝访问的错误
+        if( navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.match(/9./i) == "9." ){
+            obj.blur();
+        }
+        var imgSrc = document.selection.createRange().text;
+        document.selection.empty();
+    }
+	return imgSrc;
+}
+function getOs(){ 
+   	var OsObject = ""; 
+   	if(isIE = navigator.userAgent.indexOf("MSIE") != -1){ 
+        return "MSIE"; 
+   	}
+   	if(isFirefox = navigator.userAgent.indexOf("Firefox") != -1){ 
+        return "Firefox";
+   	}
+   	if(isChrome = navigator.userAgent.indexOf("Chrome") != -1){
+        return "Chrome";
+   	}
+   	if(isSafari = navigator.userAgent.indexOf("Safari") != -1){
+        return "Safari"; 
+   	}
+    if(isOpera = navigator.userAgent.indexOf("Opera") != -1){
+        return "Opera";
+   	} 
+}
+
+</script>
