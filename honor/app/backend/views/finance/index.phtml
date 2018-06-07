@@ -1,0 +1,246 @@
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('finance/index') }}" method="get">
+				<div class="form_item">
+					<div class="form_label">
+						<label>媒体主名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="media_name" value="{{ media_name }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>结算公司名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="company_name" value="{{ company_name }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>开发者账号：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="username" value="{{ username }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>状态：</label>
+					</div>
+					<div class="form_control">
+						<select name="cw_status" class="inputtext">
+							<option value="0" {{ cw_status==0?'selected':'' }} >待审核</option>
+							<option value="1" {{ cw_status==1?'selected':'' }} >已通过</option>
+							<option value="2" {{ cw_status==2?'selected':'' }} >未通过</option>
+						</select>
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<button class="btn_orange">搜索</button>
+					</div>
+				</div>
+			</form>
+			<div class="clear"></div>
+		</div>
+		<div class="table_box">
+		<ul class="tab-content">
+		<li class="tab-pane active">
+			<table cellpadding="0" cellspacing="0" class="tables">
+				<thead>
+					<tr>
+						<th width="10%">媒体主ID</th>
+						<th width="20%">结算公司名称</th>
+						<th width="10%">媒体主类型</th>
+						<th width="10%">登录账号</th>
+						<th width="15%">创建时间</th>
+						<th width="15%">驳回理由</th>
+						<th width="10%">状态</th>
+						<th width="20%">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% if list is not empty %}
+				 	{% for key,val in list %}
+						<tr>
+							<td>{{ val['muid'] }}</td>
+							<td>
+								{% if val['media_type'] == 2 %}
+									{{ val['company_name'] }}
+								{% endif %}
+							</td>
+							<td>
+								{% if val['media_type'] == 1 %}
+									个人
+								{% elseif val['media_type'] == 2 %}
+									公司
+								{% endif %}
+							</td>
+							<td>{{ val['username'] }}</td>
+							<td>{{ date('Y-m-d H:i:s', val['create_tm']) }}</td>
+							<td>
+								{% if val['cw_status'] == 2 %}
+									{% if val['bh_reason'] is not empty %}
+											<br/>驳回理由：
+											{% if val['bh_reason'] == 1 %}
+												媒体关键词问题
+											{% elseif val['bh_reason'] == 2 %}
+												媒体简介问题
+											{% elseif val['bh_reason'] == 3 %}
+												软件包名问题 
+											{% elseif val['bh_reason'] == 4 %}
+												下载地址问题
+											{% endif %}	
+									{% endif %}
+									{% if val['bh_explain'] is not empty %}
+											<br/>
+											详细说明：{{val['bh_explain']}}
+									{% endif %}
+								{% endif %}
+							</td>
+							<td>
+								{% if val['cw_status'] == 1 %}
+									<span style="color:	#00DB00">已通过</span>
+								{% elseif val['cw_status'] == 2 %}
+									<span style="color:	red">未通过</span>
+								{% else %}
+									<span style="color:	#EAC100">待审核</span>	
+								{% endif %}
+							</td>
+							<td>
+								{% if val['cw_status'] == 1 %}
+									<a href="{{ url('finance/add?muid='~val['muid']) }}" class="blue">编辑</a>
+								{% elseif val['cw_status'] == 2 %}
+									<a href="javascript:batchSubmit('tg',{{val['muid']}})" class="blue">通过</a> |
+									<a href="{{ url('finance/add?muid='~val['muid']) }}" class="blue">编辑</a>
+								{% else %}
+									<a href="javascript:batchSubmit('tg',{{val['muid']}})" class="blue">通过</a> |
+									<a href="javascript:batchSubmit('bh',{{val['muid']}})" class="blue">驳回</a> |
+									<a href="{{ url('finance/add?muid='~val['muid']) }}" class="blue">编辑</a>
+								{% endif %}
+							</td>
+						</tr>
+					{% endfor %}
+				 {% else %}
+						<tr>
+	                        <td colspan="7">暂无数据</td>
+	                    </tr>
+				 {% endif %}
+				</tbody>
+			</table>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+	    	</li>
+		  </ul>
+		</div>
+	</div>
+</div>
+
+
+<div class="modal" id="batch_bh" tabindex="-1" role="dialog"  aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">驳回</h4>
+			</div>
+			<form action="{{ url('finance/operation') }}" method="post" onsubmit="return bh_submit()" id="bh_form">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' name='type' value='bh' />
+				<input type='hidden' id="bh_ids" name="ids" />
+				<div class="form_item">
+					<div class="form_label">
+						<label>驳回理由：</label>
+					</div>
+					<div class="form_control">
+						<div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason1" value="1" name="bh_reason">
+		                    <label for="reject_reason1">媒体关键词问题</label>
+		                </div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason2" value="2" name="bh_reason">
+		                    <label for="reject_reason2">媒体简介问题</label>
+		                </div>
+		                <div class="clear"></div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason3" value="3" name="bh_reason">
+		                    <label for="reject_reason3">软件包名问题</label>
+		                </div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason4" value="4" name="bh_reason">
+		                    <label for="reject_reason4">下载地址问题</label>
+		                </div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>详细说明：</label>
+					</div>
+					<div class="form_control">
+						<textarea placeholder="请输入驳回理由" id="bh_explain" name="bh_explain"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn_orange" style="width:100px;" value="确定" />&nbsp;&nbsp;
+				<button type="button" class="btn btn-default" style="width:100px;" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script>
+$(function(){
+  $(".checkall").click(function(){  
+      $("input[name='id']").prop("checked", true);
+  })
+  $(".no_checkall").click(function(){  
+      $("input[name='id']").prop("checked", false); 
+  })
+})
+
+function bh_submit(){
+	if( $('input[name="bh_reason"]:checked').val() == undefined && $("#bh_explain").val() == "" ) {
+		alert('请填写其中一项')
+		return false;
+	}
+}
+
+
+function batchSubmit(type, id){
+	var ids = '';
+	var cfm_notice = '确定要批量通过';
+	if(id > 0){
+		cfm_notice = '确定要通过';
+		ids = id;
+	}else{
+		$("input[name='id']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	ids += id_num+',';
+		    }
+		});
+		ids = ids.substr(0, ids.length-1);  
+		if(ids == ''){
+			alert('请选择媒体主');
+			return false;
+		}
+	}
+	if(type == 'tg'){
+		if(confirm(cfm_notice)){
+			window.location.href="{{ url('finance/operation?type=tg&ids="+ids+"') }}";
+		}
+	}else if(type == 'bh'){
+		$('#bh_ids').val(ids);
+		$('input[name=bh_reason]').attr('checked', false);
+		$('textarea[name=bh_explain]').val('');
+		$('#batch_bh').modal('show');
+	}
+}
+</script>

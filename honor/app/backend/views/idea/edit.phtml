@@ -1,0 +1,323 @@
+<script>
+var jieguo = false;
+function check_name(prize_name){
+	var id = <?php echo !empty($list['id']) ? $list['id'] : 0 ?>;
+	$.ajax({
+		type: "POST",
+		data: {prize_name:prize_name,id:id},
+		url: "{{ url('idea/check_name') }}",
+		dataType: "json",
+		async: false,
+		success: function(res) {
+			if(res['code'] != 1) {
+				jieguo = false;
+			}else{
+				jieguo = true;
+			}
+		}
+	});
+}
+//表单验证
+function checkForm(){
+	//奖品名称
+	var prize_name = $.trim($('#prize_name').val());
+	if(prize_name==''){
+		tips_message('请填写奖品名称');
+		$('#prize_name')[0].focus();
+		return false;
+	}
+	if(prize_name.length>30 || prize_name.length<3){
+		tips_message('奖品名称应为3-30个字符');
+		$('#prize_name')[0].focus();
+		return false;
+	}
+	check_name(prize_name);
+	if(jieguo == false){
+		tips_message('奖品名称已存在');
+		$('#prize_name')[0].focus();
+		return false;
+	}
+	//图片1
+	var ad_image = $.trim($('#ad_image').val());
+	var prize_image = $.trim($('#prize_image').val());
+	if(!ad_image && !prize_image){
+		tips_message('请上传广告图片1');
+		return false;
+	}
+	//图片2
+	var ad_image2 = $.trim($('#ad_image2').val());
+	var prize_image2 = $.trim($('#prize_image2').val());
+	if(!ad_image2 && !prize_image2){
+		tips_message('请上传广告图片2');
+		return false;
+	}
+	var coupon_term = $.trim($('#coupon_term').val());
+	if (coupon_term != '' && Date.parse(coupon_term) < new Date().getTime() ) {
+		tips_message('优惠券有效期不能小于当前时间');
+		return false;
+	}
+	//推广链接
+	var push_link = $.trim($('#push_link').val());
+	if(push_link==''){
+		tips_message('请填写推广链接');
+		$('#push_link')[0].focus();
+		return false;
+	}
+	/*if(push_link.length>40){
+		tips_message('推广链接长度不能超过40个字符');
+		$('#push_link')[0].focus();
+		return false;
+	}*/
+	if(!is_url(push_link)){
+		tips_message('推广链接格式错误');
+		$('#push_link')[0].focus();
+		return false;
+	}
+	if(KindEditor.instances[0].isEmpty()){
+		tips_message('请填写奖品说明');
+		return false;
+	}
+	if(KindEditor.instances[1].isEmpty()){
+		tips_message('请填写使用流程');
+		return false;
+	}
+	if(KindEditor.instances[2].isEmpty()){
+		tips_message('请填写使用规则');
+		return false;
+	}
+
+	return true;
+}
+//图片验证
+function onUploadImgChange(sender,img,obj){
+	if(!$("#"+img).val()){
+		return false;
+	}
+    if( $("#"+img).val() && !sender.value.match(/.jpg|.png|.gif|.jpeg/i) ){
+        tips_message('图片格式无效！');
+		remove_file(img);
+		return false;
+    }
+    var idea_id = $('#idea_id').val();   
+	// 图片名称后缀必须为小写，大些报错
+	var b = test(sender.value);
+	if( $("#"+img).val() && b!=".jpg" && b!=".png" && b!=".jpeg" &&b!='.gif'){
+		tips_message('后缀只支持小写格式！');
+		if(!idea_id){
+			remove_file(img);
+		}else{
+			var file = $("#"+img);
+			file.after(file.clone().val(""));
+			file.remove();
+		}
+		return false;
+	}
+	var imgSrc = check_img(sender);
+    var img_url = imgSrc;
+    var newimg = new Image();
+    newimg.src = img_url;
+    // 加载完成执行
+    newimg.onload = function(){
+    	var w = newimg.width;
+		var h = newimg.height;
+		if( img == 'prize_image' && (w!=640 || h!=300) ){
+			tips_message('广告图片1尺寸为640*300');
+			if(!idea_id){
+				remove_file(img);
+			}else{
+				var file = $("#"+img);
+				file.after(file.clone().val(""));
+				file.remove();
+			}
+			return false;
+		}
+		/*if( img == 'prize_image2' && (w!=225 || h!=140) ){
+			tips_message('广告图片2尺寸为225*140');
+			if(!idea_id){
+				remove_file(img);
+			}else{
+				var file = $("#"+img);
+				file.after(file.clone().val(""));
+				file.remove();
+			}
+			return false;
+		}*/
+		$('#'+img).siblings('input[type=hidden]').val('');
+		var objPreview = document.getElementById(obj);
+		$('#'+img+'_del').remove();
+		str = '<button id="'+img+'_del" type="button" onclick="del_img(\''+img+'\');" >删除</button>';
+		$('#'+obj).closest('img').after(str);
+		var imgs = document.getElementById(img);
+		if( sender.files && sender.files[0] ){
+			objPreview.style.display = 'block';
+			objPreview.style.width = 'auto';
+			objPreview.style.height = 'auto';
+			objPreview.src = window.URL.createObjectURL(imgs.files[0]);
+		}
+	}	
+}
+function remove_file(file){
+	$('#'+file).siblings('input[type=hidden]').val('');
+	$('#'+file+'_div').removeAttr('src').css('display','none');
+	$('#'+file+'_del').remove();
+	var file = $("#"+file);
+	file.after(file.clone().val(""));
+	file.remove();
+	return false;
+}
+function test(file_name){
+	var result = /\.[^\.]+/.exec(file_name);
+	return result;
+}
+function check_img(obj){
+   	var imgSrc = '';
+  	if( obj.files && obj.files[0] ){
+        if(getOs() == 'Chrome'){
+            imgSrc = window.URL.createObjectURL(obj.files[0]);
+        }else{
+            imgSrc = window.URL.createObjectURL(obj.files[0]);
+        }
+    }else{
+        //IE下，使用滤镜
+        obj.select();
+        //解决IE9下document.selection拒绝访问的错误
+        if( navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.match(/9./i) == "9." ){
+            obj.blur();
+        }
+        var imgSrc = document.selection.createRange().text;
+        document.selection.empty();
+    }
+	return imgSrc;
+}
+function getOs(){ 
+   	var OsObject = ""; 
+   	if(isIE = navigator.userAgent.indexOf("MSIE") != -1){ 
+        return "MSIE"; 
+   	}
+   	if(isFirefox = navigator.userAgent.indexOf("Firefox") != -1){ 
+        return "Firefox";
+   	}
+   	if(isChrome = navigator.userAgent.indexOf("Chrome") != -1){
+        return "Chrome";
+   	}
+   	if(isSafari = navigator.userAgent.indexOf("Safari") != -1){
+        return "Safari"; 
+   	}
+    if(isOpera = navigator.userAgent.indexOf("Opera") != -1){
+        return "Opera";
+   	} 
+}
+function del_img(img){
+	if(confirm('是否确认删除？')) {
+		remove_file(img);
+	}
+}
+KindEditor.ready(function(K) {
+    window.editor = K.create('#prize_desc',{
+		items:['']
+		{% if from is not empty %},readonlyMode:true{% endif %}
+	});
+    window.editor = K.create('#coupon_step',{
+		items:['preview','undo','redo','justifyleft','justifycenter','justifyright','justifyfull','insertunorderedlist','fontname','forecolor','bold','italic','underline','image']
+		{% if from is not empty %},readonlyMode:true{% endif %}
+	});
+	window.editor = K.create('#coupon_rule',{
+		items:['']
+		{% if from is not empty %},readonlyMode:true{% endif %}
+	});
+});
+KindEditor.options.cssData = 'body { font-size: 14px; }';
+</script>
+<div class="content_inner">
+<form action="{{ url('idea/write') }}" method="post" enctype="multipart/form-data" onsubmit="return checkForm()">
+	<input type="hidden" name="idea_id" id="idea_id" {% if list['id'] is not empty %}value="{{list['id']}}"{% endif %} />
+	<div class="single_info account_info">
+		<h3>优惠券信息</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>奖品名称：</label>
+			</div>
+			<div class="form_control">
+				<input {% if from is not empty %}readonly="readonly"{% endif %} type="text" name="prize_name" id="prize_name" {% if list['prize_name'] is not empty %}value="{{list['prize_name']}}"{% endif %} class="inputtext"><br>3-30个字符
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>广告图片1：</label>
+			</div>
+			<div class="form_control">
+				{% if from is empty %}
+				<input type="hidden" name="ad_image" id="ad_image" {% if list['ad_image'] is not empty %}value="{{ list['ad_image'] }}"{% endif %} />
+				<input type="file" name="prize_image" id="prize_image" onchange="onUploadImgChange(this, 'prize_image', 'prize_image_div')" />640*300&nbsp;JPG、PNG、JPEG、GIF格式，白色底
+				{% endif %}
+				<img id="prize_image_div" {% if list['ad_image'] is not empty %}src="{{ IMG_URL~list['ad_image'] }}"{% endif %} />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>广告图片2：</label>
+			</div>
+			<div class="form_control">
+				{% if from is empty %}
+				<input type="hidden" name="ad_image2" id="ad_image2" {% if list['ad_image2'] is not empty %}value="{{ list['ad_image2'] }}"{% endif %} />
+				<input type="file" name="prize_image2" id="prize_image2" onchange="onUploadImgChange(this, 'prize_image2', 'prize_image2_div')" />225*140&nbsp;JPG、PNG、JPEG、GIF格式，白色底
+				{% endif %}
+				<img id="prize_image2_div" {% if list['ad_image2'] is not empty %}src="{{ IMG_URL~list['ad_image2'] }}"{% endif %} />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label>优惠券有效期：</label>
+			</div>
+			<div class="form_control">
+				<input {% if from is not empty %}readonly="readonly"{% else %}onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})"{% endif %} class="inputtext" name="coupon_term" id="coupon_term" {% if list['coupon_term'] is not empty %}value="{{date('Y-m-d H:i:s', list['coupon_term'])}}"{% endif %} />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>推广链接：</label>
+			</div>
+			<div class="form_control">
+				<input {% if from is not empty %}readonly="readonly"{% endif %} placeholder='http://或https://' type="text" name="push_link" id="push_link" {% if list['push_link'] is not empty %}value="{{list['push_link']}}"{% endif %} class="inputtext">
+			</div>
+		</div>
+		
+		<h3>优惠券详情</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>奖品说明：</label>
+			</div>
+			<div class="form_control">
+				在广告页面中展示，产品的重要卖点
+				<textarea name="prize_desc" id="prize_desc" style="width:450px;height:100px;">{% if list['prize_desc'] is not empty %}{{list['prize_desc']}}{% endif %}</textarea>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>使用流程：</label>
+			</div>
+			<div class="form_control">
+				请模拟用户操作，模拟用户的使用流程
+				<textarea id="coupon_step" name="coupon_step" style="width:450px;height:300px;">{% if list['coupon_step'] is not empty %}{{list['coupon_step']}}{% endif %}</textarea>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>使用规则：</label>
+			</div>
+			<div class="form_control">
+				1、用户使用次数限制；2、地域限制；3、该优惠券是否可与其他优惠券叠加使用；4、客服电话
+				<textarea name="coupon_rule" id="coupon_rule" style="width:450px;height:200px;">{% if list['coupon_rule'] is not empty %}{{list['coupon_rule']}}{% endif %}</textarea>
+			</div>
+		</div>
+		<div class="form_btn_foot">
+			{% if from is not empty %}
+			<a class="btn btn-default" href="javascript:history.back(-1)" style="width:100px">返回</a>
+			{% else %}
+			<button class="btn btn_orange" type="submit" style="width:100px">提交</button>&nbsp;&nbsp;
+			<a class="btn btn-default" href="javascript:history.back(-1)" style="width:100px">取消</a>
+			{% endif %}
+		</div>
+	</div>
+</form>
+</div>

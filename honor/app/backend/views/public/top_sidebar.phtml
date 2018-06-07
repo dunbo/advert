@@ -1,0 +1,17 @@
+<div class="content">
+	<div class="navigation">
+		<div class="title">
+			{% if menutitle == 'Honor_media'  %}
+				<a class="title_main" href="/admin/dashboard/index?title=Honor_media" >媒体平台</a>
+				<a class="title_main" style="color:#091929" href="/admin/dashboard/index?title=Honor_ad" >广告主平台</a>
+			{% else %}
+				<a class="title_main" style="color:#091929"  href="/admin/dashboard/index?title=Honor_media" >媒体平台</a>
+				<a class="title_main" href="/admin/dashboard/index?title=Honor_ad" >广告主平台</a>
+			{% endif %}
+
+		</div>
+		<div class="title_right">
+            欢迎您！&nbsp;<?php echo $admin['admin_user_name']?>
+			<a href="{{url('passport/logout')}}">退出</a>
+		</div>
+	</div>

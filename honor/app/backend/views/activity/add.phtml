@@ -1,0 +1,388 @@
+<div class="content_inner">
+<form action="{{ url('activity/publish') }}"  method="post" enctype="multipart/form-data" onsubmit="return checksubmit()">
+	<input type="hidden" name="aid" value="{{ aid }}">
+	<input type="hidden" name="type" value="{{ activity['type'] }}">
+	<div class="single_info account_info">
+		<h3>活动类型</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>活动类型：</label>
+			</div>
+			<div class="form_label" style="width:205px">
+				<input type="radio" name="type" group="type" {{ activity['type']==1?'checked':'' }} onclick="select_item(1)" value="1">大转盘
+				<input type="radio" name="type" group="type" {{ activity['type']==2?'checked':'' }} onclick="select_item(2)" value="2">刮刮乐
+				<input type="radio" name="type" group="type" {{ activity['type']==3?'checked':'' }} onclick="select_item(3)" value="3">九宫格抽奖
+			</div>
+		</div>
+		<h3>活动信息</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>活动名称：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="name" value="{{ activity['name'] }}" class="inputtext"  placeholder="活动名称应用在页面顶部标题，20个汉字以内">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>抽奖次数：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="draw_num" value="{{ activity['draw_num'] }}" class="inputtext"  placeholder="用户可以进行抽奖次数">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>活动说明：</label>
+			</div>
+			<div class="form_control">
+				<textarea name="intro"  placeholder="展示该活动的说明规则" id="intro"  >{{ activity['intro'] }}</textarea>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>开始时间：</label>
+			</div>
+			<div class="form_control">
+					<input class="inputtext" name="start_tm" id="start_tm" value="{{ activity['start_tm']?date('Y-m-d H:i:s', activity['start_tm']):'' }}" onFocus="WdatePicker({maxDate:'#F{$dp.$D(\'end_tm\')}', minDate:CurentTime(),dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>结束时间：</label>
+			</div>
+			<div class="form_control">
+				<input class="inputtext" name="end_tm" id="end_tm"  value="{{ activity['end_tm']?date('Y-m-d H:i:s', activity['end_tm']):'' }}"  onFocus="WdatePicker({minDate:'#F{$dp.$D(\'start_tm\')}',dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+			</div>
+		</div>
+		<h3>活动配置</h3>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>首页banner图：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['home_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['home_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="home_img"  value=""  accept="image/jpeg,image/jpg,image/png" />
+				<input type="hidden"  name="home_img_data"  value="{{ activity['activity_conf']['home_img']?activity['activity_conf']['home_img']:'' }}"  />
+				<span>图片尺寸为XXX，若未上传则使用默认图片</span>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>我的奖品按键图：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['my_prize_button_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['my_prize_button_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="my_prize_button_img"  value=""  />
+				<input type="hidden"  name="my_prize_button_img_data"  value="{{ activity['activity_conf']['my_prize_button_img']?activity['activity_conf']['my_prize_button_img']:'' }}"  />
+				<span>图片尺寸为XXX，若未上传则使用默认图片</span>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>活动背景颜色：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" class="inputtext color" name="activity_back_color"  value="{{ activity['activity_conf']['activity_back_color']?activity['activity_conf']['activity_back_color']:'#fff2b5' }}"  />
+				<span>活动背景颜色若未选择则使用默认颜色</span>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>活动背景图：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['activity_back_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['activity_back_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="activity_back_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="activity_back_img_data"  value="{{ activity['activity_conf']['activity_back_img']?activity['activity_conf']['activity_back_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>抽奖按键图：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['draw_button_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['draw_button_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="draw_button_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="draw_button_img_data"  value="{{ activity['activity_conf']['draw_button_img']?activity['activity_conf']['draw_button_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>抽奖按键灰色图：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['draw_button_gray_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['draw_button_gray_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="draw_button_gray_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="draw_button_gray_img_data"  value="{{ activity['activity_conf']['draw_button_gray_img']?activity['activity_conf']['draw_button_gray_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>活动说明标题背景图：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['activity_intro_title_back_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['activity_intro_title_back_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="activity_intro_title_back_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="activity_intro_title_back_img_data"  value="{{ activity['activity_conf']['activity_intro_title_back_img']?activity['activity_conf']['activity_intro_title_back_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>活动说明版块背景图：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['activity_intro_back_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['activity_intro_back_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="activity_intro_back_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="activity_intro_back_img_data"  value="{{ activity['activity_conf']['activity_intro_back_img']?activity['activity_conf']['activity_intro_back_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>中奖弹窗立即领取按键：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['lottery_button_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['lottery_button_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="lottery_button_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="lottery_button_img_data"  value="{{ activity['activity_conf']['lottery_button_img']?activity['activity_conf']['lottery_button_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label>抽奖次数背景图：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['draw_num_back_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['draw_num_back_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="draw_num_back_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="draw_num_back_img_data"  value="{{ activity['activity_conf']['draw_num_back_img']?activity['activity_conf']['draw_num_back_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item foo_1" {{ activity['type']!=1?"style='display:none'":'' }}>
+			<div class="form_label" style="width:155px;">
+				<label>大转盘图片上传：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['dial_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['dial_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="dial_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="dial_img_data"  value="{{ activity['activity_conf']['dial_img']?activity['activity_conf']['dial_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item foo_2" {{ activity['type']!=2?"style='display:none'":'' }}>
+			<div class="form_label" style="width:155px;">
+				<label>刮奖区域颜色：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" class='inputtext color' name="scratch_ticket_color"  value="{{ activity['activity_conf']['scratch_ticket_color']?activity['activity_conf']['scratch_ticket_color']:'#fff2b5' }}"/>
+				<span>刮奖区域颜色若未选择则使用默认颜色</span>
+			</div>	
+		</div>
+		<div class="form_item foo_2" {{ activity['type']!=2?"style='display:none'":'' }}>
+			<div class="form_label" style="width:155px;">
+				<label>刮奖区域图片上传：</label>
+			</div>
+			<div class="form_control">
+				{% if activity['activity_conf']['scratch_ticket_img'] is not empty %}
+					<p class="prompt_p">
+						<img src="{{ IMG_URL~activity['activity_conf']['scratch_ticket_img'] }}">
+					</p>
+				{% endif %}
+				<input type="file" class="inputtext" name="scratch_ticket_img"  value="" accept="image/jpeg,image/jpg,image/png" />
+				<span>图片尺寸为XXX，若未上传则使用默认图片，图片中需要加入文字</span>
+				<input type="hidden"  name="scratch_ticket_img_data"  value="{{ activity['activity_conf']['scratch_ticket_img']?activity['activity_conf']['scratch_ticket_img']:'' }}"  />
+			</div>
+		</div>
+		<div class="form_item foo_2" {{ activity['type']!=2?"style='display:none'":'' }}>
+			<div class="form_label" style="width:155px;">
+				<label>活动是否展示奖品：</label>
+			</div>
+			<div class="form_control">
+				<input type="checkbox" name="is_show" id="is_show" {{ activity['activity_conf']['is_show']?'checked':'' }} value="1"/>
+			</div>	
+		</div>
+
+		</div>
+		<div class="form_btn_foot">
+			<button class="btn btn_orange" style="width:100px;" type="submit">提交</button>
+		</div>
+	</div>
+</form>
+</div>
+<script>
+//颜色
+$(function(){
+	$('.color').colorPicker();
+});
+
+function checksubmit(){
+	var type = $("input[name='type']:checked").val();
+	if( type == "" || type == undefined ) {
+		tips_message('请选择活动类型','error');
+		return false
+	}
+	var name = $("input[name='name']").val();
+	if(name == '') {
+		tips_message('请填写活动名称','error');
+		return false
+	}
+	if( !max_length(name, 40)) {
+		tips_message('活动名称不超过20个字','error');
+		return false
+	}
+	var draw_num = $("input[name='draw_num']").val();
+	if(draw_num == '' || draw_num <= 0 ) {
+		tips_message('请填写抽奖次数','error');
+		return false
+	}
+	if( Math.floor(draw_num) != draw_num ) {
+		tips_message('抽奖次数填正整数','error');
+		return false
+	}
+	var intro = $("#intro").val();
+	if(intro == '') {
+		tips_message('请填写活动说明','error');
+		return false
+	}
+	var start_tm = $("#start_tm").val();
+	if(start_tm == '') {
+		tips_message('请选择开始时间','error');
+		return false
+	}
+	var end_tm = $("#end_tm").val();
+	if(end_tm == '') {
+		tips_message('请选择结束时间','error');
+		return false
+	}
+	var home_img = $("input[name='home_img']").val();
+	if(home_img && !home_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("首页banner图片格式错误");
+	    return false;
+    }
+    var my_prize_button_img = $("input[name='my_prize_button_img']").val();
+	if(my_prize_button_img && !my_prize_button_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("我的奖品按键图片格式错误");
+	    return false;
+    }
+    var activity_back_img = $("input[name='activity_back_img']").val();
+	if(activity_back_img && !activity_back_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("活动背景图片格式错误");
+	    return false;
+    }
+    var draw_button_img = $("input[name='draw_button_img']").val();
+	if(draw_button_img && !draw_button_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("抽奖按键图片格式错误");
+	    return false;
+    }
+    var draw_button_gray_img = $("input[name='draw_button_gray_img']").val();
+	if(draw_button_gray_img && !draw_button_gray_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("抽奖按键灰色图片格式错误");
+	    return false;
+    }
+    var activity_intro_title_back_img = $("input[name='activity_intro_title_back_img']").val();
+	if(activity_intro_title_back_img && !activity_intro_title_back_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("活动说明标题背景图片格式错误");
+	    return false;
+    }
+    var activity_intro_back_img = $("input[name='activity_intro_back_img']").val();
+	if(activity_intro_back_img && !activity_intro_back_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("活动说明版块背景图片格式错误");
+	    return false;
+    }
+    var lottery_button_img = $("input[name='lottery_button_img']").val();
+	if(lottery_button_img && !lottery_button_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("中奖弹窗立即领取按键图片格式错误");
+	    return false;
+    }
+    var draw_num_back_img = $("input[name='draw_num_back_img']").val();
+	if(draw_num_back_img && !draw_num_back_img.match(/.jpg|.png|.jpeg/i)){
+     	tips_message("抽奖次数背景图片格式错误");
+	    return false;
+    }
+}
+
+function select_item(type){
+	if( type == 1 ) {
+		$(".foo_1").show();
+		$(".foo_2").hide();
+	}else if( type == 2 ) {
+		$(".foo_1").hide();
+		$(".foo_2").show();
+	}else if( type == 3 ) {
+		$(".foo_1").hide();
+		$(".foo_2").hide();
+	}
+}
+
+function CurentTime() {
+            var now = new Date();
+            var year = now.getFullYear();      
+            var month = now.getMonth() + 1;    
+            var day = now.getDate();          
+            var hh = now.getHours();           
+            var mm = now.getMinutes();         
+            var clock = year + "-";
+            if (month < 10)
+                clock += "0";
+            clock += month + "-";
+            if (day < 10)
+                clock += "0";
+            clock += day + " ";
+            if (hh < 10)
+                clock += "0";
+            clock += hh + ":00:00";
+            // if (mm < 10) clock += '0';
+            // clock += mm;
+            return (clock);
+        }
+
+</script>
+
+
+

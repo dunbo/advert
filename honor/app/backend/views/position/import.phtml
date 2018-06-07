@@ -1,0 +1,100 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<title>{{title}}</title>
+<link type="text/css" href="{{ static_url('static/css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('static/css/index.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('static/css/radio/build.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('assets/css/style.css') }}" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('static/css/jquery.coolautosuggest.css')}}" />
+<script type="text/javascript" src="{{ static_url('static/js/jquery-2.1.0.js?') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/public.js?')}}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/popwin.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('assets/js/public.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/ajaxfileupload.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/jquery.coolautosuggest.js')}}"></script>
+<head>
+
+<body style="min-width: 500px;background-color: #fff;">
+<div style="width:500px;height: 90%;">
+	<form action="{{ url('position/import') }}" method="post" enctype="multipart/form-data" onsubmit="return import_submit()" id="edit_iframe" >
+	
+	
+	<div id="dsp_one">
+		<div class="single_info account_info">
+			<div class="form_item coupon_div" >
+				<div class="form_label" style="width:155px;">
+					*请输入DSP名称：
+				</div>
+				<div class="form_control" >
+					<input type="text" name="dsp_name" id="dsp_name" value="" class="inputtext" >
+					<input type="hidden" name="dsp_id" id="dsp_id" value="" />
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer code-footer" style="text-align: center;">
+			<input type="button" class="btn btn_orange " style="width:100px;" onclick="dsp_next()"  value="下一步" />
+		</div>
+	</div>
+
+
+	<div id="dsp_two" style="display:none">
+		<div class="single_info account_info">
+			<div class="form_item coupon_div" >
+				<div class="form_label" style="width:155px;">
+					DSP文件：
+				</div>
+				<div class="form_control" >
+					<input type="file" name="dsp" id="dsp" value="" onchange="dsp_file()" class="inputtext" >
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer code-footer">
+			<input type="submit" class="btn btn_orange " style="width:100px;" value="确定" />&nbsp;&nbsp;
+			<button type="button" class="btn btn-default" style="width:100px;" onclick="window.parent.close_win()" data-dismiss="modal">取消</button>
+		</div>
+	</div>
+
+	</form>
+</div>
+</body>
+
+<script>
+$("#dsp_name").coolautosuggest({
+  url:"{{url('position/search')}}?chars=",
+  idField:$("#dsp_id"),
+  //width:100,
+});
+
+function import_submit() {
+	var dsp = $("input[name='dsp']").val();
+	if( dsp=="" ) {
+		alert("请上传DSP广告位");
+		return false;
+	}
+    if(!dsp.match(/.csv/i)){
+     	alert("上传DSP广告位格式有误");
+	    return false;
+    }
+}
+
+function dsp_next() {
+	var dsp_name = $("#dsp_name").val()
+	if(dsp_name == "" ||  dsp_name == undefined) {
+		alert('请先选择DSP');
+		return false;
+	}
+	var dsp_id = $("#dsp_id").val();
+	if( dsp_id == "" ||  dsp_id == undefined ){
+		alert('DSP名称错误，请输入正确的DSP名称');
+		return false;
+	}else{
+		$('#dsp_one').hide();	
+		$('#dsp_two').show();	
+	}
+}
+
+</script>
+
+</html>

@@ -1,0 +1,381 @@
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('position/index') }}" method="get">
+				<input type="hidden" name="srch_type" value="{{ srch_type }}">
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告位名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="ad_name" value="{{ ad_name }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>媒体名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="md_name" value="{{ md_name }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>公司媒体平台账号：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="username" value="{{ username }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<button class="btn_orange" >搜索</button>
+					</div>
+				</div>
+			</form>
+			<div class="clear"></div>
+		</div>
+		<div class="table_box">
+			<ul class="nav nav-tabs" style="padding-top:20px">
+		    	<li class="{{ srch_type=='sh'?'active':'' }}" ><a href="{{ url('position/index?srch_type=sh'~'&ad_name='~ad_name~'&md_name='~md_name~'&username='~username) }}"  aria-expanded="false">待审核</a></li>
+		        <li class="{{ srch_type=='tg'?'active':'' }}" ><a href="{{ url('position/index?srch_type=tg'~'&ad_name='~ad_name~'&md_name='~md_name~'&username='~username) }}"  aria-expanded="false">已通过</a></li>
+		        <li class="{{ srch_type=='ntg'?'active':'' }}" ><a href="{{ url('position/index?srch_type=ntg'~'&ad_name='~ad_name~'&md_name='~md_name~'&username='~username) }}"  >未通过</a></li>
+		    </ul>
+		    <ul class="tab-content">
+				<li class="tab-pane active">
+					{% if srch_type != 'tg' %}
+			    		<div class="btn-group">
+					        <button class="btn btn-default checkall">全选</button>
+					        <button class="btn btn-default no_checkall">反选 </button>
+					    </div>
+					    {% if srch_type == 'sh' %}
+					   <div class="btn-group" style="margin-left: 25px;">
+				        <button class="btn btn-default checkall" onclick="batchSubmit('tg',0)">批量通过</button>
+				        <button class="btn btn-default checkall" onclick="batchSubmit('bh',0)">批量驳回</button>
+						</div>
+						{% elseif srch_type == 'ntg'  %}
+						<div class="btn-group" style="margin-left: 25px;">
+						<button class="btn btn-default checkall" onclick="batchSubmit('tg',0)">重新审核通过</button>
+						</div>
+						{% endif %}
+				    {% endif %}
+				    <div class="btn-group pull-right">
+						{% if srch_type == 'sh' or srch_type == 'tg' %}
+				    	<button class="btn btn-default" onclick="dsp_param_move()">DSP参数转移</button>
+						{% endif %}
+				    	{% if srch_type == 'sh' %}
+				    	<button class="btn btn-default" onclick="batch_dsp_export()">导出DSP广告位申请表</button>
+				        <button class="btn btn-default" onclick="import_dsp()">导入DSP广告位ID</button>
+				    	{% endif %}
+				    </div>
+		    		<table cellpadding="0" cellspacing="0" class="tables">
+						<thead>
+							<tr>
+								<th width="4%"></th>
+								<th width="4%">广告位ID</th>
+								<th width="9%">广告位名称</th>
+								<th width="9%">媒体名称</th>
+								<th width="7%">投放类型</th>
+								<th width="9%">广告规则（样式）</th>
+								<th width="9%">第三方DSP广告位appid</th>
+								<th width="9%">第三方DSP广告位ID</th>
+								<th width="6%">第三方Appkey</th>
+								<th width="6%">创建时间</th>
+								<th width="8%">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% if list is not empty %}
+						 	{% for key,val in list %}
+								<tr>
+									<td><input type="checkbox" name="id" value="{{ val['id'] }}"></td>
+									<td>{{ val['id'] }}</td>
+									<td>{{ val['name'] }}</td>
+									<td>{{ val['media_name'] }}</td>
+									<td id="tf_{{val['id']}}" node_data="{{val['type']}}" note="{{val['tf_type']}}" >
+										{% if val['type'] == 1 %}
+											{% if val['tf_type'] == 1 %}
+												SDK
+											{% elseif val['tf_type'] == 2 %}
+												{% if val['api_type'] == 1 %}
+													通用广告API
+												{% elseif val['api_type'] == 2 %}
+													互动广告API
+												{% endif %}
+											{% else %}
+												类型有误
+											{% endif %}
+										{% else %}
+											商业内容API
+										{% endif %}
+
+									</td>
+									<td>
+										<p>
+										{% if val['t_pid'] is not empty and val['t_id'] is not empty  %}
+											{{ val['tmp_parent_name'] }} 
+											({{ val['tmp_sub_name'] }})
+										{% else %}
+											默认
+										{% endif %}	
+										</p>
+									</td>
+									<!-- <td>
+										{% if val['strategyid'] %}
+										<a href="{{ url('position/strategy?id='~val['strategyid']) }}" class="blue">屏蔽策略</a>
+										{% else %}
+											无
+										{% endif %}
+									</td> -->
+									<td >
+										{% if val['type'] == 1 %}
+										 	 {% if val['dsp_id_arr'] is not empty %}
+											 	{% for kk,vv in val['dsp_id_arr'] %}
+													{{vv['dsp_name']}}:{{vv['dsp_appid']}}<br/>
+												{% endfor %}
+											{% else %}
+												未添加
+											{% endif %}
+										{% endif %}
+									</td>
+									<td id="dsp_{{val['id']}}"  note="{% if val['dsp_id_arr'] is not empty %}1{% endif %}">
+										{% if val['type'] == 1 %}
+											 {% if val['dsp_id_arr'] is not empty %}
+									 		     {% for kk,vv in val['dsp_id_arr'] %}
+													{{vv['dsp_name']}}:{{vv['dsp_ad_pos_id']}}<br/>
+												 {% endfor %}
+											{% else %}
+												未添加
+											{% endif %}
+										{% endif %}
+									</td>
+									<td >
+										{% if val['type'] == 1 %}
+										 	{% if val['dsp_id_arr'] is not empty %}
+											 	{{val['dsp_id_arr'][0]['dsp_appkey']}} 
+											{% else %}
+												未添加
+											{% endif %}
+										{% endif %}
+									</td>
+									<td>{{ date('Y-m-d H:i:s', val['create_tm']) }}</td>
+									<td>
+										<a href="{{ url('position/detail?id='~val['id']~'&srch_type='~srch_type) }}" class="blue">查看</a>
+										{% if srch_type == 'sh' %}
+										<a href="javascript:batchSubmit('tg',{{val['id']}})" class="blue">通过</a>
+										<a href="javascript:batchSubmit('bh',{{val['id']}})" class="blue">驳回</a>
+										{% elseif srch_type == 'ntg'  %}
+										<a href="javascript:batchSubmit('tg',{{val['id']}})" class="blue">通过</a>
+										{% endif %}
+
+									</td>
+								</tr>
+							{% endfor %}
+						 {% else %}
+								<tr>
+			                        <td colspan="7">暂无数据</td>
+			                    </tr>
+						 {% endif %}
+						</tbody>
+					</table>
+		    	</li>
+		    </ul>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+	</div>
+</div>
+
+<div class="modal" id="batch_bh" tabindex="-1" role="dialog"  aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">驳回</h4>
+			</div>
+			<form action="{{ url('position/operation') }}" method="post" onsubmit="return bh_submit()" id="bh_form">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' name='type' value='bh' />
+				<input type='hidden' id="bh_ids" name="ids" />
+				<div class="form_item">
+					<div class="form_label">
+						<label>驳回理由：</label>
+					</div>
+					<div class="">
+						<div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason1" value="1" name="bh_reason">
+		                    <label for="reject_reason1">原生广告未审核通过。</label>
+		                </div>
+		            </div>
+		            <div class="">
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason2" value="2" name="bh_reason">
+		                    <label for="reject_reason2">激励视频暂时无法建立。</label>
+		                </div>
+		            </div>
+		            <div class="">
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason3" value="3" name="bh_reason">
+		                    <label for="reject_reason3">视频贴片未审核通过。</label>
+		                </div>
+		            </div>
+		            <div class="">
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason4" value="4" name="bh_reason">
+		                    <label for="reject_reason4">广告位命名格式错误。（媒体名称-广告位类型  例如：安智智盟-横屏）</label>
+		                </div>
+		            </div>
+				</div>
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>详细说明：</label>
+					</div>
+					<div class="form_control">
+						<textarea placeholder="请输入驳回理由" id="bh_explain" name="bh_explain"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn_orange" style="width:100px;" value="确定" />&nbsp;&nbsp;
+				<button type="button" class="btn btn-default" style="width:100px;" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<script>
+$(function(){
+  $(".checkall").click(function(){  
+      $("input[name='id']").prop("checked", true);
+  })
+  $(".no_checkall").click(function(){  
+      $("input[name='id']").prop("checked", false); 
+  })
+})
+
+function batchSubmit(type, id){
+	var ids = '';
+	var cfm_notice = '确定要批量通过';
+	if(id > 0){
+		cfm_notice = '确定要通过';
+		ids = id;
+	}else{
+		$("input[name='id']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	ids += id_num+',';
+		    }
+		});
+		ids = ids.substr(0, ids.length-1);  
+		if(ids == ''){
+			alert('请选择广告位');
+			return false;
+		}
+	}
+	if(type == 'tg'){
+		if(confirm(cfm_notice)){
+			window.location.href="{{ url('position/operation?type=tg&ids="+ids+"') }}";
+		}
+	}else if(type == 'bh'){
+		$('#bh_ids').val(ids);
+		$('input[name=bh_reason]').attr('checked', false);
+		$('textarea[name=bh_explain]').val('');
+		$('#batch_bh').modal('show');
+	}
+}
+
+function bh_submit(){
+	if( $('input[name="bh_reason"]:checked').val() == undefined && $("#bh_explain").val() == "" ) {
+		alert('请填写其中一项')
+		return false;
+	}
+}
+
+
+function close_win(){
+	$("#mask,#maskTop").fadeOut(function() {
+        $(this).remove();
+    });
+}
+ function import_dsp() {
+	popWin.showWin("517","250","导入DSP广告位ID","{{ url('position/import') }}");
+ }
+
+function batch_dsp_export()
+{
+	var ids = '';
+	var erro = '';
+	var cfm_notice = '确定要导出';
+	$("input[name='id']:checkbox").each(function(){
+	    if($(this).prop("checked")){
+	      	var id_num = $(this).val();
+	      	var type = $("#tf_"+id_num).attr('node_data');
+	      	if(type != 1) {
+	      		erro = '只能导出媒体类型是Android类型下的广告位且未关联第三方DSP广告位ID';
+	      		return false;
+	      	}
+	      	var dsp_id = $("#dsp_"+id_num).attr('note');
+	      	if(dsp_id != "") {
+	      		erro = '只能导出媒体类型是Android类型下的广告位且未关联第三方DSP广告位ID';
+	      		return false;
+	      	}
+	      	ids += id_num+',';
+	    }
+	});
+	if(erro != '') {
+		alert(erro)
+		return false;
+	}
+	ids = ids.substr(0, ids.length-1);  
+	if(ids == ''){
+		alert('请选择广告位');
+		return false;
+	}
+	if(confirm(cfm_notice)){
+		window.location.href="{{ url('position/export?ids="+ids+"') }}";
+	}
+}
+//dsp参数转移
+function dsp_param_move(){
+	var ids = '';
+	var erro = '';
+	var cfm_notice = '确定要转移';
+	var obj = $("input[name='id']:checked")
+	var len =  obj.length; 
+	if(len > 1 ) {
+		alert("只能选择一个广告位参数转移");
+		return false;
+	}else if(len == 0) {
+		alert('请选择要转移参数的广告位');
+		return false;
+	}
+	obj.each(function(){
+	      	var id_num = $(this).val();
+	      	var type = $("#tf_"+id_num).attr('node_data');
+	      	if(type != 1) {
+	      		erro = '只能转移媒体投放类型是Android类型下的广告位且未关联第三方DSP广告位ID';
+	      		return false;
+	      	}
+	      	var dsp_id = $("#dsp_"+id_num).attr('note');
+	      	if(dsp_id == "") {
+	      		erro = '只能转移媒体的投放类型是Android类型下的广告位且已关联第三方DSP广告位ID';
+	      		return false;
+	      	}
+	      	ids += id_num+',';
+	});
+	if(erro != '') {
+		alert(erro)
+		return false;
+	}
+	ids = ids.substr(0, ids.length-1);  
+	if(ids == ''){
+		alert('请选择广告位');
+		return false;
+	}
+	popWin.showWin("517","300","DSP参数转移","{{ url('position/move?id=') }}"+ids );
+}
+</script>

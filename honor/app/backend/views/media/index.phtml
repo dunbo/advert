@@ -1,0 +1,600 @@
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('media/index') }}" method="get">
+				<input type="hidden" name="srch_type" value="{{ srch_type }}">
+				<div class="form_item">
+					<div class="form_label">
+						<label>公司名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="company_name" value="{{ company_name }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>公司媒体平台账号：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="username" value="{{ username }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>媒体名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="name" value="{{ name }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<button class="btn_orange" >搜索</button>
+					</div>
+				</div>
+			</form>
+			<div class="clear"></div>
+		</div>
+		<div class="table_box">
+			<ul class="nav nav-tabs" style="padding-top:20px">
+		    	<li class="{{ srch_type=='sh'?'active':'' }}" ><a href="{{ url('media/index?srch_type=sh'~'&company_name='~company_name~'&username='~username~'&name='~name) }}"  aria-expanded="false">待审核</a></li>
+		    	<li class="{{ srch_type=='rz'?'active':'' }}" ><a href="{{ url('media/index?srch_type=rz'~'&company_name='~company_name~'&username='~username~'&name='~name) }}"  aria-expanded="false">待认证</a></li>
+		        <li class="{{ srch_type=='tg'?'active':'' }}" ><a href="{{ url('media/index?srch_type=tg'~'&company_name='~company_name~'&username='~username~'&name='~name) }}"  aria-expanded="false">已通过</a></li>
+		        <li class="{{ srch_type=='ntg'?'active':'' }}" ><a href="{{ url('media/index?srch_type=ntg'~'&company_name='~company_name~'&username='~username~'&name='~name) }}"  >未通过</a></li>
+		    </ul>
+		    <ul class="tab-content">
+				<li class="tab-pane active">
+		    		<div class="btn-group">
+				        <button class="btn btn-default checkall">全选</button>
+				        <button class="btn btn-default no_checkall">反选 </button>
+				    </div>
+				    <div class="btn-group pull-right" style="margin-left: 10px;">
+						<button class="btn btn-default" onclick="batch_export()">导出</button>
+				    </div>
+				    <div class="btn-group pull-right">
+				    	{% if srch_type == 'tg' %}
+				    	<button class="btn btn-default" onclick="batchSubmit('bh',0)">批量驳回</button>
+				    	{% elseif srch_type == 'sh' %}
+				        <button class="btn btn-default" onclick="batchSubmit('tg',0)">批量通过</button>
+				        <button class="btn btn-default" onclick="batchSubmit('bh',0)">批量驳回</button>
+						{% elseif srch_type == 'rz'  %}
+						<button class="btn btn-default" onclick="batchSubmit('tg',0)">批量通过</button>
+				        <button class="btn btn-default" onclick="batchSubmit('bh',0)">批量驳回</button>
+						{% endif %} 
+				    </div>
+				    {% if srch_type == 'rz' %}
+				    <div class="btn-group pull-right" style="margin-right: 10px;">
+						<button class="btn btn-default" onclick="batchApk('tg',0)">认证通过</button>
+				        <button class="btn btn-default" onclick="batchApk('bh',0)">认证驳回</button>
+					</div>
+					{% endif %}
+		    		<table cellpadding="0" cellspacing="0" class="tables">
+						<thead>
+							<tr>
+								<th width="1%"></th>
+								<th width="4%">媒体ID</th>
+								<th width="7%">媒体名称</th>
+								<th width="5%">媒体主名称</th>
+								<th width="4%">行业</th>
+								<th width="5%">平台</th>
+								<th width="4%">投放方式</th>
+								<!-- <th width="8%">量级(PV或DAU)</th> -->
+								<th width="6%">包名</th>
+								<!-- <th width="7%">网站域名</th> -->
+								<th width="5%">应用平台</th>
+								<th width="6%">应用详情</th>
+								<th width="5%">媒体关键词</th>
+								<th width="5%">结算方案</th>
+								{% if srch_type == 'sh' %}
+								<th width="6%">空包签名(上游DSP)</th>
+								{% elseif srch_type == 'rz' %}
+								<th width="6%">空包签名(上游DSP)</th>
+								<th width="6%">空包签名(开发者)</th>
+								{% endif %}
+								<th width="7%">创建时间</th>
+								<th width="7%">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% if list is not empty %}
+						 	{% for key,val in list %}
+								<tr>
+									<td><input type="checkbox" name="mmid" apk_status="{{ val['apk_status'] }}" id="select_{{val['mmid']}}" value="{{ val['mmid'] }}"></td>
+									<td>{{ val['mmid'] }}</td>
+									<td>{{ val['name'] }}</td>
+									<td>{{ val['media_name'] }}</td>
+									<td>
+										{{ val['industry_parentid_name'] }}<br/>
+										{{ val['industry_name'] }}
+									</td>
+									<td>
+										{% if val['type'] == 1 %}
+											Android
+										{% elseif val['type'] == 2 %}
+											H5
+										{% else %}
+											类型有误
+										{% endif %}
+									</td>
+									<td>
+										{% if val['type'] == 1 %}
+											{% if val['tf_type'] == 1 %}
+												SDK
+											{% elseif val['tf_type'] == 2 %}
+												{% if val['api_type'] == 1 %}
+													通用广告API
+												{% elseif val['api_type'] == 2 %}
+													互动广告API
+												{% endif %}
+											{% endif %}
+										{% elseif val['type'] == 2 %}
+											商业内容API
+										{% endif %}
+									</td>
+									<!-- <td>{{ val['flow'] }}</td> -->
+									<td>{{ val['package_name'] }}</td>
+									<!-- <td>{{ val['host'] }}</td> -->
+									<td>
+										{% if val['type'] == 1 %}
+											{{ get_platform(val['soft_src']) }}
+										{% endif %}
+									</td>
+									<td>
+										{% if val['type'] == 1 %}
+											{% if val['soft_url'] != "" %}
+												{{ val['soft_url'] }}
+											{% else %}
+												http://www.anzhi.com/pkg/{{ val['package_name'] }}
+											{% endif %}
+										{% endif %}
+									</td>
+									<td>{{ val['doc_key'] }}</td>
+									<td>{{ val['plan_name'] }}</td>
+									{% if srch_type == 'sh' or srch_type == 'rz' %}
+										<td>
+										{% if val['type'] == 1 and val['tf_type'] == 1 %}
+											{% if val['dsp_key'] is empty %}
+												待提交<div style="height: 8px"></div>
+												<a href="javascript:up_pkg_dsp({{val['mmid']}})" class="blue">提交</a>	
+											{% else %}
+												已提交<div style="height: 8px"></div>
+												<a href="{{ IMG_URL~val['dsp_path'] }}" class="blue">下载文件</a>	
+												&nbsp;<span style="color:red">
+												<a href="javascript:up_pkg_dsp({{val['mmid']}})" class="blue"><span style="color:red">重新提交</span></a>
+											{% endif %}
+										{% endif %}
+										</td>
+									{% endif %}
+									
+									{% if srch_type == 'rz' %}
+										<td>
+										{% if val['type'] == 1 and val['tf_type'] == 1 %}
+											{% if val['apk_status'] == 0 %}
+												待提交<div style="height: 8px"></div>
+												<a href="javascript:up_pkg({{val['mmid']}}, '{{ val['dsp_path'] }}')" class="blue">提交</a>
+											{% elseif val['apk_status'] == 1 %}
+												已通过<div style="height: 8px"></div>
+												<a href="{{ IMG_URL~val['apk_path'] }}" class="blue">下载文件</a>
+											{% elseif val['apk_status'] == 2 %}
+												待审核<div style="height: 8px"></div>
+												<a href="{{ IMG_URL~val['apk_path'] }}" class="blue">下载文件</a>
+											{% elseif val['apk_status'] == 3 %}
+												待提交<div style="height: 8px"></div>
+												<a href="{{ IMG_URL~val['apk_path'] }}" class="blue">下载文件</a>	
+												&nbsp;<span style="color:red">
+												<a href="javascript:up_pkg({{val['mmid']}}, '{{ val['dsp_path'] }}')" class="blue"><span style="color:red">重新提交</span></a>
+											</span>
+											{% else %}
+												状态有误
+											{% endif %}
+										{% endif %}
+										</td>
+									{% endif %}
+										
+									</td>
+									<td>{{ date('Y-m-d H:i:s', val['create_tm']) }}</td>
+									<td>
+										<a href="{{ url('media/detail?mmid='~val['mmid']~'&srch_type='~srch_type) }}" class="blue">编辑媒体资料</a><br/>
+										{% if srch_type == 'sh' %}
+										<a href="javascript:batchSubmit('tg',{{val['mmid']}},{{val['apk_status']}})" class="blue">通过</a>
+										<a href="javascript:batchSubmit('bh',{{val['mmid']}})" class="blue">驳回</a>
+										{% elseif srch_type == 'ntg'  %}
+										<a href="javascript:batchSubmit('sh',{{val['mmid']}})" class="blue">驳回</a>
+										{% elseif srch_type == 'tg'  %}
+										<a href="javascript:batchSubmit('bh',{{val['mmid']}})" class="blue">驳回</a>
+										{% elseif srch_type == 'rz'  %}
+											{% if val['apk_status'] == 0 or val['apk_status'] == 2 or val['apk_status'] == 3 %}
+											<a href="javascript:batchSubmit('tg',{{val['mmid']}},{{val['apk_status']}})" class="blue">通过</a>
+											{% else %}
+											<a href="javascript:batchSubmit('tg',{{val['mmid']}},{{val['apk_status']}})" class="blue">通过</a>	
+											{% endif %}
+											<a href="javascript:batchSubmit('bh',{{val['mmid']}})" class="blue">驳回</a>
+										{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+						 {% else %}
+								<tr>
+			                        <td colspan="7">暂无数据</td>
+			                    </tr>
+						 {% endif %}
+						</tbody>
+					</table>
+		    	</li>
+		    </ul>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+	</div>
+</div>
+
+<div class="modal" id="batch_bh" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">驳回</h4>
+			</div>
+			<form action="{{ url('media/operation') }}" method="post" onsubmit="return bh_submit()" id="bh_form">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' name='type' value='bh' />
+				<input type='hidden' id="bh_ids" name="ids" />
+				<div class="form_item">
+					<div class="form_label">
+						<label>驳回理由：</label>
+					</div>
+					<div class="form_control">
+						<div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason1" value="1" name="bh_reason">
+		                    <label for="reject_reason1">应用过于简陋，交互界面、服务功能单一、且实用性、创新性较低。</label>
+		                </div>
+		            </div>
+		            <div class="form_control">
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason2" value="2" name="bh_reason">
+		                    <label for="reject_reason2">您提交的应用名称、简介描述和实质内容不符或简介为非中文描述。请重新修改为 您提交应用相对应的描述后再次提交。</label>
+		                </div>
+		            </div>
+		            <div class="form_control">
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason3" value="3" name="bh_reason">
+		                    <label for="reject_reason3">您的应用部分频道无内容或内容过于单一，我们暂时不能通过您的申请，建议您完善后再申请此项业务。</label>
+		                </div>
+		            </div>
+		            <div class="form_control">
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason4" value="4" name="bh_reason">
+		                    <label for="reject_reason4">无法认证应用市场应用的信息，请提供有效的应用详情页地址</label>
+		                </div>
+		            </div>
+		            <div class="form_control">
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason5" value="5" name="bh_reason">
+		                    <label for="reject_reason4">您提交的媒体已存在，请修改好再次提交。</label>
+		                </div>
+		            </div>
+		            <div class="form_control">
+		                 <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason6" value="6" name="bh_reason">
+		                    <label for="reject_reason4">您提交的媒体信息与内容实致性不符。</label>
+		                </div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>详细说明：</label>
+					</div>
+					<div class="form_control">
+						<textarea placeholder="请输入驳回理由" id="bh_explain"  name="bh_explain"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn_orange" style="width:100px;" value="确定" />&nbsp;&nbsp;
+				<button type="button" class="btn btn-default"  style="width:100px;" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<!--认证弹窗-->
+<div class="modal" id="up_pkg" tabindex="-1" role="dialog"  aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">应用认证</h4>
+			</div>
+			<form action="{{ url('media/author') }}" method="post"   onsubmit="return apk_submit()" id="bh_form">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' id="mmid" value="" name="mmid" />
+				<input type='hidden' id="dsp_path" value="" name="dsp_path" />
+				<div class="form_item">
+					<div class="form_label">
+						<label>下载签名文件：</label>
+					</div>
+					<div class="form_label">
+		                  <a href="javascript:down_pkg()" class="blue">空包文件</a>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>上传文件：</label>
+					</div>
+					<div class="form_control">
+						<input type="hidden" name="apk_path" id="apk_path" value="" >
+						<input type="file" name="apk" id="apk" value="" onchange="apk_file()" class="inputtext"  accept="apk" >
+						<span>请上传空包签名后的应用文件</span>
+						<span id="is_up" style="color:red"></span>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn_orange" id="pkg_btn" style="width:100px;" value="上传" />&nbsp;&nbsp;
+				<button type="button" class="btn btn-default" style="width:100px;" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+<!--上传上游DSP的apk文件-->
+<div class="modal" id="up_pkg_dsp" tabindex="-1" role="dialog"  aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">上传DSP</h4>
+			</div>
+			<form action="{{ url('media/up_pkg_dsp') }}" enctype="multipart/form-data" method="post">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' class="mmid" value="" name="mmid" />
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>上传文件：</label>
+					</div>
+					<div class="form_control">
+						<input type="file" name="dsp" id="dsp" value="" class="inputtext"  accept="apk" >
+						<span>请上传上游DSP空包</span>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn_orange" style="width:100px;" value="提交" />&nbsp;&nbsp;
+				<button type="button" class="btn btn-default" style="width:100px;" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+
+
+
+<script>
+$(function(){
+  $(".checkall").click(function(){  
+      $("input[name='mmid']").prop("checked", true);
+  })
+  $(".no_checkall").click(function(){  
+      $("input[name='mmid']").prop("checked", false); 
+  })
+})
+
+function up_pkg(id, dsp_path){
+	$("#mmid").val(id);
+	$("#dsp_path").val(dsp_path);
+	if(dsp_path == "") {
+		alert('请联系商务获取空包文件')
+		return false
+	}
+	$('#up_pkg').modal({
+		keyboard: true
+	})
+}
+
+function up_pkg_dsp(id){
+	$(".mmid").val(id);
+	$('#up_pkg_dsp').modal({
+		keyboard: true
+	})
+}
+
+function down_pkg() {
+	var dsp_path = $("#dsp_path").val()
+	if(dsp_path == '') {
+		alert('请联系商务获取空包文件')
+	}else {
+		location.href="http://honor.cdn.anzhi.com/"+dsp_path;
+	}
+}
+
+var srch_type = '{{ srch_type }}'
+
+function batchSubmit(type, id, apk_status){
+	var ids = '';
+	var cfm_notice = '确定要批量通过';
+	if(id > 0){
+		ids = id;
+		cfm_notice = '确定要通过';
+		// if(type == 'tg' && srch_type == 'rz') {
+		// 	if(apk_status!=1) {
+		// 		alert('媒体id为:'+ids+'未认证通过');
+		// 		return false
+		// 	}
+		// }
+	}else{
+		var check_status = true;
+		$("input[name='mmid']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	var apk_status = $('#select_'+id_num).attr('apk_status')
+		  //     	if(type == 'tg' && srch_type == 'rz') {
+				// 	if(apk_status!=1) {
+				// 		alert('媒体id为:'+id_num+'未认证通过');
+				// 		check_status = false;
+				// 		return false
+				// 	}
+				// }
+		      	ids += id_num+',';
+		    }
+		});
+		if(!check_status) {
+			return false
+		}
+		ids = ids.substr(0, ids.length-1);  
+		if(ids == ''){
+			alert('请选择媒体');
+			return false;
+		}
+	}
+	if(type == 'tg'){
+		if(confirm(cfm_notice)){
+			window.location.href="{{ url('media/operation?type=tg&ids="+ids+"') }}";
+		}
+	}else if(type == 'sh'){
+		if(confirm('确定要驳回')){
+			window.location.href="{{ url('media/operation?type=sh&ids="+ids+"') }}";
+		}
+	}else if(type == 'bh'){
+		$('#bh_ids').val(ids);
+		$('input[name=bh_reason]').attr('checked', false);
+		$('textarea[name=bh_explain]').val('');
+		$('#batch_bh').modal('show');
+	}
+}
+
+function bh_submit(){
+	if( $('input[name="bh_reason"]:checked').val() == undefined && $("#bh_explain").val() == "" ) {
+		alert('请填写其中一项')
+		return false;
+	}
+}
+
+function batchApk(type, id){
+	var ids = '';
+	var cfm_notice = '确定要批量认证';
+	// if(id > 0){
+	// 	ids = id;
+	// 	cfm_notice = '确定要认证';
+	// 	var apk_status = $('#select_'+id).attr('apk_status')
+	// 	if(apk_status!=2) {
+	// 		alert('只能是待审核状态的才能认证通过');
+	// 		return false
+	// 	}
+	// }else{
+		var check_status = true;
+		$("input[name='mmid']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	var apk_status = $('#select_'+id_num).attr('apk_status')
+				if(type == 'tg') {
+					if(apk_status!=2) {
+						alert('媒体id为:'+id_num+'不能认证通过');
+						check_status = false;
+						return false
+					}
+				}else if(type == 'bh') {
+					if(apk_status !=1 && apk_status!=2) {
+						alert('媒体id为:'+id_num+'不能认证驳回');
+						check_status = false;
+						return false
+					}
+				}
+		      	ids += id_num+',';
+		    }
+		});
+		if(!check_status) {
+			return false
+		}
+		ids = ids.substr(0, ids.length-1);  
+		if(ids == ''){
+			alert('请选择媒体');
+			return false;
+		}
+	//}
+	 if(type == 'tg'){
+		if(confirm('确定认证')){
+			window.location.href="{{ url('media/apk_status?srch_type="+srch_type+"&status=tg&ids="+ids+"') }}";
+		}
+	}else if(type == 'bh'){
+		if(confirm('确定驳回')){
+			window.location.href="{{ url('media/apk_status?srch_type="+srch_type+"&status=bh&ids="+ids+"') }}";
+		}
+	}
+}
+
+
+
+//上传apk
+function apk_file(){
+	var apk = $("input[name='apk']").val();
+	if( apk == "" ) {
+		alert('请上传apk');
+		return false
+	}
+    if( apk && !apk.match(/.apk/i)){
+     	alert("上传apk格式有误");
+	    return false;
+    }
+    $("#pkg_btn").val('上传中')
+	$.ajaxFileUpload(
+	{
+		url:"{{ url('media/up_package') }}", //你处理上传文件的服务端
+		secureuri:false,
+		fileElementId:'apk',
+		dataType: 'json',
+		success: function (data){
+			if(data.code == 1){
+				$("#pkg_btn").val('提交')
+				$('#is_up').html(data.msg);
+				$('#apk_path').val(data.data);
+				return false;
+			}else{
+				$("#pkg_btn").val('上传')
+				$('#is_up').html(data.msg);
+				alert(data.msg);
+				return false;
+			}
+	   }
+	})
+}
+
+function apk_submit()
+{
+	var apk_path = $('#apk_path').val()
+	if(apk_path == "" || apk_path == unfinded) {
+		alert('请上传apk');
+		return false
+	}
+	return true
+}
+
+function batch_export()
+{
+	var ids = '';
+	var erro = '';
+	var cfm_notice = '确定要导出';
+	$("input[name='mmid']:checkbox").each(function(){
+	    if($(this).prop("checked")){
+	      	var id_num = $(this).val();
+	      	ids += id_num+',';
+	    }
+	});
+	ids = ids.substr(0, ids.length-1);  
+	if(ids == ''){
+		alert('请选择媒体');
+		return false;
+	}
+	if(confirm(cfm_notice)){
+		window.location.href="{{ url('media/export?ids="+ids+"') }}";
+	}
+}
+</script>

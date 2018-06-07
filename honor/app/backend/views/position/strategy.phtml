@@ -1,0 +1,223 @@
+<div class="content_inner">
+	<div class="single_info block_info">
+			<!-- 名称 -->
+			<div class="form_item">
+				<div class="form_label">
+					<label>名称：</label>
+				</div>
+				<div class="form_control">
+					<p class="prompt_p">{{ rows['name'] }}</p>
+				</div>
+			</div>
+
+			<!-- 行业 -->
+			<div class="form_item" id="block2">
+				<div class="form_label">
+					<label>行业屏蔽：</label>
+				</div>
+				<div class="form_control">
+					<label class="label_group {{ rows['shield_industry']==0?'label_selected':'' }} ">
+						<span class="radio_icon">
+							<span class="radio_inner"></span>
+							<input type="radio" name="shield_industry" onclick="select_type(1,0)" value="0" class="radio_input"  {{ rows['shield_industry']==0?'checked':'' }}>
+						</span>
+						<span class="radio_txt">不屏蔽</span>
+					</label>
+					<label class="label_group {{ rows['shield_industry']==1?'label_selected':'' }}">
+						<span class="radio_icon">
+							<span class="radio_inner"></span>
+							<input type="radio" name="shield_industry" onclick="select_type(1,1)" value="1" {{ rows['shield_industry']==1?'checked':'' }} class="radio_input">
+						</span>
+						<span class="radio_txt">屏蔽</span>
+					</label>
+				</div>
+
+				<div class="multiselect" id="select_block_1" {{ rows['shield_industry']==0?'style="display:none"':'' }}>
+					<select id="select_sel" class="select_industry" style="display:none">
+						{% for key,val in industry %}
+							<optgroup value="{{ val['id'] }}" {{ val['selected']?"selected='selected'":'' }} label="{{ val['parent_name'] }}">
+								{% for k,v in val['sub'] %}
+								<option value="{{ v['id'] }}" {{ v['selected']?"selected='selected'":''  }}>{{ v['sub_name'] }}</option>
+								{% endfor %}
+							</optgroup>
+						{% endfor %}
+					</select>
+
+					<div class="select_table">
+						<div class="select_table_group">
+							<div class="select_table_head">
+								<span>选择行业({{ industry_sy_num }})</span>
+								<a href="javascript:;" class="select_add_all">添加全部</a>
+							</div>
+							<div class="select_table_search">
+								<input type="text" class="search_input search_input1 inputtext" placeholder="搜索">
+								<i class="anticon_search glyphicon glyphicon-search"></i>
+							</div>
+						</div>
+						
+						<ul class="ms_list">
+							{% for key,val in industry %}
+							<li class="ms_list_mainli">
+								<h3 style="{{  !val['selected_left']?'display:none':'' }}">{{ val['parent_name'] }}</h3>
+								<ul class="ms_list_sub">
+								{% for k,v in val['sub'] %}
+								<li style="{{ v['selected']?'display:none':'' }}" >{{ v['sub_name'] }}</li>
+								{% endfor %}
+								</ul>
+							</li>
+							{% endfor %}
+						</ul>
+
+					</div>
+					<div class="ms_selection">
+						<div class="select_table_group">
+							<div class="select_table_head">
+								<span>选择行业({{ industry_select_num }})</span>
+								<a href="javascript:;" class="select_delete">删除全部</a>
+							</div>
+							<div class="select_table_search">
+								<input type="text" class="search_input search_input2 inputtext" placeholder="搜索">
+								<i class="anticon_search"></i>
+							</div>
+						</div>
+
+						<ul class="ms_list">
+							{% for key,val in industry %}
+							<li class="ms_list_mainli">
+								<h3 style="{{ val['selected']?'display:block':'' }}">{{ val['parent_name'] }}</h3>
+								<ul class="ms_list_sub">
+								{% for k,v in val['sub'] %}
+								<li class="selected" style="{{ v['selected']?'display:list-item':'' }}">{{ v['sub_name'] }}</li>
+								{% endfor %}
+								</ul>
+							</li>
+							{% endfor %}
+						</ul>
+
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+
+			<!-- 标签 -->
+			<div class="form_item" id="block1">
+				<div class="form_label">
+					<label>活动标签：</label>
+				</div>
+				<div class="form_control">
+					<label class="label_group {{ rows['shield_tag']==0?'label_selected':'' }}">
+						<span class="radio_icon">
+							<span class="radio_inner"></span>
+							<input type="radio" name="shield_tag" value="0" onclick="select_type(2,0)" {{ rows['shield_tag']==0?'checked':'' }} class="radio_input" >
+						</span>
+						<span class="radio_txt">不屏蔽</span>
+					</label>
+					<label class="label_group {{ rows['shield_tag']==1?'label_selected':'' }}">
+						<span class="radio_icon">
+							<span class="radio_inner"></span>
+							<input type="radio" name="shield_tag" onclick="select_type(2,1)" value="1" {{ rows['shield_tag']==1?'checked':'' }} class="radio_input">
+						</span>
+						<span class="radio_txt">屏蔽</span>
+					</label>
+				</div>
+
+				<div class="multiselect" id="select_block_2" {{ rows['shield_tag']==0?'style="display:none"':'' }}>
+					<select id="select_sel" class="select_tag"  style="display:none">
+						{% for key,val in list %}
+							<optgroup value="{{ val['group_id'] }}" {{ val['selected']?"selected='selected'":'' }} label="{{ val['name'] }}">
+								{% for k,v in val['tags'] %}
+								<option value="{{ v['tag_id'] }}" {{ v['selected']?"selected='selected'":'' }} >{{ v['tag_name'] }}</option>
+								{% endfor %}
+							</optgroup>
+						{% endfor %}
+					</select>
+
+					<div class="select_table">
+						<div class="select_table_group">
+							<div class="select_table_head">
+								<span>选择标签({{ tags_sy_num }})</span>
+								<a href="javascript:;" class="select_add_all">添加全部</a>
+							</div>
+							<div class="select_table_search">
+								<input type="text" class="search_input search_input1 inputtext" placeholder="搜索">
+								<i class="anticon_search glyphicon glyphicon-search"></i>
+							</div>
+						</div>
+
+						<ul class="ms_list">
+							{% for key,val in list %}
+							<li class="ms_list_mainli">
+								<h3 style="{{ !val['selected_left']?'display:none':'' }}">{{ val['name'] }}</h3>
+								<ul class="ms_list_sub">
+								{% for k,v in val['tags'] %}
+								<li style="{{ v['selected']?'display:none':'' }}">{{ v['tag_name'] }}</li>
+								{% endfor %}
+								</ul>
+							</li>
+							{% endfor %}
+						</ul>
+
+					</div>
+					<div class="ms_selection">
+						<div class="select_table_group">
+							<div class="select_table_head">
+								<span>选择标签({{ tags_select_num }})</span>
+								<a href="javascript:;" class="select_delete">删除全部</a>
+							</div>
+							<div class="select_table_search">
+								<input type="text" class="search_input search_input2 inputtext" placeholder="搜索">
+								<i class="anticon_search"></i>
+							</div>
+						</div>
+
+						<ul class="ms_list">
+							{% for key,val in list %}
+							<li class="ms_list_mainli">
+								<h3 style="{{ val['selected']?'display:block':'' }}">{{ val['name'] }}</h3>
+								<ul class="ms_list_sub">
+								{% for k,v in val['tags'] %}
+								<li {{ v['selected']?'class="selected"':'' }}  style="{{ v['selected']?'display:block':'' }}">{{ v['tag_name'] }}</li>
+								{% endfor %}
+								</ul>
+							</li>
+							{% endfor %}
+						</ul>
+
+					</div>
+					<div class="clear"></div>
+				</div>
+			</div>
+
+			<!-- 广告主url -->
+			<div class="form_item">
+				<div class="form_label">
+					<label>广告主url屏蔽：</label>
+				</div>
+				<div class="form_control">
+					<label class="label_group {{ !rows['url']?'label_selected':'' }}">
+						<span class="radio_icon">
+							<span class="radio_inner"></span>
+							<input type="radio" name="shield_url" onclick="select_type(3,0)" value="0" class="radio_input"  {{ !rows['url']?'checked':'' }} >
+						</span>
+						<span class="radio_txt">不屏蔽</span>
+					</label>
+					<label class="label_group {{ rows['url']?'label_selected':'' }}">
+						<span class="radio_icon">
+							<span class="radio_inner"></span>
+							<input type="radio" name="shield_url"  onclick="select_type(3,1)" value='1' {{ rows['url']?'checked':'' }} class="radio_input">
+						</span>
+						<span class="radio_txt">屏蔽</span>
+					</label>
+                    <div class="clear"></div>
+                    <textarea id="select_block_3" {{ !rows['url']?'style="display:none"':'' }} name="url" style="margin-top:12px" placeholder="请输入要屏蔽的广告主url(如www.**.com)，如果有多个请回车换行后输入另一个url。">{{ rows['url'] }}</textarea>
+				</div>
+			</div>
+			<div class="form_btn_foot" style="margin-left:30px">
+				<a class="btn btn-default" href="{{ url('position/index') }}" style="width:100px;">返回</a>
+			</div>
+
+			<input type="hidden" value=""  id="industry" name="industry">
+			<input type="hidden" value=""  id="tag_parent" name="tag_parent">
+			<input type="hidden" value=""  id="tag_sub" name="tag_sub">
+	</div>
+</div>

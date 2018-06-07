@@ -1,0 +1,159 @@
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('statistics/advertdays') }}" id="search_form" method="get">
+				<input type="hidden" name="ad_id" value="{{ ad_id }}" />
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告位名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="aname" value="{{ aname }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>查询时间：</label>
+					</div>
+					<div class="form_control">
+						<input class="inputtext" name="start_tm"  id="start_tm" value="{{ start_tm }}" onFocus="WdatePicker({readOnly:true})" />
+						<span class='space'>~</span>
+						<input class="inputtext" name="end_tm" id="end_tm"  value="{{ end_tm }}"  onFocus="WdatePicker({readOnly:true})" />
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<button class="btn_orange">搜索</button>
+					</div>
+				</div>
+				<div class="pull_right">
+					<div class="form_control">
+						<a class="btn_orange pull_right" href="{{ url('statistics/advertdays?export=1'~'&start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type='~order_type~'&order=') }}  {{ order?0:1 }}" >导出</a>
+					</div>
+				</div>
+			</form>
+			<div class="clear"></div>
+		</div>
+		<div class="table_box">
+			<table cellpadding="0" cellspacing="0" class="tables">
+				<thead>
+					<tr>
+						<th width="8%">日期</th>
+						<th width="5%">
+							<!-- 曝光量 -->
+							{% if order_type == 'exp' %}
+									<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=exp&order='~order) }}">曝光量
+									{% if order  == 1 %}
+									<span class="blue">↑</span>↓
+									{% else %}
+									<span class="blue">↓</span>↑
+									{% endif %}
+									</a>
+							{% else %}
+								<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=exp&order='~order) }}">曝光量↓↑</a>
+							{% endif %}
+						</th>
+						<th width="5%">
+							<!-- 点击量 -->
+							{% if order_type == 'click' %}
+									<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=click&order='~order) }}">点击量
+									{% if order  == 1 %}
+									<span class="blue">↑</span>↓
+									{% else %}
+									<span class="blue">↓</span>↑
+									{% endif %}
+									</a>
+							{% else %}
+								<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=click&order='~order) }}">点击量↓↑</a>
+							{% endif %}
+						</th>
+						<th width="5%">
+							点击率
+							<!-- {% if order_type == 'rate' %}
+									<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=rate&order='~order) }}">
+									{% if order  == 1 %}
+									<span class="blue">↑</span>↓
+									{% else %}
+									<span class="blue">↓</span>↑
+									{% endif %}
+									</a>
+							{% else %}
+								<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=rate&order='~order) }}">↓↑</a>
+							{% endif %} -->
+						</th>
+						<th width="5%">
+							eCPM
+							<!-- {% if order_type == 'ecpm' %}
+									<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=ecpm&order='~order) }}">
+									{% if order  == 1 %}
+									<span class="blue">↑</span>↓
+									{% else %}
+									<span class="blue">↓</span>↑
+									{% endif %}
+									</a>
+							{% else %}
+								<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=ecpm&order='~order) }}">↓↑</a>
+							{% endif %} -->
+						</th>
+						<th width="5%">
+							<!-- 预计收益 -->
+							{% if order_type == 'ear' %}
+									<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=ear&order='~order) }}">预计收益
+									{% if order  == 1 %}
+									<span class="blue">↑</span>↓
+									{% else %}
+									<span class="blue">↓</span>↑
+									{% endif %}
+									</a>
+							{% else %}
+								<a href="{{ url('statistics/advertdays?'~'start_tm='~start_tm~'&end_tm='~end_tm~'&aname='~aname~'&ad_id='~ad_id~'&order_type=ear&order='~order) }}">预计收益↓↑</a>
+							{% endif %}
+						</th>
+					</tr>
+				</thead>
+				<tbody>
+			{% if list is not empty %}
+				{% set exposure = 0,click=0,earnings=0 %}
+				 {% for key,val in list %}
+				 	{% set exposure = exposure + val['exposure'] %}
+				 	{% set click = click + val['click'] %}
+				 	{% set earnings = earnings + val['earnings'] %}
+					<tr>
+						<td>{{ val['create_date'] }}</td>
+						<td>{{ val['exposure'] }}</td>
+						<td>{{ val['click'] }}</td>
+						<td>{{ click_rate(val['click'],val['exposure'])}}%</td>
+						<td>{{ ecpm(val['exposure'],val['earnings']) }}</td>
+						<td>￥{{ number_format(val['earnings']) }}</td>
+					</tr>
+				{% endfor %}
+					<tr>
+						<td>总计</td>
+						<td>{{ exposure }}</td>
+						<td>{{ click }}</td>
+						<td>{{ click_rate(click,exposure) }}%</td>
+						<td>{{ ecpm(exposure,earnings) }}</td>
+						<td>￥{{ number_format(earnings) }}</td>
+					</tr>
+					<tr>
+						<td>全部总计</td>
+						<td>{{ tatol['exposure'] }}</td>
+						<td>{{ tatol['click'] }}</td>
+						<td>{{ click_rate(tatol['click'],tatol['exposure']) }}%</td>
+						<td>{{ ecpm(tatol['exposure'],tatol['earnings']) }}</td>
+						<td>￥{{ number_format(tatol['earnings']) }}</td>
+					</tr>
+			{% else %}
+						<tr>
+	                          <td colspan="7">暂无数据</td>
+	                    </tr>
+			{% endif %}
+				</tbody>
+			</table>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+		
+	</div>
+</div>

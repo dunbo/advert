@@ -1,0 +1,505 @@
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('materiel/list') }}" method="get" id="search_form">
+				<input type="hidden" name="srch_type" value="{{ srch_type }}">
+				<input type='hidden' name="uid" value="{{ uid }}">
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告主名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="ad_name" {% if ad_name is not empty %}value="{{ ad_name }}"{% endif %} class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告计划名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="materiel_name" {% if materiel_name is not empty %}value="{{ materiel_name }}"{% endif %} class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<input class="btn_orange" type="submit" value="搜索" />
+					</div>
+				</div>
+			</form>
+			<div class="clear"></div>
+		</div>
+		<div class="table_box">
+			<ul class="nav nav-tabs" style="padding-top:20px">
+		    	<li class="{{ srch_type=='sh'?'active':'' }}" ><a href="{{ url('materiel/list?srch_type=sh&uid='~uid) }}"  aria-expanded="false">待审核</a></li>
+		        <li class="{{ srch_type=='tg'?'active':'' }}" ><a href="{{ url('materiel/list?srch_type=tg&uid='~uid) }}"  aria-expanded="false">已通过</a></li>
+		        <li class="{{ srch_type=='ntg'?'active':'' }}" ><a href="{{ url('materiel/list?srch_type=ntg&uid='~uid) }}" >未通过</a></li>
+		         <li class="{{ srch_type=='del'?'active':'' }}" ><a href="{{ url('materiel/list?srch_type=del&uid='~uid) }}" >已删除</a></li>
+		    	<span style="float:right;padding-right:20px;color:red">提示：先添加标签，再添加行业</span>
+		    </ul>
+		    <ul class="tab-content">
+				<li class="tab-pane active">
+					{% if srch_type != 'tg' %}
+		    		<div class="btn-group">
+				        <button type="button" class="btn btn-default checkall">全选</button>
+				        <button type="button" class="btn btn-default no_checkall">反选</button>
+				    </div>
+				    {% endif %}
+				    <div class="btn-group pull-right">
+				    	{% if srch_type == 'sh' %}
+				        <button type="button" class="btn btn-default" onclick="batch_tg(0)">批量通过</button>
+				        <button type="button" class="btn btn-default" onclick="batch_bh(0)">批量驳回</button>
+						{% elseif srch_type == 'ntg'  %}
+						<button type="button" class="btn btn-default" onclick="batch_tg(0)">重新审核通过</button>
+						{% endif %}
+				    </div>
+		    		<table cellpadding="0" cellspacing="0" class="tables">
+						<thead>
+							<tr>
+								<th width="3%"></th>
+								<th width="10%">广告计划名称</th>
+								<th width="8%">广告主名称</th>
+								<th width="7%">推广类型</th>
+								<th width="10%">广告样式</th>
+								<th width="20%">广告创意</th>
+								<th width="7%">落地页</th>
+								<!-- <th width="9%">广告位形式</th> -->
+								<!-- <th width="4%">单价</th> -->
+								<!-- <th width="6%">日预算</th> -->
+								<!-- <th width="8%">开始时间</th>
+								<th width="8%">结束时间</th> -->
+								<th width="7%">精确投放</th>
+								<!-- <th width="7%">投放创意</th> -->
+								<th width="8%">行业</th>
+								<th width="8%">标签</th>
+								<th width="12%">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% if list is not empty %}
+						 	{% for key, val in list %}
+								<tr>
+									<td><input type="checkbox" name="id" value="{{ val['id'] }}"></td>
+									<td><a href="{{ url('materiel/edit?id='~val['id']) }}" class="blue">{{ val['name'] }}</a></td>
+									<td>{{ val['ad_name'] }}</td>
+									<td>
+										{% if val['api_type'] == 1 %}
+											通用广告
+										{% elseif val['api_type'] == 2 %}
+											互动广告
+										{% endif %}
+									</td>
+									<td>{{ val['template'] }}</td>
+									<!-- <td>
+										<p>
+											{{ val['t_name'] }} (尺寸{{ val['size'] }})
+										</p>
+									</td> -->
+									<td>
+										<img style="width:60px;height:30px" src="{{ IMG_URL~val['copywriter_img'] }}" class="image viewer-toggle" />
+										{% if val['t_id'] == 16 %}
+										<img style="width:60px;height:30px" src="{{ IMG_URL~val['brand_img'] }}" class="image viewer-toggle" />
+										{% endif %}
+										{% if val['t_id'] == 14 or val['t_id'] == 15 or val['t_id'] == 16 %}
+										<p>广告文案：{{ val['copywriter_desc'] }}</p>
+										<p>品牌文案：{{ val['brand_desc'] }}</p>
+										{% endif %} 
+									</td>
+									<td>
+										{% if val['t_id'] != 17 %}
+										<a href="{{ val['url'] }}" class="blue" target="_blank">落地页</a>
+										{% endif %}
+									</td>
+									<!-- <td>{{ val['price']/100 }}</td>
+									<td>{{ val['day_budget']/100 }}</td> -->
+									<!-- <td>{{ date('Y-m-d H:i:s', val['begin_tm']) }}</td>
+									<td>{{ date('Y-m-d H:i:s', val['end_tm']) }}</td> -->
+									<td><a href="javascript:;" onclick="tf_alert('{{ val['tf_nettype'] }}','{{ val['tf_type'] }}','{{ val['tf_mobile'] }}','{{ val['industry_pname'] }}','{{ val['industry_name'] }}','{{ val['tf_area'] }}')" class="blue">查看</a></td>
+								<!-- 	<td><a href="{{url('idea/edit?from=materiel&idea_id='~val['idea_id'])}}" class='blue'>查看详情</a></td> -->
+									<td>
+										<select id="ad_industry_parentid_{{val['id']}}" onchange="show_industry({{val['id']}},{{val['ad_industryid']?val['ad_industryid']:0}})">
+											<option value=''>一级行业</option>
+											{% for vv in industry %}
+											{% if vv['parentid'] == 0 %}
+											<option value="{{vv['id']}}" {% if val['ad_industry_parentid'] is not empty and val['ad_industry_parentid'] == vv['id'] %}selected="selected"{% endif %}>{{vv['name']}}</option>
+											{% endif %}
+											{% endfor %}
+										</select>
+										<select id="ad_industryid_{{val['id']}}"></select>
+									</td>
+									<td>{{val['activetag_sp_name']?val['activetag_sp_name']:'未添加'}}</td>
+									<td>
+										<a href="javascript:;" onclick="add_tags({{ val['id'] }},'{{ val['activetag_sp'] }}','{{val['activetag_sp_name']}}')" class="blue">添加标签</a>
+										{% if srch_type == 'sh' %}
+										<a href="javascript:;" onclick="batch_tg({{ val['id'] }})" class="blue">通过</a>
+										<a href="javascript:;" onclick="batch_bh({{ val['id'] }})" class="blue">驳回</a>
+										{% elseif srch_type == 'ntg' %}
+										<a href="javascript:;" onclick="batch_tg({{ val['id'] }})" class="blue">通过</a>
+										{% elseif srch_type == 'tg' %}
+										<a href="javascript:;" onclick="batch_bh({{ val['id'] }})" class="blue">驳回</a>
+										{% elseif srch_type == 'del' %}
+										
+										{% endif %}
+									</td>
+								</tr>
+							{% endfor %}
+						 {% else %}
+								<tr>
+			                        <td colspan="11">暂无数据</td>
+			                    </tr>
+						 {% endif %}
+						</tbody>
+					</table>
+		    	</li>
+		    </ul>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+	</div>
+</div>
+<!--投放条件弹窗-->
+<div class="modal" id="tf_alert" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">投放条件</h4>
+			</div>
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<div id="tf_div"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<!--驳回条件弹窗-->
+<div class="modal" id="batch_bh" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">驳回</h4>
+			</div>
+			<form action="{{ url('materiel/examinebh') }}" method="post" id="bh_form" onsubmit="return check_bh_form()">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' id="bh_ids" name="ids" />
+				<div class="form_item">
+					<div class="form_label">
+						<label>驳回理由：</label>
+					</div>
+					<div class="form_control">
+						<div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason1" value="1" name="bh_reason">
+		                    <label for="reject_reason1">媒体关键词问题</label>
+		                </div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason2" value="2" name="bh_reason">
+		                    <label for="reject_reason2">媒体简介问题</label>
+		                </div>
+		                <div class="clear"></div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason3" value="3" name="bh_reason">
+		                    <label for="reject_reason3">软件包名问题</label>
+		                </div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason4" value="4" name="bh_reason">
+		                    <label for="reject_reason4">下载地址问题</label>
+		                </div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>详细说明：</label>
+					</div>
+					<div class="form_control">
+						<textarea placeholder="请输入驳回理由" name="bh_explain" id='bh_explain'></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn_orange" value="确定" />
+				<button type="button" class="btn btn-default"  data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+<!--添加标签弹窗-->
+<div class="modal" id="modal_tag" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">添加标签</h4>
+			</div>
+			<form action="{{ url('materiel/examinetag?page='~paginator.current) }}" method="post" onsubmit="return check_tag_form()">
+			<input type='hidden' id="tag_ids" name="ids" />
+			<div class="modal-body" style="width:100%">
+				<div id='selected_tag'></div>
+				<div class="form_item form_item2">
+					<div class="form_label">
+						<label>标签：</label>
+					</div>
+					<div class="form_control">
+						<input style="width:212px" class="inputtext" id="tag_input" type="text">
+						<button type="button" class="btn_orange" onclick="select_tags()">查询</button>
+						<a class='blue' onclick="$('#tag_div').html('')">清空</a>
+					</div>					
+					<div class="clear"></div>
+				</div>
+				<div id="tag_div"></div>
+				<h5>热门标签：</h5>
+				{% if tags is not empty %}
+				{% for tag in tags %}
+					<?php $all_tags = json_decode($tag['tags'], true) ?>
+					<div class="form_item form_item2">
+						<div class="form_label">
+							<label>{{ tag['name'] }}：</label>
+						</div>
+						<div class="form_control">
+							{% for val in all_tags %}
+							<div class="label_check_group">
+								<span class="checkbox_icon">
+									<span class="checkbox_inner"></span>
+									<input type="checkbox" name="activetag_sp[]" value="{{ val['tag_id'] }}" class="check_input"/>
+								</span>
+								<span class="checkbox_txt">{{ val['tag_name'] }}</span>
+							</div>
+							{% endfor %}
+						</div>
+					</div>
+				{% endfor %}
+				{% endif %}
+			</div>
+			<div class="modal-footer">
+				<input type="submit" class="btn btn_orange" value="确定" />
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+$(function(){
+	$(".checkall").click(function(){
+		$("input[name='id']").prop("checked", true);
+	})
+	$(".no_checkall").click(function(){  
+		$("input[name='id']").prop("checked", false); 
+	})
+	<?php foreach($list as $val){ ?>
+	show_industry(<?php echo $val['id'] ?>,<?php echo $val['ad_industryid']?$val['ad_industryid']:0 ?>);
+	<?php } ?>
+});
+
+var industry_arr = <?php echo json_encode($industry) ?>;
+var tg_industry_status = true;//审核通过操作是否选择行业
+var tag_checked = false;//添加标签操作是否选择标签
+//批量通过操作
+function batch_tg(id){
+	var ids = '';
+	var industry_pids = '';
+	var industryids = '';
+	if(id > 0){
+		ids = id;
+		industry_pids = $('#ad_industry_parentid_'+id).val();
+		industryids = $('#ad_industryid_'+id).val();
+	}else{
+		$("input[name='id']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	ids += id_num+',';
+		      	if($('#ad_industry_parentid_'+id_num).val()=='' || $('#ad_industryid_'+id_num).val()==''){
+		      		tg_industry_status = false;
+		      		return false;
+		      	}
+				industry_pids += $('#ad_industry_parentid_'+id_num).val()+',';
+		      	industryids += $('#ad_industryid_'+id_num).val()+',';
+		    }
+		});
+		ids = ids.substr(0, ids.length-1);
+		if(ids == ''){
+			tips_message('请选择广告计划');
+			return false;
+		}
+		industry_pids = industry_pids.substr(0, industry_pids.length-1);
+		industryids = industryids.substr(0, industryids.length-1);
+	}
+	if(tg_industry_status==false || !industry_pids || !industryids){
+		tg_industry_status = true;
+		tips_message('请选择行业');
+		return false;
+	}
+	if(confirm('确定要通过吗')){
+		window.location.href="{{ url('materiel/examinetg?ids="+ids+"&industry_pids="+industry_pids+"&industryids="+industryids+"') }}";
+	}
+	
+}
+
+//批量驳回操作
+function batch_bh(id){
+	var ids = '';
+	if(id > 0){
+		ids = id;
+	}else{
+		$("input[name='id']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	ids += id_num+',';
+		    }
+		});
+		ids = ids.substr(0, ids.length-1);
+		if(ids == ''){
+			tips_message('请选择广告计划');
+			return false;
+		}
+
+	}	
+	$('#bh_ids').val(ids);
+	$('input[name=bh_reason]').attr('checked', false);
+	$('textarea[name=bh_explain]').val('');
+	$('#batch_bh').modal('show');
+}
+//添加标签
+function add_tags(id, activetag_sp, activetag_sp_name){
+	var str = '<h5>已选标签：</h5>';
+	var selected_tags = activetag_sp.split(',');
+	var selected_tags_name = activetag_sp_name.split(',');
+	if(selected_tags.length>0){
+		for(i=0;i<selected_tags.length;i++){
+			if(selected_tags[i] != 0){
+				str += "<span><input type='hidden' name='sp_activetag[]' value='"+selected_tags[i]+"' />"+selected_tags_name[i]+"&nbsp;<span class='blue' onclick='$(this).parent().remove()'>&times;</span>&nbsp;&nbsp;&nbsp;</span>";
+			}
+		}
+	}
+	$('#selected_tag').html(str);
+	$('#tag_ids').val(id);
+	$('#tag_input').val('');
+	$('#tag_div').html('');
+	$("input[name='activetag_sp[]']").attr('checked', false);
+	$('.label_check_group').removeClass('check_selected');
+	$('#modal_tag').modal('show');
+}
+
+//查看投放条件
+function tf_alert(tf_nettype,tf_type,tf_mobile,industry_pname,industry_name,tf_area){
+	var str = '';
+	str += '网络环境：';
+	if(tf_nettype != ''){
+		if(tf_nettype==1){
+			str += "仅在3G";
+		}else if(tf_nettype==2){
+			str += "仅在WiFi";
+		}
+	}
+	str += '<br>投放平台：';
+	if(tf_type != ''){
+		if(tf_type==1){
+			str += "h5";
+		}else if(tf_type==2){
+			str += "Android";
+		}
+	}
+	str += '<br>选择机型：';
+	if(tf_mobile != ''){
+		if (tf_mobile.indexOf('1') > -1) {
+			str += "高端机型 ";
+		}
+		if (tf_mobile.indexOf('2') > -1) {
+			str += "中端机型 ";
+		}
+		if (tf_mobile.indexOf('3') > -1) {
+			str += "低端机型 ";
+		}
+	}
+	str += "<br>媒体属性：";
+	if(industry_pname != ''){
+		str += industry_pname+' ';
+	}
+	if(industry_name != ''){
+		str += industry_name;
+	}
+	str += '<br>投放地区：';
+	if(tf_area != ''){
+		str += tf_area;
+	}
+	$('#tf_div').html('');
+	$('#tf_div').append(str);
+	$('#tf_alert').modal('show');
+}
+
+//查询标签
+function select_tags(){
+	var tag_name = $('#tag_input').val();
+	$.ajax({
+		type: "GET",
+		data: {tag_name:tag_name},
+		url: "{{ url('materiel/tags') }}",
+		dataType: "json",
+		success: function(res) {
+			if(res['code'] == 1) {
+		  		if(res['data']){
+		  			var str = '';
+		  			for(i=0;i<res['data'].length;i++){
+		  				str += '<input type="checkbox" name="activetag_sp[]" value="'+res['data'][i]['tag_id']+'"/><span>'+res['data'][i]['tag_name']+'</span>&nbsp;&nbsp;&nbsp;';
+		  			}
+		  			$('#tag_div').html(str);
+		  		}
+			}else{
+		  		alert('获取数据出错！');
+		  		return false;
+			}
+		}
+	});
+}
+
+//生成二级行业
+function show_industry(id, ad_industryid){
+	var ad_industry_parentid = $('#ad_industry_parentid_'+id).val();
+	var select_value = ad_industryid;
+	var option_str = '';
+	if(ad_industry_parentid != ''){
+		for(i=0;i<industry_arr.length;i++){
+			if(industry_arr[i]['parentid'] == ad_industry_parentid){
+				if(industry_arr[i]['id'] == select_value){
+					option_str += "<option selected='selected' value='"+industry_arr[i]['id']+"'>"+industry_arr[i]['name']+"</option>";
+				}else{
+					option_str += "<option value='"+industry_arr[i]['id']+"'>"+industry_arr[i]['name']+"</option>";
+				}
+			}
+		}
+	}
+	var option_index = "<option value=''>二级行业</option>";
+	$('#ad_industryid_'+id).html(option_index+option_str);
+}
+
+//添加标签表单验证
+function check_tag_form(){
+	var checked_tags = $("input[name='activetag_sp[]']");
+	for(i=0;i<checked_tags.length;i++){
+		if(checked_tags[i].checked == true){
+			tag_checked = true;
+			break;
+		}
+	}
+	if(tag_checked==false && $("input[name='sp_activetag[]']").val()==null){
+		alert('请选择标签');
+		return false;
+	}else{
+		tag_checked = false;
+	}
+}
+
+//驳回表单验证
+function check_bh_form(){
+	if( $('input[name="bh_reason"]:checked').val() == undefined && $("#bh_explain").val() == "" ) {
+		alert('请填写其中一项')
+		return false;
+	}
+}
+
+//图片预览
+ $(function(){
+	$('.image').viewer();
+})
+</script>

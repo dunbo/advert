@@ -1,0 +1,500 @@
+<div class="content_inner">
+<form action="{{ url('media/publish') }}"  method="post" onsubmit="return checksubmit()">
+	<input type="hidden" name="mmid" value="{{ mmid }}">
+	<input type="hidden" name="type" value="{{ media['type'] }}">
+	<input type="hidden" name="srch_type" value="{{ srch_type }}">
+	<div class="single_info account_info">
+		<h3>账号信息</h3>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>媒体名称：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="name" value="{{ media['name'] }}" disabled='true' class="inputtext">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label>媒体主名称：</label>
+			</div>
+			<div class="form_control">
+				<p class="prompt_p">{{ media['media_name'] }}</p>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>一级行业：</label>
+			</div>
+			<div class="form_control">
+				<select name="industry_parentid" class="inputtext" id='industry_parentid'>
+					<option value='0'>----请选择----</option> 
+					{% for key,val in industry %}
+						{% if val['parentid'] == 0 %}
+						<option {{ media['industry_parentid']==val['id']?'selected':'' }} value="{{ val['id'] }}">{{ val['name'] }}</option>
+						{% endif %}	
+					{% endfor %}
+				</select>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>二级行业：</label>
+			</div>
+			<div class="form_control">
+
+			<select name="industryid" data='0' class="inputtext two" {{ media['industry_parentid']?'style="display:none"':'' }}> 
+		   		<option value='0'>----请选择----</option> 
+		   </select>
+			{% for k,v in industry %}
+				{% if v['parentid'] == 0 %}
+					<select name="industryid" class="inputtext two" data="{{v['id']}}"  {{ media['industry_parentid']!=v['id']?'disabled="disabled" style="display:none"':'' }} >
+					{% for kk,vv in industry %}
+						{% if v['id'] == vv['parentid'] %}
+							<option {{ media['industryid']==vv['id']?'selected':'' }} value="{{ vv['id'] }}">{{ vv['name'] }}</option>
+						{% endif %}
+					{% endfor %}
+					</select>
+				{% endif %}
+			{% endfor %}
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>媒体等级：</label>
+			</div>
+			<div class="form_control">
+				<select name="level" class="inputtext">
+					<option {{ media['level']==1?'selected':'' }} value="1">一级</option>
+					<option {{ media['level']==2?'selected':'' }} value="2">二级</option>
+					<option {{ media['level']==3?'selected':'' }} value="3">三级</option>
+					<option {{ media['level']==4?'selected':'' }} value="4">四级</option>
+					<option {{ media['level']==5?'selected':'' }} value="5">五级</option>
+				</select>
+			</div>
+		</div>
+
+		<h3>软件/网站信息</h3>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label>媒体类型：</label>
+			</div>
+			<div class="form_control">
+				<p class="prompt_p">
+					{% if media['type'] == 1 %}
+						Android
+					{% elseif media['type'] == 2 %}
+						H5
+					{% endif %}
+				</p>
+			</div>
+		</div>
+		{% if media['type'] == 1 %}
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label>投放方式：</label>
+			</div>
+			<div class="form_control">
+				<p class="prompt_p">
+					{% if media['tf_type'] == 1 %}
+						SDK
+					{% elseif media['tf_type'] == 2 %}
+						API
+					{% endif %}
+				</p>
+			</div>
+		</div>
+		{% endif %}
+		{% if media['type'] == 1 and media['tf_type'] == 2 %}
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label>API形式：</label>
+			</div>
+			<div class="form_control">
+				<p class="prompt_p">
+					{% if media['api_type'] == 1 %}
+						通用广告API
+					{% elseif media['api_type'] == 2 %}
+						互动广告API
+					{% endif %}
+				</p>
+			</div>
+		</div>
+		{% endif %}
+		{% if media['type'] == 1 %}
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>包名：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="package_name" value="{{ media['package_name'] }}" class="inputtext">
+			</div>
+		</div>
+		<!-- {% if media['apk_sign'] == "" %}
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>下载地址：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="download_link" value="{{ media['download_link'] }}" class="inputtext">
+			</div>
+		</div>
+		{% endif %} -->
+		{% else %}
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>域名：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="host" value="{{ media['host'] }}" class="inputtext">
+			</div>
+		</div>
+		{% endif %}
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label>
+					<font color="red">*</font>
+					{% if media['type'] == 1 %}
+						量级(DAU)
+					{% else %}
+						量级(PV)
+					{% endif %}
+					：
+				</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="flow" value="{{ media['flow'] }}" class="inputtext">
+			</div>
+		</div>
+
+		{% if media['type'] == 1 %}
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font> 应用详情页：</label>
+			</div>
+			<div class="form_control" style="width:12%">
+				<select name="soft_src" id="soft_src" class="inputtext">
+				{% for key,val in soft_src_list %}
+					<option value="{{ key }}"  {{ media['soft_src']==key?"selected":'' }}>{{ val }}</option>
+				{% endfor %}
+				</select>
+			</div>
+			<div class="form_control">
+				<input type="text" name="soft_url" value="{{ media['soft_url']?media['soft_url']:'http://www.anzhi.com/pkg/'~media['package_name'] }}" class="soft_url inputtext" placeholder="请输入应用详细页">
+			</div>
+		</div>
+		{% endif %}
+		
+		<h3>接入参数</h3>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label>APPkey：</label>
+			</div>
+			<div class="form_control">
+				<p class="prompt_p">
+					{{ media['appkey'] }}
+				</p>
+			</div>
+		</div>
+		{% if media['type'] == 2 %}
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label>Secret：</label>
+			</div>
+			<div class="form_control">
+				<p class="prompt_p">
+					{{ media['secret'] }}
+				</p>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label>回调地址：</label>
+			</div>
+			<div class="form_control">
+				<p class="prompt_p">
+					<input type="text" name="token_url" value="{{ media['token_url'] }}" class="inputtext">
+				</p>
+			</div>
+		</div>
+		{% endif %}
+		<h3>描述信息</h3>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>媒体关键字：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="doc_key" value="{{ media['doc_key'] }}" class="inputtext">
+			</div>
+			<div class="form_control" style="text-align: left;">
+				0-20个字符，每个词用","号分割
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>安智关键字：</label>
+			</div>
+			<div class="form_control">
+				<input type="text"  name="anzhi_tag" value="{{ media['anzhi_tag'] }}" class="inputtext">
+			</div>
+			<div class="form_control" style="text-align: left;">
+				0-100个字符，每个词用","号分割
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+				<label><font color="red">*</font>媒体简介：</label>
+			</div>
+			<div class="form_control">
+				<textarea name="intro" id="intro" placeholder="准确填写简介能提高广告匹配度及收益，40字以上-100字以内">{{ media['intro'] }}</textarea>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label" style="width:135px">
+			</div>
+			<div class="form_control">
+			<button class="btn btn_orange" type="submit" style="width:100px;">提交</button>&nbsp;&nbsp;
+				<a class="btn btn-default" href="javascript:history.back(-1)" style="width:100px;">取消</a>
+			</div>
+			<!-- {% if media['examine_status'] == 0 %}
+			&nbsp;&nbsp;
+			<a href="javascript:batchSubmit('bh',{{media['mmid']}})" class="btn btn_orange" style="width:100px;">驳回</a>
+			&nbsp;&nbsp;
+			<a href="javascript:batchSubmit('tg',{{media['mmid']}})" class="btn btn_orange" style="width:100px;">通过</a>
+			{% elseif media['examine_status'] == 2  %}
+			&nbsp;&nbsp;
+			<a href="javascript:batchSubmit('tg',{{media['mmid']}})" class="btn btn_orange" style="width:100px;">通过</a>
+			{% endif %} -->
+		</div>
+	</div>
+</form>
+</div>
+
+<div class="modal" id="batch_bh" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">驳回</h4>
+			</div>
+			<form action="{{ url('media/operation') }}" method="post" onsubmit="return bh_submit()" id="bh_form">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' name='type' value='bh' />
+				<input type='hidden' id="bh_ids" name="ids" />
+				<div class="form_item">
+					<div class="form_label" style="width:135px">
+						<label>驳回理由：</label>
+					</div>
+					<div class="form_control">
+						<div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason1" value="1" name="bh_reason">
+		                    <label for="reject_reason1">媒体关键词问题</label>
+		                </div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason2" value="2" name="bh_reason">
+		                    <label for="reject_reason2">媒体简介问题</label>
+		                </div>
+		                <div class="clear"></div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason3" value="3" name="bh_reason">
+		                    <label for="reject_reason3">软件包名问题</label>
+		                </div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason4" value="4" name="bh_reason">
+		                    <label for="reject_reason4">下载地址问题</label>
+		                </div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label" style="width:135px">
+						<label>详细说明：</label>
+					</div>
+					<div class="form_control">
+						<textarea placeholder="请输入驳回理由" id="bh_explain" name="bh_explain"></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn-default" value="确定" />
+				<button type="button" class="btn btn-default"  data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+ <script>
+ $(document).ready(function(){
+   $("#industry_parentid").change(function(){
+   	var id =  $(this).val();
+   	$('.two').each(function(){
+   		if( $(this).attr('data') == id ) {
+   			$(this).show().attr('disabled',false);
+   		}else {
+			$(this).hide().attr('disabled',true);;
+   		}
+   	})
+   });
+
+});
+
+function checksubmit() {
+	var type = $("input[name='type']").val();
+	//var name = $("input[name='name']").val();
+	var doc_key = $("input[name='doc_key']").val();
+	// if( name == "" ) {
+	// 	tips_message('媒体名称不能为空', 'error')
+	// 	return false
+	// }
+	// if( !max_length(name, 20) ) {
+	// 	tips_message('媒体名称不能超过10个字', 'error')
+	// 	return false
+	// }
+	var industry_parentid = $('#industry_parentid').val();
+	if( industry_parentid == 0 ) {
+		tips_message('请选择一级行业', 'error')
+		return false
+	}
+	if( type == 1) {
+		var package = $("input[name='package']").val();
+		if(package == "") {
+			tips_message('程序包名不能为空', 'error')
+			return false
+		}
+		// if(apk_sign == ""){
+		// 	var down_link = $("input[name='down_link']").val();
+		// 	if(down_link == "") {
+		// 		tips_message('下载地址不能为空', 'error')
+		// 		return false
+		// 	}
+		// 	if( !is_url(down_link) ) {
+		// 		tips_message('下载地址格式有误', 'error')
+		// 		return false
+		// 	}
+		// }
+		var flow = $("input[name='flow']").val();
+		if(flow == "") {
+			tips_message('输入您的产品的量级有利于我们更好的为您服务', 'error')
+			return false
+		}
+		if(!/^\d+(\.\d+)?$/.test(flow)){
+			tips_message('量级只能为正数', 'error')
+			return false
+		}
+		var soft_url = $("input[name='soft_url']").val();
+		if(soft_url == "") {
+			tips_message('应用详细页地址不能为空', 'error')
+			return false
+		}
+		if( !is_url(soft_url) ) {
+			tips_message('应用详细页格式有误', 'error')
+			return false
+		}
+	}else {
+		var host = $("input[name='host']").val();
+		if(host == "") {
+			tips_message('网站域名不能为空', 'error')
+			return false
+		}else if( !is_url(host) ) {
+			tips_message('网站域名格式有误', 'error')
+			return false
+		}
+		var flow = $("input[name='flow']").val();
+		if(flow == "") {
+			tips_message('输入您的产品的量级有利于我们更好的为您服务', 'error')
+			return false
+		}
+		if(!/^\d+(\.\d+)?$/.test(flow)){
+			tips_message('量级只能为正数', 'error')
+			return false
+		}
+		var token_url = $("input[name='token_url']").val()
+		// if(token_url == "" ) {
+		// 	tips_message('请填写回调地址','error');
+		// 	return false
+		// }
+		if(token_url !="" && !is_url(token_url) ) {
+			tips_message('回调地址格式有误', 'error')
+			return false
+		}
+	}
+
+	if( doc_key == "" ) {
+		tips_message('媒体关键词不能为空', 'error')
+		return false
+	}
+	if( !max_length(doc_key, 40) ) {
+		tips_message('媒体关键词不能超过20字符', 'error')
+		return false
+	}
+	var anzhi_tag = $("input[name='anzhi_tag']").val();
+	if( anzhi_tag == "" ) {
+		tips_message('安智关键词不能为空', 'error')
+		return false
+	}
+	if( !max_length(anzhi_tag, 200) ) {
+		tips_message('安智关键词不能超过100字符', 'error')
+		return false
+	}
+	var intro = $("#intro").val();
+	if( intro == "" ) {
+		tips_message('媒体简介不能为空', 'error')
+		return false
+	}
+	if( !min_length(intro, 80) ) {
+		tips_message('准确填写简介能提高广告匹配度及收益，40字以上-100字以内', 'error')
+		return false
+	}
+
+	if( !max_length(intro, 200) ) {
+		tips_message('准确填写简介能提高广告匹配度及收益，40字以上-100字以内', 'error')
+		return false
+	}
+
+	return true;
+}
+
+function batchSubmit(type, id){
+	var ids = '';
+	var cfm_notice = '确定要批量通过';
+	if(id > 0){
+		cfm_notice = '确定要通过';
+		ids = id;
+	}else{
+		$("input[name='mmid']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	ids += id_num+',';
+		    }
+		});
+		ids = ids.substr(0, ids.length-1);  
+		if(ids == ''){
+			alert('请选择媒体');
+			return false;
+		}
+	}
+	if(type == 'tg'){
+		if(confirm(cfm_notice)){
+			window.location.href="{{ url('media/operation?type=tg&ids="+ids+"') }}";
+		}
+	}else if(type == 'bh'){
+		$('#bh_ids').val(ids);
+		$('input[name=bh_reason]').attr('checked', false);
+		$('textarea[name=bh_explain]').val('');
+		$('#batch_bh').modal('show');
+	}
+}
+
+function bh_submit(){
+	if( $('input[name="bh_reason"]:checked').val() == undefined ) {
+		alert('请选择写驳回理由')
+		return false;
+	}
+	if( $('#bh_explain').val() == '' ) {
+		alert('请填写详细说明')
+		return false;
+	}
+}
+</script>
+
+

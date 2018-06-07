@@ -1,0 +1,71 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<title>{{title}}</title>
+<link type="text/css" href="{{ static_url('static/css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('static/css/index.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('static/css/radio/build.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('assets/css/style.css') }}" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="{{ static_url('static/css/jquery.coolautosuggest.css')}}" />
+<script type="text/javascript" src="{{ static_url('static/js/jquery-2.1.0.js?') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/public.js?')}}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/popwin.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('assets/js/public.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/ajaxfileupload.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/jquery.coolautosuggest.js')}}"></script>
+<head>
+<body style="min-width: 500px;background-color: #fff;">
+<div style="width:500px;height: 90%;">
+	<form action="{{ url('position/move') }}" method="post" enctype="multipart/form-data" onsubmit="return import_submit()" id="edit_iframe" >
+		<input type="hidden" name="id_rela" id="id_rela" value="{{ position['id'] }}" />
+		<div class="single_info account_info">
+			<div class="form_item " >
+				<div class="form_label" style="width:100px;">
+					<font color="red">*</font>转出广告位：
+				</div>
+				<div class="form_label" style="width:300px;text-align: left;" >
+					{{ position['name'] }}
+				</div>
+			</div>
+			<div class="form_item " >
+				<div class="form_label" style="width:100px;">
+					<font color="red">*</font>转出参数：
+				</div>
+				<div class="form_label"  style="width:300px;text-align: left;" >
+					DSP名称：AppID &nbsp;&nbsp; 广告位ID &nbsp;&nbsp; Appkey
+				</div>
+			</div>
+			<div class="form_item " >
+				<div class="form_label" style="width:100px;">
+					<font color="red">*</font>转出广告位：
+				</div>
+				<div class="form_control" >
+					<input type="text" name="name" id="name" value="" class="inputtext" >
+					<input type="hidden" name="id" id="id" value="" />
+				</div>
+			</div>
+		</div>
+		<div class="modal-footer code-footer">
+			<input type="submit" class="btn btn_orange " style="width:100px;" value="确定" />&nbsp;&nbsp;
+			<button type="button" class="btn btn-default" style="width:100px;" onclick="window.parent.close_win()" data-dismiss="modal">取消</button>
+		</div>
+	</form>
+</div>
+</body>
+
+<script>
+$("#name").coolautosuggest({
+  url:"{{url('position/ad_search')}}?chars=",
+  idField:$("#id"),
+});
+
+function import_submit() {
+	var id = $("input[name='id']").val();
+	if( id=="" ) {
+		alert("请填写要转入的广告位");
+		return false;
+	}
+}
+</script>
+</html>

@@ -1,0 +1,224 @@
+	<div class="main" style="padding:0">
+		<div class="modal-body modal-reject_cnt" style="width:100%">
+            <form action="{{url('config/basics?tab=2')}}" method="post" class="form-horizontal" id="save-form">
+                <h4><a href="{{url('config/basics')}}">基础配置</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{url('config/basics?tab=2')}}" style="color:red">基础配置(新)</a></h4><br>
+				<select id="t_pid" class="inputtext" onchange="toggle_div()">
+					<option value="1">横屏</option>
+					<option value="2">插屏</option>
+					<option value="3">开屏</option>
+					<option value="4">原生</option>
+				</select>
+				<br>
+				<div id="t_pid_1">
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>不分行业最小CPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value = "<?php echo $info['t_pid_1']['cpm']?>" class="inputtext" name="cpm_1" id="cpm_1">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业截断前TopN N值设定</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_1']['topn']?>"  class="inputtext" name="topn_1" id="topn_1">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业最小eCPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_1']['ecpm']?>" class="inputtext" name="ecpm_1" id="ecpm_1">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业二价附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_1']['trade_diff_add_val']?>"  class="inputtext" name="trade_diff_add_val_1" id="trade_diff_add_val_1">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>cmp附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_1']['cpm_add_val']?>" class="inputtext" name="cpm_add_val_1" id="cpm_add_val_1">
+						</div>
+					</div>
+				</div>
+				<div id="t_pid_2">
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>不分行业最小CPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value = "<?php echo $info['t_pid_2']['cpm']?>" class="inputtext" name="cpm_2" id="cpm_2">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业截断前TopN N值设定</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_2']['topn']?>"  class="inputtext" name="topn_2" id="topn_2">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业最小eCPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_2']['ecpm']?>" class="inputtext" name="ecpm_2" id="ecpm_2">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业二价附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_2']['trade_diff_add_val']?>"  class="inputtext" name="trade_diff_add_val_2" id="trade_diff_add_val_2">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>cmp附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_2']['cpm_add_val']?>" class="inputtext" name="cpm_add_val_2" id="cpm_add_val_2">
+						</div>
+					</div>
+				</div>
+				<div id="t_pid_3">
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>不分行业最小CPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value = "<?php echo $info['t_pid_3']['cpm']?>" class="inputtext" name="cpm_3" id="cpm_3">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业截断前TopN N值设定</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_3']['topn']?>"  class="inputtext" name="topn_3" id="topn_3">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业最小eCPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_3']['ecpm']?>" class="inputtext" name="ecpm_3" id="ecpm_3">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业二价附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_3']['trade_diff_add_val']?>"  class="inputtext" name="trade_diff_add_val_3" id="trade_diff_add_val_3">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>cmp附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_3']['cpm_add_val']?>" class="inputtext" name="cpm_add_val_3" id="cpm_add_val_3">
+						</div>
+					</div>
+				</div>
+				<div id="t_pid_4">
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>不分行业最小CPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value = "<?php echo $info['t_pid_4']['cpm']?>" class="inputtext" name="cpm_4" id="cpm_4">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业截断前TopN N值设定</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_4']['topn']?>"  class="inputtext" name="topn_4" id="topn_4">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业最小eCPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_4']['ecpm']?>" class="inputtext" name="ecpm_4" id="ecpm_4">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业二价附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_4']['trade_diff_add_val']?>"  class="inputtext" name="trade_diff_add_val_4" id="trade_diff_add_val_4">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>cmp附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['t_pid_4']['cpm_add_val']?>" class="inputtext" name="cpm_add_val_4" id="cpm_add_val_4">
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<div align="center">
+			<button type="button" id="save-btn" class="btn btn-default">保存</button>
+		</div>
+	</div>
+
+
+<script>
+	$(function(){
+		toggle_div();
+	})
+	function toggle_div(){
+		$('div[id^=t_pid_]').hide();
+		var t_pid = $('#t_pid').val();
+		$('#t_pid_'+t_pid).show();
+	}
+    $('#save-btn').on('click', function(){
+        $('#save-form').submit();
+    });
+</script>

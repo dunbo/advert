@@ -1,0 +1,386 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<title>{{title}}</title>
+<link type="text/css" href="{{ static_url('static/css/bootstrap.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('static/css/index.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('static/css/radio/build.css') }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('assets/css/style.css') }}" rel="stylesheet" />
+<script type="text/javascript" src="{{ static_url('static/js/jquery-2.1.0.js?') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/public.js?')}}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/bootstrap.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/popwin.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('assets/js/public.js') }}"></script>
+<script type="text/javascript" src="{{ static_url('static/js/ajaxfileupload.js') }}"></script>
+<head>
+
+<body style="min-width: 500px;background-color: #fff;">
+<div style="width:500px;height: 90%;">
+	<form action="{{ url('prize/publish') }}" method="post" enctype="multipart/form-data" onsubmit="return add_submit()" id="edit_iframe" >
+	<input type="hidden" value="{{ prize['id'] }}" name="id" id="id" />
+	<input type="hidden" value="{{ prize['aid'] }}" name="aid" />
+	<div class="single_info account_info">
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>选择奖品：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<select name="type" id="type" onchange="select_type(this)" class="inputtext">
+					<option {{ prize['type']==1?'selected':'' }} value="1">优惠券</option>
+					<option {{ prize['type']==2?'selected':'' }} value="2">实物奖励</option>
+					<option {{ prize['type']==3?'selected':'' }} value="3">话费充值</option>
+					<option {{ prize['type']==4?'selected':'' }} value="4">在抽一次</option>
+					<option {{ prize['type']==5?'selected':'' }} value="5">幸运奖</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="form_item coupon_div" {% if prize['type']!=1 %}style="display:none"{% endif %} >
+			<div class="form_label" style="width:155px;">
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="file" name="coupon" id="coupon" value="" onchange="coupon_file()" class="inputtext" >
+				{% if prize['type'] == 1 %}
+					<span style="color:red;display:block"></span>
+					<span style="color:red;display:block" node_data='{{ coupon_count }}' id="count">已导入优惠券：{{ coupon_count }}个</span>
+				{% endif %}
+				<a class="blue" href="{{ static_url('csv/coupon.csv') }}">下载模板</a>
+			</div>
+		</div>
+
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>奖品图片：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="file" name="prize_img" value="" class="inputtext" >
+				<div style="margin-top:5px">尺寸为XXX</div>
+				<input type="hidden" name="prize_img_data" value="{{ prize['prize_img'] }}" class="inputtext" >
+			</div>
+		</div>
+
+		<div class="form_item dialog_prize_img_div" {% if prize['type']==5 %}style="display:none"{% endif %}>
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>中奖弹窗奖品图片：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="file" name="dialog_prize_img" value="" class="inputtext" >
+				<div style="margin-top:5px">尺寸为XXX</div>
+				<input type="hidden" name="dialog_prize_img_data" value="{{ prize['dialog_prize_img'] }}" class="inputtext" >
+			</div>
+		</div>
+		<div class="form_item my_prize_img_div" {% if prize['type']==4 or prize['type']==5 %}style="display:none"{% endif %}>
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>我的奖品页面图片：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="file" name="my_prize_img" value="" class="inputtext" >
+				<div style="margin-top:5px">尺寸为XXX</div>
+				<input type="hidden" name="my_prize_img_data" value="{{ prize['my_prize_img'] }}" class="inputtext" >
+			</div>
+		</div>
+
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>奖品名称：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="text" name="name" value="{{ prize['name'] }}" class="inputtext" >
+			</div>
+		</div>
+
+		<div class="form_item award_intro_div" {% if prize['type']==5 %}style="display:none"{% endif %}>
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>中奖文字说明：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="text" name="award_intro" value="{{ prize['award_intro'] }}" class="inputtext" >
+			</div>
+		</div>
+
+		<div class="form_item num_div" {% if prize['type']==5 %}style="display:none"{% endif %}>
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>奖品数量：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="text" name="num" value="{{ prize['num'] }}" class="inputtext" >
+			</div>
+		</div>
+
+		<div class="form_item">
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>中奖概率：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="text" name="probability" value="{{ prize['probability'] }}" class="inputtext" >
+			</div>
+		</div>
+
+		<div class="form_item url_div" {% if prize['type']==4 or prize['type']==5 %}style="display:none"{% endif %}>
+			<div class="form_label" style="width:155px;">
+				<label>立即领取跳转地址：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<input type="text" name="url" value="{{ prize['url'] }}" class="inputtext" >
+			</div>
+		</div>
+
+		<div class="form_item  prize_intro_div" {% if prize['type']==4 or prize['type']==5 %}style="display:none"{% endif %}>
+			<div class="form_label" style="width:155px;">
+				<label><font color="red">*</font>活动说明：</label>
+			</div>
+			<div class="form_control" style="width:63%">
+				<textarea name="prize_intro" id="prize_intro" >{{ prize['prize_intro'] }}</textarea>
+			</div>
+		</div>
+		
+	</div>
+	<div class="modal-footer code-footer">
+		{% if activity['author'] == 1 %}
+		<input type="submit" class="btn btn_orange " style="width:100px;" value="确定" />&nbsp;&nbsp;
+		{% endif %}
+		<button type="button" class="btn btn-default" style="width:100px;" onclick="window.parent.close_win()" data-dismiss="modal">取消</button>
+	</div>
+	</form>
+</div>
+</body>
+
+<script>
+//优惠券验证
+function coupon_file(){
+	var coupon = $("input[name='coupon']").val();
+	if( coupon == "" ) {
+		alert('请上传优惠券');
+		return false
+	}
+    if( coupon && !coupon.match(/.csv/i)){
+    	$("#count").attr('node_data',0).text('');
+     	alert("上传优惠券格式有误");
+	    return false;
+    }
+	$.ajaxFileUpload({
+		url:"{{ url('prize/coupon_check') }}", //你处理上传文件的服务端
+		secureuri:false,
+		fileElementId:'coupon',
+		dataType: 'json',
+		success: function (data){
+			if(data.code == 1){
+				$('#count').attr('node_data',data.count).text('已导入优惠券：'+data.count+'个')
+				return false;
+			}else{
+				$('#count').attr('node_data',0).text(data.msg)
+				alert(data.msg);
+				return false;
+			}
+	   }
+	})
+}
+
+function add_submit() {
+	var id   = $("#id").val();
+	var type = $("#type").val();
+	if( type == 1 ) {
+		var coupon = $("input[name='coupon']").val();
+	    if( coupon && !coupon.match(/.csv/i)){
+	     	alert("上传优惠券格式有误");
+		    return false;
+	    }
+	    var count = $('#count');
+	    if(count.attr('node_data') == 0){
+	    	alert(count.text());
+		    return false;
+	    }
+		var prize_img = $("input[name='prize_img']").val();
+		if(prize_img && !prize_img.match(/.jpg|.png|.jpeg/i)){
+	     	alert("奖品图片格式错误");
+		    return false;
+	    }
+		var dialog_prize_img = $("input[name='dialog_prize_img']").val();
+		if(dialog_prize_img && !dialog_prize_img.match(/.jpg|.gif|.png|.jpeg/i)){
+	     	alert("中奖弹窗奖品图片格式错误");
+		    return false;
+	    }
+		var my_prize_img = $("input[name='my_prize_img']").val();
+		if(my_prize_img && !my_prize_img.match(/.jpg|.png|.jpeg/i)){
+	     	alert("我的奖品页面图片格式错误");
+		    return false;
+	    }
+		var name = $("input[name='name']").val();
+		if( name == "" ) {
+			alert('请填写奖品名称');
+			return false
+		}
+		var award_intro = $("input[name='award_intro']").val();
+		if( award_intro == "" ) {
+			alert('请填写中奖文字说明');
+			return false
+		}
+		var num = $("input[name='num']").val();
+		if( num == "" ) {
+			alert('请填写奖品数量');
+			return false
+		}
+		if(! /^[0-9]+$/.test(num)) {
+			alert('奖品数量必须为正整数');
+			return false
+		}
+		var probability = $("input[name='probability']").val();
+		if( probability == "" ) {
+			alert('请填写中奖概率');
+			return false
+		}
+		var url = $("input[name='url']").val();
+		if( url && !is_url(url) ) {
+			alert('立即领取跳转地址格式有误')
+			return false
+		}
+		var prize_intro = $("#prize_intro").val();
+		if( prize_intro == "" ) {
+			alert('请填写活动说明');
+			return false
+		}
+	}else if( type == 2 || type == 3 ) {
+		var prize_img = $("input[name='prize_img']").val();
+		if(prize_img && !prize_img.match(/.jpg|.png|.jpeg/i)){
+	     	alert("奖品图片格式错误");
+		    return false;
+	    }
+		var dialog_prize_img = $("input[name='dialog_prize_img']").val();
+		if(dialog_prize_img && !dialog_prize_img.match(/.jpg|.png|.jpeg/i)){
+	     	alert("中奖弹窗奖品图片格式错误");
+		    return false;
+	    }
+		var my_prize_img = $("input[name='my_prize_img']").val();
+		if(my_prize_img && !my_prize_img.match(/.jpg|.png|.jpeg/i)){
+	     	alert("我的奖品页面图片格式错误");
+		    return false;
+	    }
+		var name = $("input[name='name']").val();
+		if( name == "" ) {
+			alert('请填写奖品名称');
+			return false
+		}
+		var award_intro = $("input[name='award_intro']").val();
+		if( award_intro == "" ) {
+			alert('请填写中奖文字说明');
+			return false
+		}
+		var num = $("input[name='num']").val();
+		if( num == "" ) {
+			alert('请填写奖品数量');
+			return false
+		}
+		if(! /^[0-9]+$/.test(num)) {
+			alert('奖品数量必须为正整数');
+			return false
+		}
+		var probability = $("input[name='probability']").val();
+		if( probability == "" ) {
+			alert('请填写中奖概率');
+			return false
+		}
+		var url = $("input[name='url']").val();
+		if( url && !is_url(url) ) {
+			alert('立即领取跳转地址格式有误')
+			return false
+		}
+		var prize_intro = $("#prize_intro").val();
+		if( prize_intro == "" ) {
+			alert('请填写活动说明');
+			return false
+		}
+	}else if( type == 4 ) {
+		var prize_img = $("input[name='prize_img']").val();
+		if(prize_img && !prize_img.match(/.jpg|.png|.jpeg/i)){
+	     	alert("奖品图片格式错误");
+		    return false;
+	    }
+		var dialog_prize_img = $("input[name='dialog_prize_img']").val();
+		if(dialog_prize_img && !dialog_prize_img.match(/.jpg|.png|.jpeg/i)){
+	     	alert("中奖弹窗奖品图片格式错误");
+		    return false;
+	    }
+		var name = $("input[name='name']").val();
+		if( name == "" ) {
+			alert('请填写奖品名称');
+			return false
+		}
+		var award_intro = $("input[name='award_intro']").val();
+		if( award_intro == "" ) {
+			alert('请填写中奖文字说明');
+			return false
+		}
+		var num = $("input[name='num']").val();
+		if( num == "" ) {
+			alert('请填写奖品数量');
+			return false
+		}
+		if(! /^[0-9]+$/.test(num)) {
+			alert('奖品数量必须为正整数');
+			return false
+		}
+		var probability = $("input[name='probability']").val();
+		if( probability == "" ) {
+			alert('请填写中奖概率');
+			return false
+		}
+	}else if( type == 5 ) {
+		var prize_img = $("input[name='prize_img']").val();
+		if(prize_img && !prize_img.match(/.jpg|.png|.jpeg/i)){
+	     	alert("奖品图片格式错误");
+		    return false;
+	    }
+		var name = $("input[name='name']").val();
+		if( name == "" ) {
+			alert('请填写奖品名称');
+			return false
+		}
+		var probability = $("input[name='probability']").val();
+		if( probability == "" ) {
+			alert('请填写中奖概率');
+			return false
+		}
+	}
+}
+
+function select_type( obj ) {
+	var type = $(obj).val()
+	if( type == 1 ) {
+		$(".coupon_div").show()
+		$(".dialog_prize_img_div").show()
+		$(".my_prize_img_div").show()
+		$(".award_intro_div").show()
+		$(".num_div").show()
+		$(".url_div").show()
+		$(".prize_intro_div").show()
+	}else if( type == 2|| type == 3) {
+		$(".coupon_div").hide()
+		$(".dialog_prize_img_div").show()
+		$(".my_prize_img_div").show()
+		$(".award_intro_div").show()
+		$(".num_div").show()
+		$(".url_div").show()
+		$(".prize_intro_div").show()
+	}else if( type == 4 ) {
+		$(".coupon_div").hide()
+		$(".dialog_prize_img_div").show()
+		$(".my_prize_img_div").hide()
+		$(".award_intro_div").show()
+		$(".num_div").show()
+		$(".url_div").show()
+		$(".prize_intro_div").hide()
+	}else if( type == 5 ) {
+		$(".coupon_div").hide()
+		$(".dialog_prize_img_div").hide()
+		$(".my_prize_img_div").hide()
+		$(".award_intro_div").hide()
+		$(".num_div").hide()
+		$(".url_div").hide()
+		$(".prize_intro_div").hide()
+	}
+
+}
+
+</script>
+
+</html>

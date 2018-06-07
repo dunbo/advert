@@ -1,0 +1,24 @@
+<div class="sider">
+	<div class="logo">
+        <a href="#">LOGO</a>
+	</div>
+	<ul class="menu">
+        <?php if(!empty($admin['menu'][$menutitle])){?>
+	<?php foreach ($admin['menu'][$menutitle] as $pmname=>$mname): ?>
+		<li class="menu_main_item">
+			<div class="menu_title">
+				<i class="menu_icon glyphicon glyphicon-random"></i>
+				<span><?php echo $pmname?></span>
+			</div>
+			<ul class="menu_sub" style="display: block;">
+                <?php foreach ($mname as $value): ?>
+                <li <?php if($value['nodename']==$popedom_name) echo 'class="selected"';?>>
+					<a href="<?php echo $value['nodename']?>"><?php echo $value['postil']?></a>
+				</li>
+                <?php endforeach; ?>
+			</ul>
+		</li>
+	<?php endforeach; ?>
+	<?php }?>
+	</ul>
+</div>

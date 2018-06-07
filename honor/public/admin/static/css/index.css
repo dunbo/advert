@@ -1,0 +1,177 @@
+body,div,span,img,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,input,textarea,select,option,fieldset,legend,p,th,td,em,i{margin:0; padding:0;  font-weight:normal; font-family:"微软雅黑",Arial,sans-serif;}
+html,body{/*height:100%;*/}
+*{box-sizing: border-box;}
+body{/*height:100%*/;min-width:960px; background:#f2f2f2 ; font-size:14px; color:#666;}
+fieldset,img {border: 0;}
+em,i,label{ font-style:normal; font-weight: normal;}
+a{text-decoration:none; color:#666;}
+a:hover{text-decoration:none;}
+a:active,a:focus{outline: none;}
+.clear{clear:both;}
+ul,li{list-style:none;}
+.martop15{margin-top:15px}
+.has-switch{min-width:60px}
+.has-switch span, .has-switch label{line-height:14px;}
+.sider{width:180px; height: 100%; background: #2e2a27; overflow-y: auto; position: fixed;}
+.logo{width:180px; height: 61px; background: #ff7746; border-bottom: 1px solid #0d1e2e; position: fixed; line-height: 61px; text-align: center; z-index: 100; box-shadow: 0 3px 3px rgba(0,0,0,.13)}
+.logo a{color:#fff}
+.menu{margin-top: 61px; margin-bottom: 120px; z-index: 99;}
+.menu_title,.menu_sub li{height:42px; line-height:42px; color:#acaba7; cursor: pointer;}
+.menu_title{padding-left:24px; background:#2e2a27; position: relative;}
+.menu_icon{display:inline-block; width:10px; height:10px; margin-right: 10px}
+.menu_title:after{content:""; position: absolute; right:16px; top:18px; width:6px; height:6px; border-left:1px solid #acaba7; border-top:1px solid #acaba7; transform: rotate(45deg); -webkit-transform: rotate(45deg); transition: all .2s;}
+.menu li a{color:#acaba7;}
+.menu .menu_title:hover:after{border-color:#FF7746;}
+.menu .selected .menu_title:after{transform: rotate(225deg);-webkit-transform: rotate(225deg);}
+.menu_sub{}
+.menu_sub li{padding-left:48px}
+.menu_sub li a{font-size: 12px;}
+.menu_sub li:hover{background:#392e29;}
+.menu_sub li:hover a{color:#fff}
+.menu_sub li.selected a{color:#ff7746}
+.content{margin-left:180px;}
+
+.navigation {width: 100%; height: 60px; padding: 0 20px; background: #fff}
+.navigation .title{float: left; font-size: 16px; font-weight: 700; line-height: 60px;}
+.title i{display:inline-block; width:6px; height:6px; border-top:1px solid #091929; border-right: 1px solid #091929; vertical-align:middle; transform: rotate(45deg);}
+.title_main{color: #ff7746; padding-right: 6px;}
+.title_sub_title{padding-left: 6px; color: #091929; font-weight: 400;}
+.title_right{float: right; line-height: 60px;}
+.title_right a{display:inline-block; margin:0 15px; padding:0 5px; color: #2e2a27;}
+.content_inner{padding:20px}
+.search_box{background: #fff; margin-bottom: 20px; padding: 10px;}
+.search_box .inputtext{float:left; margin-top:3px}
+.search_box .form_label{float:left}
+.search_box .form_item{float:left}
+.search_box .space{float:left; height:34px; line-height: 34px;}
+.search_box .form_control{float:left;}
+.search_box .btn_orange{margin-top:3px}
+.form_item{display: inline-block; margin-right:10px;}
+.form_label{display: inline-block; padding:7px 0; text-align: right;}
+.form_control{display: inline-block;}
+.inputtext{height:32px; padding:6px 7px; border:1px solid #b6c7d3; border-radius:6px; color:#091929}
+.inputtext:hover,.form_control textarea:hover{border:1px solid #ff7746;}
+.btn_orange{display:inline-block; height:32px; padding:9px 15px; background:#ff7746; border:1px solid #ff7746; border-radius: 4px; color:#fff; cursor: pointer; line-height: 1;}
+.btn_orange:hover{background:#ff642b; border-color:#ff642b; color:#fff}
+.form_item2{width:100%}
+.form_item2 .form_label{float:left; width:20%; margin-right:4%}
+.form_item2 .form_control{float:left; width:76%}
+.pull_right{float: right;}
+.table_box{background: #fff; padding: 0 10px;}
+.tables{width:100%;}
+.tables th,.tables td{padding:16px 8px; border-bottom:2px solid #ecf1f5}
+.tables th{height:53px; text-align: left; font-size: 13px; font-weight: 700; color:#091929}
+.tables td{border-bottom-width: 1px; font-size: 12px;word-break: break-all; word-wrap:break-word;}
+.tables .blue{color:#4a90e2}
+.pagebars_l{float:left; margin-top:19px; height:28px; line-height: 28px;}
+.pagebars_l span{color:#ff7746; font-weight: 700;}
+.pagebars_r{float:right; margin:16px 0; padding:5px; background:#fff;}
+.pagebars_r a.page_a{display: inline-block; min-width: 28px; height:28px; background:#fff; border:1px solid #d9d9d9; border-radius: 6px; line-height: 27px; text-align: center; color:#d9d9d9;}
+.pagebars_r a.active{background:#ff7746; border-color: #ff7746; color:#fff}
+#page_dropdown .btn{padding:3px 12px; position: relative; top:-2px}
+#page_dropdown .dropdown-menu{min-width:60px}
+#page_dropdown .btn:hover,#page_dropdown .btn:focus,#page_dropdown .btn.focus{background-color: #fff; border-color: #ff7746;}
+.page_jumper{display: inline-block;}
+.page_jumper input{width:40px; height: 28px; margin: 0 5px; padding:0 5px; background: #fff; border: 1px solid #d9d9d9; border-radius: 6px;}
+.single_info{padding: 21px; background: #fff;}
+/*单选按钮组样式*/
+.label_group{display: inline-block; margin: 7px 10px 0 0; cursor: pointer;}
+.radio_icon{display:inline-block; position: relative; width:18px; height:18px; top:3px}
+.radio_inner{display: inline-block; width: 16px; height: 16px; background-color: #fff; border: 1px solid #d9d9d9; border-radius: 16px; position: relative; left: 0; top: 0;}
+.radio_inner:after{content: " "; width: 10px; height: 10px; background: #ff7746; position: absolute; left: 2px;  top: 2px; border-radius: 6px; opacity: 0; transform: scale(0); transition:all .2s}
+.radio_icon .radio_input{width:100%; height:100%; position: absolute; left:0; top:0; bottom:0; right:0; opacity: 0; cursor: pointer;}
+.radio_txt{display: inline-block; height:18px; line-height: 18px;}
+.label_selected .radio_inner:after{opacity: 1; transform: scale(1);}
+/*多选按钮*/
+.label_check_group{display: inline-block; margin: 7px 10px 0 0; cursor: pointer; position: relative;}
+.checkbox_icon{display:inline-block; position: relative; width:18px; height:18px; top:4px}
+.checkbox_inner{display: inline-block; width: 16px; height: 16px; background: #fff; border: 1px solid #d9d9d9; border-radius: 3px; position: absolute; left: 0; top: 0;}
+.checkbox_inner:after{content:""; position:absolute; left:5px; top:2px; width:5px; height:8px; border:2px solid #fff; border-top:0; border-left:0; transform: rotate(45deg); -webkit-transform:rotate(45deg); transition:all .2s; -webkit-transition:all .2s}
+.checkbox_icon .check_input{width:100%; height:100%; position: absolute; left:0; top:0; bottom:0; right:0; opacity: 0; cursor: pointer;}
+.checkbox_txt{display: inline-block; height: 18px; line-height: 18px;}
+.check_selected .checkbox_inner,.check_selected .checkbox_inner:after{border-color:#ff7746}
+/**/
+.switch_group{width:44px; height:28px; border-radius: 6px; background:#a9b9c8; border:1px solid #a9b9c8; line-height: 27px; position: relative; cursor: pointer;}
+.switch_group:after{content:" "; width:18px; height:18px; background:#fff; border-radius: 18px; position: absolute; left:2px; top:4px; transition:all .3s}
+.switch_group span{ color:#fff; position: absolute; left:24px;}
+.switch_checked{background:#ff7746; border:1px solid #ff7746;}
+.switch_checked:after{left:22px}
+.switch_checked span{left:6px}
+.switch_group input{opacity: 0;}
+.single_info .form_item{display: block; margin-bottom: 10px;}
+.single_info .form_label{width:90px; vertical-align: top;}
+.single_info .form_control{width:43%}
+.single_info .inputtext{width:96%}
+.form_control textarea{width: 96%; height: 250px; padding: 10px 0 10px 15px; background: #fff; border: 1px solid #b6c7d3; border-radius: 4px; box-sizing: border-box;font-size: 15px; overflow-x: hidden; overflow-y: auto;}
+.form_btn_foot{padding-left:95px}
+
+.chart_box{padding:10px; min-height:80px; margin-bottom: 20px; background: #fff;}
+.form_prompt{display: inline-block;}
+.blue{color:#4a90e2}
+
+.block_info .form_label{width:120px;}
+.multiselect{padding-left:126px}
+.select_table,.ms_selection{float: left; min-width: 35%;; background: #fff; color: #555;}
+.select_table_group{border:1px solid #e9e9e9; border-bottom: none; border-radius: 2px 2px 0 0; padding-bottom: 6px;}
+.select_table_head{height: 30px; background: #e9e9e9; margin-bottom: 10px; padding: 6px 10px;}
+.select_table_head span{float: left; color: #333;}
+.select_table_head a{float: right; color: #ff7746; cursor: pointer;}
+.select_table_search{width: 180px; margin: 0 auto; position: relative;}
+.select_table_search .search_input{width: 180px; height: 30px; margin: 0 auto; padding: 5px 7px;}
+.anticon_search{position: absolute; right:6px; top:8px; cursor: pointer;}
+.radio-info{padding-top:7px; padding-bottom: 7px;}
+.prompt_p{padding:7px 0;}
+.prompt_p img{display: block; width:300px; height:200px; border: 1px solid #ccc;}
+.account_info .form_label {width: 126px;}
+.account_info h3{padding:10px 0; font-size: 18px; font-weight: 700;}
+/*弹窗*/
+.modal-header{height: 44px; background: #ff7746; border-radius: 6px 6px 0 0; border-bottom: 1px solid #e9e9e9;color: #fff;}
+.modal-title {font-size: 14px; font-weight: 700; line-height: 21px;}
+.close{color: #fff; opacity: .8; transition:all .2s; -webkit-transition:all .2s}
+button.close:hover{transform: rotate(360deg); -webkit-transform: rotate(360deg);}
+.code-footer p{float:left; line-height: 40px; font-size: 14px;}
+#modal_code .form_control textarea{font-size: 12px; color: #091929;}
+.modal-dialog{width:500px}
+.confirm_body{ padding:40px 20px; text-align: center;}
+.confirm_body p{font-weight: bold;}
+#modal_confirm .modal-footer{text-align: center;}
+#modal_confirm .modal-footer button{width:80px; margin: 0 20px;}
+#modal_tag h5{padding:2px 0 8px 5px; font-size: 14px; font-weight: bold;}
+/*login*/
+.login_wrap{width:480px; margin: 40px auto;}
+.login_wrap .form_control,.login_wrap .form_item{width:100%;}
+.login_wrap .form_item{margin-bottom: 20px;}
+.login_wrap .form_control .inputtext{width:100%; height:40px}
+.btn_login{width:100%; height:40px;}
+.tab-pane{padding-top:20px}
+.modal-reject_cnt .form_label{vertical-align: top;}
+.modal-reject_cnt textarea{width:260px; padding:5px; height:80px}
+/*选项卡*/
+.table_nav{height:50px; line-height: 50px; background:#efefef;}
+.table_nav_a{margin-right: 15px;}
+.table_nav_a a{display: inline-block; height:32px; padding:0 10px; border:1px solid #efefef; border-radius: 4px; text-align: center; line-height: 30px;}
+.table_nav_a a.active,.table_nav_a a:hover{background:#fff; border:1px solid #ff7746;}
+
+/*echars图表示例*/
+#chart_lenge{float:right; margin: 10px 60px 0 0; display: inline; position: relative; z-index: 2;}
+#chart_lenge li{display: inline-block; margin-left:10px; font-size: 12px; cursor: pointer;}
+.chart_check{display: inline-block; position: relative;}
+.chart_check i{display: inline-block; width:16px; height:16px; background:#fff; border:1px solid #d9d9d9; border-radius: 3px; position: relative; top:3px}
+.chart_check i:after{content:""; position:absolute; left:5px; top:2px; width:5px; height:8px; border:2px solid #fff; border-top:0; border-left:0; transform: rotate(45deg); }
+.chart_check input{position: absolute; left:0; top:0; bottom:0; right:0; opacity: 0;}
+.chart_item{display: inline-block; height:18px; line-height: 18px;}
+#chart_lenge li.selected .chart_check i{border-color:#ff7746}
+#chart_lenge li.selected .chart_check i:after{border-color:#ff7746}
+#chart_ad{position: relative; z-index: 1;}
+/*alert弹窗*/
+.alert-tips{position:fixed;top:0px;width:100%;z-index:1001;text-align: center;display:none;}
+#tag_div span{word-wrap:break-word;word-break:break-all;}
+
+.ms_list{position: relative; height: 153px; border:1px solid #e9e9e9; border-top: none; border-radius: 0 0 2px 2px; overflow-y: auto;}
+.ms_list h3{padding: 5px 0 0 10px; color: #999; cursor: pointer; font-size: 14px;font-weight: 100; }
+.ms_list_sub li{padding: 4px 10px 4px 30px; color: #999; font-size: 12px; line-height: 1.5; cursor: pointer;}
+.ms_list_sub li.ms_hover{background: #ff7746; color: #fff;}
+.ms_selection .ms_list h3{display: none;}
+.ms_selection .ms_list_sub li{display: none;}
+.li_back_color{background: #f5f5f5;}
+ .select_table li{list-style: bengali;}  

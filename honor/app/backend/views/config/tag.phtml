@@ -1,0 +1,133 @@
+	<div class="main" style="padding:0">
+		<div>
+			<div class="content_inner">
+				<div class="manage_ad_position">
+
+					<div class="table_box">
+
+					    <ul class="tab-content">
+					    	<li id="a" class="tab-pane active">
+					    		<div class="btn-group">
+							        <button class="btn btn-default" onclick="add()" data-toggle="modal" data-target="#modal_reject">创建标签组</button>
+							    </div>
+					    		<table cellpadding="0" cellspacing="0" class="tables">
+									<thead>
+										<tr>
+											<th>标签组</th>
+											<th>标签</th>
+											<th>排序值</th>
+											<th>操作</th>
+										</tr>
+									</thead>
+									<tbody>
+                                         {% if list is not empty %}
+				 	                            {% for key,val in list %}
+										<tr>
+											<td>{{ val['name'] }}</td>
+											<td>{{ val['new_tags'] }}</td>
+											<td>{{ val['rank'] }}</td>
+											<td>
+												<a href="#" class="blue" onclick=edit({{ key }})  data-toggle="modal" data-target="#modal_reject">编辑</a>
+											</td>
+                                         </tr>
+                                                 {% endfor %}
+                                         {% endif %}
+									</tbody>
+								</table>
+					    	</li>
+					    </ul>
+	 				{% if list is not empty %}
+	                    {{ partial('public/paginator') }}
+	                {% endif %}
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--获取代码弹窗-->
+<div class="modal" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">创建标签组</h4>
+			</div>
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+                                <form action="{{url('config/savetagroup')}}" method="post" class="form-horizontal" id="save-form">
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>标签组名</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value = "1" class="inputtext" name="tag_group_name" id="tag_group_name">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>组排序值</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="2" class="inputtext"  name="tag_group_rank" id="tag_group_rank">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>添加标签</label>
+						</div>
+						<div class="form_control">
+							<textarea id="tags" name="tags"></textarea>
+							<input type="hidden" value="0" class="inputtext" name="set_id" id="set_id">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer code-footer">
+				<button type="button" id="save-btn" class="btn btn-default">确定</button>
+				<button type="button" id = "close_btn" class="btn btn-default"  data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+function edit(key){
+
+	var tmp_data = <?php echo json_encode($list);?>;
+
+	$("#set_id").val(tmp_data[key].group_id);
+	$("#tag_group_name").val(tmp_data[key].name);
+	$("#tag_group_rank").val(tmp_data[key].rank);
+	$("#tags").val(tmp_data[key].new_tags);
+
+}
+
+function add(id,name,rank,tags){
+	$("#set_id").val(0);
+	$("#tag_group_name").val('');
+	$("#tag_group_rank").val('');
+	$("#tags").val('');
+}
+
+    $('#save-btn').on('click', function(){
+
+        var tag_group_name = $.trim($('#tag_group_name').val());
+        if(tag_group_name == '' || tag_group_name == false){
+            tips_message('请填写标签组名');
+	    $("#modal_reject").modal('hide');
+            return false;
+        }
+
+        var tags = $.trim($('#tags').val());
+        if(tags == '' || tags == false){
+            tips_message('请填写标签');
+	    $("#modal_reject").modal('hide');
+            return false;
+        }
+
+
+        $('#save-form').submit();
+    });
+</script>

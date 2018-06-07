@@ -1,0 +1,226 @@
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('idea/list') }}" method="get" id="search_form">
+				<input type="hidden" name="srch_type" value="{{ srch_type }}">
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告主名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="ad_name" {% if ad_name is not empty %}value="{{ ad_name }}"{% endif %} class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>奖品名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="prize_name" {% if prize_name is not empty %}value="{{ prize_name }}"{% endif %} class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<input class="btn_orange" type="submit" value="搜索" />
+					</div>
+				</div>
+			</form>
+			<div class="clear"></div>
+		</div>
+		<div class="table_box">
+			<ul class="nav nav-tabs" style="padding-top:20px">
+		    	<li class="{{ srch_type=='sh'?'active':'' }}" ><a href="{{ url('idea/list?srch_type=sh') }}"  aria-expanded="false">待审核</a></li>
+		        <li class="{{ srch_type=='tg'?'active':'' }}" ><a href="{{ url('idea/list?srch_type=tg') }}"  aria-expanded="false">已通过</a></li>
+		        <li class="{{ srch_type=='ntg'?'active':'' }}" ><a href="{{ url('idea/list?srch_type=ntg') }}" >未通过</a></li>
+		    </ul>
+		    <ul class="tab-content">
+				<li class="tab-pane active">
+					{% if srch_type != 'tg' %}
+		    		<div class="btn-group">
+				        <button type="button" class="btn btn-default checkall">全选</button>
+				        <button type="button" class="btn btn-default no_checkall">反选</button>
+				    </div>
+				    {% endif %}
+				    <div class="btn-group pull-right">
+				    	{% if srch_type == 'sh' %}
+				        <button type="button" class="btn btn-default" onclick="batch_tg(0)">批量通过</button>
+				        <button type="button" class="btn btn-default" onclick="batch_bh(0)">批量驳回</button>
+						{% elseif srch_type == 'ntg'  %}
+						<button type="button" class="btn btn-default" onclick="batch_tg(0)">重新审核通过</button>
+						{% endif %}
+				    </div>
+		    		<table cellpadding="0" cellspacing="0" class="tables">
+						<thead>
+							<tr>
+								<th width="3%"></th>
+								<th width="10%">奖品名称</th>
+								<th width="10%">广告主名称</th>
+								<th width="11%">广告图片1</th>
+								<th width="11%">广告图片2</th>
+								<th width="13%">优惠券有效期</th>
+								<th width="13%">推广链接</th>
+								<th width="8%">优惠券详情</th>
+								<th width="11%">驳回原因</th>
+								<th width="10%">操作</th>
+							</tr>
+						</thead>
+						<tbody>
+						{% if list is not empty %}
+						 	{% for key, val in list %}
+								<tr>
+									<td><input type="checkbox" name="id" value="{{ val['id'] }}"></td>
+									<td>{{ val['prize_name'] }}</td>
+									<td>{{ val['ad_name'] }}</td>
+									<td>{% if val['ad_image'] is not empty %}<img src="{{IMG_URL~val['ad_image']}}" width='100px' height='50px' />{% endif %}</td>
+									<td>{% if val['ad_image2'] is not empty %}<img src="{{IMG_URL~val['ad_image2']}}" width='100px' height='50px' />{% endif %}</td>
+									<td>{% if val['coupon_term'] is not empty %}{{ date('Y-m-d H:i:s', val['coupon_term']) }}{% endif %}</td>
+									<td>{{ val['push_link'] }}</td>
+									<td><a href="{{url('idea/edit?idea_id='~val['id'])}}" class='blue'>查看详情</a></td>
+									<td>{{ val['bh_explain'] }}</td>
+									<td>
+										{% if srch_type == 'sh' %}
+										<a href="javascript:;" onclick="batch_tg({{ val['id'] }})" class="blue">通过</a>
+										<a href="javascript:;" onclick="batch_bh({{ val['id'] }})" class="blue">驳回</a>
+										{% elseif srch_type == 'tg' %}
+										<a href="javascript:;" onclick="batch_bh({{ val['id'] }})" class="blue">驳回</a>
+										{% elseif srch_type == 'ntg' %}
+										<a href="javascript:;" onclick="batch_tg({{ val['id'] }})" class="blue">通过</a>
+										{% endif %}
+										<a href="{{url('idea/edit?idea_id='~val['id'])}}" class='blue'>查看详情</a>
+									</td>
+								</tr>
+							{% endfor %}
+						 {% else %}
+								<tr>
+			                        <td colspan="11">暂无数据</td>
+			                    </tr>
+						 {% endif %}
+						</tbody>
+					</table>
+		    	</li>
+		    </ul>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+	</div>
+</div>
+<!--驳回条件弹窗-->
+<div class="modal" id="batch_bh" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">驳回</h4>
+			</div>
+			<form action="{{ url('idea/examinebh') }}" method="post" id="bh_form" onsubmit="return check_bh_form()">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<input type='hidden' id="bh_ids" name="ids" />
+				<div class="form_item">
+					<div class="form_label">
+						<label>驳回理由：</label>
+					</div>
+					<div class="form_control">
+						<div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason1" value="1" name="bh_reason">
+		                    <label for="reject_reason1">媒体关键词问题</label>
+		                </div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason2" value="2" name="bh_reason">
+		                    <label for="reject_reason2">媒体简介问题</label>
+		                </div>
+		                <div class="clear"></div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason3" value="3" name="bh_reason">
+		                    <label for="reject_reason3">软件包名问题</label>
+		                </div>
+		                <div class="radio radio-info radio-inline">
+		                    <input type="radio" id="reject_reason4" value="4" name="bh_reason">
+		                    <label for="reject_reason4">下载地址问题</label>
+		                </div>
+					</div>
+				</div>
+				<div class="clear"></div>
+				<div class="form_item martop15">
+					<div class="form_label">
+						<label>详细说明：</label>
+					</div>
+					<div class="form_control">
+						<textarea placeholder="请输入驳回理由" name="bh_explain" id='bh_explain'></textarea>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<input type="submit" class="btn btn-default" value="确定" />
+				<button type="button" class="btn btn-default"  data-dismiss="modal">取消</button>
+			</div>
+			</form>
+		</div>
+	</div>
+</div>
+<script>
+$(function(){
+  $(".checkall").click(function(){  
+      $("input[name='id']").prop("checked", true);
+  })
+  $(".no_checkall").click(function(){  
+      $("input[name='id']").prop("checked", false); 
+  })
+});
+
+//批量通过操作
+function batch_tg(id){
+	var ids = '';
+	if(id > 0){
+		ids = id;
+	}else{
+		$("input[name='id']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	ids += id_num+',';
+		    }
+		});
+		ids = ids.substr(0, ids.length-1);  
+		if(ids == ''){
+			tips_message('请选择广告创意');
+			return false;
+		}
+	}
+	if(confirm('确定要通过吗')){
+		window.location.href="{{ url('idea/examinetg?ids="+ids+"') }}";
+	}
+}
+
+//批量驳回操作
+function batch_bh(id){
+	var ids = '';
+	if(id > 0){
+		ids = id;
+	}else{
+		$("input[name='id']:checkbox").each(function(){
+		    if($(this).prop("checked")){
+		      	var id_num = $(this).val();
+		      	ids += id_num+',';
+		    }
+		});
+		ids = ids.substr(0, ids.length-1);  
+		if(ids == ''){
+			tips_message('请选择广告创意');
+			return false;
+		}
+	}
+	$('#bh_ids').val(ids);
+	$('input[name=bh_reason]').attr('checked', false);
+	$('textarea[name=bh_explain]').val('');
+	$('#batch_bh').modal('show');
+}
+//驳回表单验证
+function check_bh_form(){
+	if($("input:radio[name='bh_reason']:checked").val()==null){
+		alert('请选择驳回理由');return false;
+	}
+	if($.trim($("#bh_explain").val())==''){
+		alert('请输入驳回说明');return false;
+	}
+}
+</script>

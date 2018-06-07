@@ -1,0 +1,87 @@
+	<div class="main" style="padding:0">
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+                <form action="{{url('config/basics')}}" method="post" class="form-horizontal" id="save-form">
+                <h4><a href="{{url('config/basics')}}" style="color:red">基础配置</a>&nbsp;&nbsp;&nbsp;&nbsp;<a href="{{url('config/basics?tab=2')}}">基础配置(新)</a></h4><br>
+				<h4 class="modal-title">系统基础指标</h4>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>不分行业最小CPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value = "<?php echo $info['cpm']?>" class="inputtext" name="cpm" id="cpm">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业截断前TopN N值设定</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['topn']?>"  class="inputtext" name="topn" id="topn">
+						</div>
+					</div>
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业最小eCPM&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['ecpm']?>" class="inputtext" name="ecpm" id="ecpm">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>行业二价附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['trade_diff_add_val']?>"  class="inputtext" name="trade_diff_add_val" id="trade_diff_add_val">
+						</div>
+                                        </div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>cmp附加值&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['cpm_add_val']?>" class="inputtext" name="cpm_add_val" id="cpm_add_val">
+						</div>
+					</div>
+					<h4 class="modal-title">广告主指标</h4>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>充值最低限额&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['set_price']/100?>" class="inputtext"  name="set_price" id="set_price">
+						</div>
+					</div>
+
+					<div class="clear"></div>
+					<div class="form_item martop15">
+						<div class="form_label">
+							<label>广告主最小余额&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+						</div>
+						<div class="form_control">
+							<input type="text" value="<?php echo $info['min_price']/100?>" class="inputtext" name="min_price" id="min_price">
+						</div>
+					</div>
+
+
+				</form>
+			</div>
+			<div align="center">
+				<button type="button" id="save-btn" class="btn btn-default">保存</button>
+			</div>
+	</div>
+
+
+<script>
+    $('#save-btn').on('click', function(){
+        $('#save-form').submit();
+    });
+</script>

@@ -1,0 +1,228 @@
+
+<div class="content_inner">
+	<div class="single_info account_info">
+		<h3>广告位信息</h3>			
+		<form action="{{ url('position/publish') }}" method="post" onsubmit="return checksubmit()">
+				<input type="hidden" name="id" value="{{ position['id'] }}">
+				<input type="hidden" name="srch_type" value="{{ srch_type }}">
+				<div class="form_item">
+					<div class="form_label" style="width:140px">
+						<font color="red">*</font>
+						<label>广告位名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="name" value="{{ position['name'] }}" disabled='true' placeholder="请输入广告名称，不超过20字" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+				<div class="form_label" style="width:140px">
+					<font color="red">*</font>
+					<label>投放媒体：</label>
+				</div>
+				<div class="form_control">
+					<select name="mmid" id="mmid" class="inputtext" onchange="select_media()" >
+						<option value="0">请选择媒体</option>
+						{% for key,val in mediaList %}
+							{% if val['mmid'] == position['mmid'] %}
+								<option selected value="{{ val['mmid'] }}" type="{{ val['type'] }}"  tf_type="{{ val['tf_type'] }}" api_type="{{ val['api_type'] }}">{{ val['name'] }}</option>
+							{% else %}
+								<option value="{{ val['mmid'] }}" type="{{ val['type'] }}" tf_type="{{ val['tf_type'] }}" api_type="{{ val['api_type'] }}">{{ val['name'] }}</option>
+							{% endif %}
+						{% endfor%}
+					</select>
+				</div>
+			</div>
+			<div class="form_item">
+				<div class="form_label" style="width:140px">
+					<font color="red">*</font>
+					<label>广告规格：</label>
+				</div>
+				<div class="form_control">
+					<input type="hidden" name="t_pid" value="{{ position['t_pid']}}" />
+					<input type="hidden" name="t_id" value="{{ position['t_id']}}" />
+					<input type="text" id="tmp_show"  readonly='true' value="{{ position['tmp_parent_name']?position['tmp_parent_name']~' / '~position['tmp_sub_name']:'' }} {{position['size']?'('~position['size']~')':''}}" placeholder="请选择广告规格"  class="inputtext">
+						<div class="select_table select_table_left" style="display:none" >
+							<ul class="ms_list" id="ms_listt_l" style="border-top:1px solid #e9e9e9">
+							</ul>
+						</div>
+						<div class="select_table select_table_right" style="display:none">
+							<ul class="ms_list" id="ms_listt_r" style="border-top:1px solid #e9e9e9">
+							</ul>
+						</div>
+				</div>
+			</div>
+			<div class="form_btn_foot">
+				<button class="btn btn_orange" style="width:100px;" type="submit">提交审核</button>&nbsp;&nbsp;
+				<a class="btn btn-default" style="width:100px;" href="javascript:history.back(-1)">取消</a>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script>
+function checksubmit() {
+	var name = $("input[name='name']").val();
+	var type = $('#mmid').find("option:selected").attr("type");
+	if( name == "" ) {
+		tips_message('媒体名称不能为空', 'error')
+		return false
+	}else if( !max_length(name, 40) ) {
+		tips_message('媒体名称不能超过20个字', 'error')
+		return false
+	}
+	var mmid = $("#mmid").val();
+	if(mmid == 0) {
+		tips_message('请选择媒体', 'error')
+		return false;
+	}
+	var p_id = $("input[name=t_pid]").val();
+	var t_id = $("input[name=t_id]").val();
+	if(t_id == "" || t_id == undefined ) {
+		tips_message('请选择广告规格', 'error')
+		return false;
+	}
+	if(p_id== "" || p_id == undefined ) {
+		tips_message('请选择广告规格', 'error')
+		return false;
+	}
+	return true;
+}
+
+var temp_parent_list = {{ temp_parent_list }};
+var temp_sub_list 	 = {{ temp_sub_list }};
+function select_pid(pid)
+{
+	event.stopPropagation();
+	var str = '';
+	$(temp_sub_list).each(function(k,v){
+			if(v.parentid == pid) {
+				var name;
+				if(v.size == null) {
+					name = v['name'];
+				}else {
+					name = v['name']+'('+v['size']+')';
+				}
+				str += '<li class="ms_list_mainli_'+v['id']+'" onclick="select_sub(this,'+v['parentid']+','+v['id']+" ,'" +name+"'"+')" >';
+				str += '<h3>'+name+'</h3>';
+				str += '</li>';
+			}
+		})
+	$("#ms_listt_r li").removeClass('li_back_color');
+	$("#ms_listt_l li").removeClass('li_back_color');
+	$(".ms_list_mainli_"+pid).addClass('li_back_color');
+	$('#ms_listt_r').html(str);
+	$('.select_table_right').show();
+}
+
+function show_left_list()
+{
+	var type 	 = $('#mmid').find("option:selected").attr("type");
+	var tf_type  = $('#mmid').find("option:selected").attr("tf_type");
+ 	var api_type = $('#mmid').find("option:selected").attr("api_type");
+ 	if(!type){
+ 		tips_message('请先选择媒体', 'error')
+ 		return false
+ 	}
+ 	var from_key;
+ 	if( type == 1 ){
+ 		if(tf_type == 1) {
+			from_key = 1;
+ 		}else if( tf_type == 2) {
+ 			from_key = 1;
+ 		}else {
+ 			tips_message('选择媒体类型有误', 'error')
+ 			return false
+ 		}
+ 	}else if( type == 2 ){
+ 		from_key = 3;
+ 	}
+ 	var data = temp_parent_list[from_key];
+ 	var str = '';
+	$(data).each(function(k,v){
+			if(k<4){
+				str += '<li class="ms_list_mainli_'+v['id']+'" onclick="select_pid('+v['id']+')" >';
+				str += '<h3>'+v['name']+'</h3>';
+				str += '</li>';
+			}
+		})
+	$("#ms_listt_l li").removeClass('li_back_color');
+	$('#ms_listt_l').html(str);
+	$('.select_table_left').show();
+	//$('.select_table_right').hide();
+}
+
+$(function(){
+	$("#tmp_show").click(function(event){
+ 		event.stopPropagation();
+ 		var is_val = $(this).val();
+		if(is_val == "") {
+			show_left_list();
+		}else{
+			$('.select_table_left').show();
+			$('.select_table_right').show();
+			var parent_id = $("input[name=t_pid]").val();
+			var sub_id 	  = $("input[name=t_id]").val();
+			show_left_list();
+			select_pid(parent_id);
+			$('#ms_listt_r li').removeClass('li_back_color');
+			$(".ms_list_mainli_"+sub_id).addClass('li_back_color');
+		}
+	});
+
+	$('html').click(function(event){
+		$('.select_table_left').hide();
+		$('.select_table_right').hide();
+	})
+	var api_type = $('#mmid').find("option:selected").attr("api_type");
+	if(api_type == 2) {
+		select_media()
+	}
+})
+
+
+function select_sub(obj, parent_id, sub_id, name)
+{
+	var type 	 = $('#mmid').find("option:selected").attr("type");
+	var tf_type  = $('#mmid').find("option:selected").attr("tf_type");
+ 	var api_type = $('#mmid').find("option:selected").attr("api_type");
+ 	var from_key;
+ 	if( type == 1 ){
+ 		if(tf_type == 1) {
+			from_key = 1;
+ 		}else if( tf_type == 2) {
+ 			from_key = 1;
+ 		}else {
+ 			tips_message('选择媒体类型有误', 'error')
+ 			return false
+ 		}
+ 	}else if( type == 2 ){
+ 		from_key = 3;
+ 	}
+	var data = temp_parent_list[from_key];
+	var parent_name = "";
+	$(data).each(function(k,v){
+			if(v.id == parent_id) {
+				parent_name = v.name;
+			}
+		})
+	$("#ms_listt_r li").removeClass('li_back_color');
+	$(obj).addClass('li_back_color');
+	$("input[name=t_pid]").val(parent_id);
+	$("input[name=t_id]").val(sub_id);
+	$("#tmp_show").val(parent_name+' / '+name);
+}
+
+function select_media(){
+	var api_type = $('#mmid').find("option:selected").attr("api_type");
+	if(api_type == 2) {
+		$("#tmp_show").val('默认').attr('disabled', true);
+		$("input[name=t_id]").val(0);
+		$("input[name=t_pid]").val(0);
+	}else {
+		$("#tmp_show").val('').attr('disabled', false);
+		$("input[name=t_id]").val('');
+		$("input[name=t_pid]").val('');
+	}
+}
+</script>
+ 

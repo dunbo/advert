@@ -1,0 +1,80 @@
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('advertiser/list') }}" method="get">
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告主名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="ad_name" {% if ad_name is not empty %}value="{{ad_name}}"{% endif %} class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>公司名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="company_name" {% if company_name is not empty %}value="{{company_name}}"{% endif %} class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>登录账号：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="username" {% if username is not empty %}value="{{username}}"{% endif %} class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<button class="btn_orange">搜索</button>
+					</div>
+				</div>
+			</form>
+			<div class="clear"></div>
+		</div>
+		<div class="table_nav">
+			<a class="btn_orange" href="{{ url('advertiser/add') }}">创建广告主</a>
+		</div>
+		<div class="table_box">
+			
+			<table cellpadding="0" cellspacing="0" class="tables">
+				<thead>
+					<tr>
+						<th>广告主ID</th>
+						<th>广告主名称</th>
+						<th>公司名称</th>
+						<th>登录账号</th>
+						<th>创建时间</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% if list is not empty %}
+				 	{% for val in list %}
+						<tr>
+							<td>{{ val['auid'] }}</td>
+							<td>{{ val['ad_name'] }}</td>
+							<td>{{ val['company_name'] }}</td>
+							<td>{{ val['username'] }}</td>
+							<td>{{ date('Y-m-d H:i:s', val['create_tm']) }}</td>
+							<td>
+								<a href="{{ url('materiel/list?srch_type=tg&uid='~val['auid']) }}" class="blue">查看广告计划</a> |
+								<a href="{{ url('advertiser/add?uid='~val['auid']) }}" class="blue">编辑广告主</a>
+							</td>
+						</tr>
+					{% endfor %}
+				 {% else %}
+						<tr>
+	                        <td colspan="6">暂无数据</td>
+	                    </tr>
+				 {% endif %}
+				</tbody>
+			</table>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>
+	</div>
+</div>

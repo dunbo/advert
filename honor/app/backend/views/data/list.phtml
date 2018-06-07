@@ -1,0 +1,92 @@
+<script>
+function checkForm(){
+	var begin_tm = $.trim($('#begin_tm').val());
+	var end_tm = $.trim($('#end_tm').val());
+	if(begin_tm && end_tm && begin_tm>end_tm){
+		tips_message('开始时间不能大于结束时间');
+		return false;
+	}
+}
+</script>
+<div class="content_inner">
+	<div class="manage_ad_position">
+		<div class="search_box">
+			<form action="{{ url('data/list') }}" id="search_form" method="get" onsubmit="return checkForm()">
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告计划名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="materiel_name" value="{{ materiel_name }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>广告主名称：</label>
+					</div>
+					<div class="form_control">
+						<input type="text" name="ad_name" value="{{ ad_name }}" class="inputtext">
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>查询时间：</label>
+					</div>
+					<div class="form_control">
+						<input class="inputtext" name="begin_tm" id="begin_tm" value="{{ begin_tm }}" onFocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'%y-%M-%d %H:%m:%s'})" />
+						<span class='space'>~</span>
+						<input class="inputtext" name="end_tm" id="end_tm"  value="{{ end_tm }}"  onFocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'%y-%M-%d %H:%m:%s'})" />
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_control">
+						<button class="btn_orange">搜索</button>
+					</div>
+				</div>
+				<div class='clear'></div>
+			</form>
+		</div>
+		<div class="table_nav">
+			<a class="btn_orange" href="{{url('data/list?from=1&page='~page)}}">导出数据报表</a>	
+		</div>
+		<div class="table_box">
+			<table cellpadding="0" cellspacing="0" class="tables">
+				<thead>
+					<tr>
+						<th>广告计划名称</th>
+						<th>广告主名称</th>
+						<th>时间</th>
+						<th>曝光量(次)</th>
+						<th>点击量(次)</th>
+						<th>转化pv</th>
+						<th>点击均价(元)</th>
+						<th>总消耗(元)</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% if list is not empty %}
+						{% for key,val in list %}
+							<tr>
+								<td>{{ val['ad_name'] }}</td>
+								<td>{{ val['client_name'] }}</td>
+								<td>{{ val['create_date'] }}</td>
+								<td>{{ val['exposure'] }}</td>
+								<td>{{ val['click_num'] }}</td>
+								<td>{{ val['pv'] }}</td>
+								<td>￥{{ val['click_price']/100 }}</td>
+								<td>￥{{ val['total']/100 }}</td>
+							</tr>
+						{% endfor %}
+					{% else %}
+						<tr>
+			                <td colspan="10">暂无数据</td>
+			            </tr>
+					{% endif %}
+				</tbody>
+			</table>
+			{% if list is not empty %}
+	             {{ partial('public/paginator') }}
+	        {% endif %}
+		</div>		
+	</div>
+</div>
