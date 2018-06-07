@@ -1,0 +1,1044 @@
+<script>
+$(function(){
+//单选按钮
+$('.label_group').bind('click',function(){
+	$(this).parent().find('.label_group').removeClass('label_selected');
+	if(!$(this).hasClass('label_selected')){
+		$(this).addClass('label_selected');
+		$(this).find('input').attr('checked','checked');
+	}
+});
+//多选按钮
+$('.label_check_group').bind('click',function(){
+	if(!$(this).hasClass('check_selected')){
+		$(this).addClass('check_selected');
+		$(this).find('input').prop('checked','checked');
+		$(this).find('input').attr('checked','checked');
+	}
+	else{
+		$(this).removeClass('check_selected');
+		$(this).find('input').removeAttr('checked');
+		$(this).find('input').removeProp('checked');
+	}
+});
+
+var area_arr = <?php echo json_encode($materiel['tf_area']) ?>;
+if(area_arr != null){
+	for(i=0;i<area_arr.length;i++){
+		var tmp = area_arr[i].split(',');
+		var select_obj = addArea(tmp[0]);
+		showSubArea(select_obj, tmp[1]);
+	}
+}
+show_industry();
+check_push();
+
+})
+var jieguo = false;
+function check_name(name) {
+	var id = <?php echo !empty($materiel['id']) ? $materiel['id'] : 0 ?>;
+	$.ajax({
+		type: "POST",
+		data: {name:name,id:id},
+		url: "{{ url('materiel/check_name') }}",
+		dataType: "json",
+		async: false,  
+		success: function(res) {
+			if(res['code'] != 1) {
+				jieguo = false;
+			}else{
+				jieguo = true;
+			}
+		}
+	});
+}
+//表单验证
+function checkForm(){
+	var tf_type = $("input[name=tf_type]:checked").val();
+	if(tf_type == "" || tf_type == undefined) {
+		tips_message('请选择推广目标');
+		return false;
+	}
+	var name = $.trim($('#name').val());
+	if(name==''){
+		tips_message('请填写广告计划名称');
+		$('#name')[0].focus();
+		return false;
+	}
+	if(name.length>40){
+		tips_message('广告计划名称不能超过40个字');
+		$('#name')[0].focus();
+		return false;
+	}
+	check_name(name);
+	if(jieguo == false){
+		tips_message('广告计划名称已存在');
+		$('#name')[0].focus();
+		return false;
+	}
+	var day_budget = $.trim($('#day_budget').val());
+	if(day_budget==''){
+		tips_message('请填写日预算');
+		$('#day_budget')[0].focus();
+		return false;
+	}
+	if(/^[1-9]\d*$/.test(day_budget) == false) {
+        tips_message("日预算投放请填写正整数");
+        $('#day_budget')[0].focus();
+        return false;
+    }
+    if(day_budget < 100) {
+    	tips_message("日预算必须大于100元");
+        $('#day_budget')[0].focus();
+        return false;
+    }
+    if (day_budget > 1000000) {
+        tips_message("日预算最大为1000000");
+        $('#day_budget')[0].focus();
+        return false;
+    }
+    var t_pid = $("input[name=t_pid]").val();
+    var t_id  = $("input[name=t_id]").val();
+    if(t_pid=="" || t_id=="") {
+    	tips_message('请选择广告样式');
+		return false;
+    }
+	var tf_date_type = $("input[name=tf_date_type]:checked").val();
+	var begin_tm = $.trim($('#begin_tm').val());
+	if(begin_tm==''){
+		tips_message('请选择投放开始时间');
+		return false;
+	}
+	if(tf_date_type == 2) {
+		var end_tm = $.trim($('#end_tm').val());
+		if(end_tm==''){
+			tips_message('请选择投放结束时间');
+			return false;
+		}
+		if(Date.parse(begin_tm) > Date.parse(end_tm) ) {
+			tips_message('投放开始时间不能大于结束时间');
+			return false;
+		}
+	}
+	var price = $.trim($('#price').val());
+	if(price==''){
+		tips_message('请填写单价');
+		$('#price')[0].focus();
+		return false;
+	}
+	var r = /^[0-9]+(\.[0-9]{1})?$/;
+    if(r.test(price) == false) {
+        tips_message("单价格式填写错误");
+        $('#price')[0].focus();
+        return false;
+    }
+    if(price > 1000000) {
+        tips_message("单价最大为1000000");
+        $('#price')[0].focus();
+        return false;
+    }
+
+    var copywriter_img = $("#copywriter_img_div").attr('src')
+    if(copywriter_img == undefined) {
+    	tips_message("请上传创意图");
+    	return false
+    }
+    if(t_id == 16) {
+    	var brand_img = $("#brand_img_div").attr('src')
+	    if(brand_img == undefined) {
+	    	tips_message("请上品牌图");
+	    	return false
+	    }
+    }
+    if(t_id == 14 || t_id == 15 || t_id == 16) {
+    	var copywriter_desc = $("input[name=copywriter_desc]").val()
+	    if(copywriter_desc==''){
+			tips_message('请填写广告文案');
+			$("input[name=copywriter_desc]")[0].focus();
+			return false;
+		}
+		if(copywriter_desc.length>25){
+			tips_message('广告文案不能超过25个字');
+			$("input[name=copywriter_desc]")[0].focus();
+			return false;
+		}
+		var brand_desc = $("input[name=brand_desc]").val()
+	    if(brand_desc==''){
+			tips_message('请填写广告品牌');
+			$("input[name=brand_desc]")[0].focus();
+			return false;
+		}
+		if(brand_desc.length>10){
+			tips_message('广告品牌不能超过10个字');
+			$("input[name=brand_desc]")[0].focus();
+			return false;
+		}
+    }
+    if(t_id != 17) {
+    	var url = $("input[name=url]").val()
+    	if(url==''){
+			tips_message('请填写落地页');
+			$("input[name=url]")[0].focus();
+			return false;
+		}
+		if(!is_url(url)) {
+			tips_message('落地页地址格式有误');
+			$("input[name=url]")[0].focus();
+			return false;
+		}
+    }
+    
+	return true;
+}
+//精准投放条件验证
+function check_push(){
+	var str = '';
+	//检测投放地区
+	refreshArea(); //生成地区信息
+	var res = check_area();
+	if(!res){
+		return false;
+	}
+	var area_value = $('#area_value').val();
+	if( area_value != '' && typeof(area_value) != 'undefined'){
+		str += "<input type='hidden' name='tf_area' value='"+$('#area_value').val()+"'/>";
+		str += "<input type='hidden' name='area_sp' value='"+$('#area_num').val()+"'/>";
+	}
+	//检测网络环境
+	var tf_nettype = $('input:radio[name="nettype"]:checked').val();
+	if(typeof(tf_nettype) != 'undefined' && tf_nettype != ''){
+		str += "<input type='hidden' name='tf_nettype' value='"+tf_nettype+"'/>";
+		if(tf_nettype==1){
+			str += "网络环境：仅在3G<br>";
+		}else if(tf_nettype==2){
+			str += "网络环境：仅在WiFi<br>";
+		}
+	}
+	//检测投放平台
+	// var tf_type = $('input:radio[name="tf_platform"]:checked').val();
+	// if(typeof(tf_type) != 'undefined' && tf_type != ''){
+	// 	str += "<input type='hidden' name='tf_type' value='"+tf_type+"'/>";
+	// 	if(tf_type==1){
+	// 		str += "投放平台：H5<br>";
+	// 	}else if(tf_type==2){
+	// 		str += "投放平台：Andriod<br>";
+	// 	}
+	// }
+	//检测机型
+	var tf_mobile = $('input[name="tf_phone"]:checked');
+	var tf_mobile_value = '';
+	if(typeof(tf_mobile) != 'undefined' && tf_mobile.length > 0){
+		str += '选择机型：';
+		for(i=0;i<tf_mobile.length;i++){
+			if(tf_mobile[i].value==1){
+				tf_mobile_value += tf_mobile[i].value+',';
+				str += '高端机型 ';
+			}else if(tf_mobile[i].value==2){
+				tf_mobile_value += tf_mobile[i].value+',';
+				str += '中端机型 ';
+			}else if(tf_mobile[i].value==3){
+				tf_mobile_value += tf_mobile[i].value+',';
+				str += '低端机型 ';
+			}
+		}
+		tf_mobile_value = tf_mobile_value.replace(/,$/, '');
+		str += "<input type='hidden' name='tf_mobile' value='"+tf_mobile_value+"'/>";
+		str += '<br>';
+	}
+	//检测媒体属性
+	var industry_parentid = $('#industry_parentid').val();
+	var industryid = $('#industryid').val();
+	if(industry_parentid != ''){
+		str += "<input type='hidden' name='industry_parentid' value='"+industry_parentid+"'/>";
+		str += "媒体属性："+$('#industry_parentid').find("option:selected").text()+' ';
+		if(industryid != ''){
+			str += "<input type='hidden' name='industryid' value='"+industryid+"'/>";
+			str += $('#industryid').find("option:selected").text();
+		}
+		str += '<br>';
+	}
+	//将选中信息放入div
+	$('#tf_clear').html("<button type='button' onclick='clear_push()'>清空</button>");
+	//增加清除按钮
+	$('#tf_hidden').html('');
+	if(str != ''){
+		$('#tf_hidden').append(str);
+	}
+	if( area_value != '' && typeof(area_value) != 'undefined'){
+		$('#tf_hidden').append('投放区域：'+$('#area_value').val());
+	}
+	$('#modal_reject').modal('hide');
+}
+//清空精准投放信息
+function clear_push(){
+	$('input:radio[name="nettype"]').attr("checked",false); //网络类型
+	$('input:radio[name="tf_platform"]').attr("checked",false); //投放平台
+	$('.label_group').removeClass('label_selected');
+	$('input[name="tf_phone"]').attr('checked',false); //机型
+	$('.label_check_group').removeClass('check_selected');
+	$('#industry_parentid').val(''); //媒体一级行业
+	$('#industryid').html("<option value=''>未选择</option>"); //媒体二级行业
+	$('#area_value').val(''); //投放地区
+	$('#area_num').val(''); //投放地区编号
+	$('#push_td').html(''); //地区div
+	$('#tf_clear').html(''); //清除所有按钮
+	$('#tf_hidden').html(''); //投放条件div
+}
+function check_area(){
+	var area = document.getElementById("area_value").value;//北京;河南,信阳;河南,周口;江西
+	var area_arr = new Array;
+	area_arr = area.split(";");
+	var s = area_arr.join(";")+";";//北京;河南,信阳;河南,周口;江西;
+	for (i=0;i<area_arr.length;i++) {
+		if (area_arr[i].split(",")[1]==null) {
+		 	var pro = area_arr[i].split(",")[0];
+		 	for (j=0;j<area_arr.length;j++) {
+			 	if (area_arr[j].split(",")[0]==pro&&j!=i) {
+			 		$('#area_value').val('');
+					$('#area_num').val('');
+					tips_message("您选择地区的有冲突，请重新选择");
+					return false;
+				}
+			}
+		} else if (s.replace(area_arr[i]+";","").indexOf(area_arr[i]+";")>-1) {
+			$('#area_value').val('');
+			$('#area_num').val('');
+			tips_message("您选择了重复的省市，请重新选择");
+			return false;
+		}
+	}
+	return true;
+}
+var area_id = 1;
+function addArea(){
+	var html = '<div id="area_div_'+area_id+'">';
+	html += '<select name="push_area[]" id="push_area_'+area_id+'" class="push_area" onchange="showSubArea(this)">';
+	html += '<option value="">请选择</option>';
+	var province = '';
+	if (typeof(arguments[0]) != 'undefined') {
+		province = arguments[0].trim();
+	}
+	for(var i in area_list){
+		if (i == 990000) continue; //海外排除
+		var item = area_list[i]['name'].split("\t");
+		var sub = area_list[i]['sub'];
+		var sub_length = 0;
+		for (var j in sub) {
+			sub_length++;
+		}
+		if (province == item[0].trim()) {
+			html += "<option selected value='"+i+':'+item[0]+':'+sub_length+"'>"+item[0]+"</option>";
+		}else{
+			html += "<option value='"+i+':'+item[0]+':'+sub_length+"'>"+item[0]+"</option>";
+		}	
+	}
+	html += '</select>';
+	html += '<span class="sub_area"></span>';
+	html += '<input type="button" value="删除" onclick="delArea(this)"/>';
+	html += '</div>';
+	$('#push_td').append(html);
+	var obj = $('#push_area_' + area_id);
+	area_id++;
+	return obj;
+}
+
+function delArea(obj){
+	$(obj).parent().remove();
+}
+
+function showSubArea(obj){
+	var sub_id = $(obj).attr('id').replace('push_area_', 'push_city_');
+	var sub_select = "<select name='push_city[]' id='"+sub_id+"'><option value=''>请选择</option>";
+	var value = $(obj).children('option:selected').val();
+	var arr = value.split(':');
+	var code = arr[0];
+	var city = '';
+	if (typeof(arguments[1]) != 'undefined') {
+		city = arguments[1].trim();
+	}
+	if (typeof(area_list[code]) == 'undefined') {
+		$(obj).parent().find('.sub_area').html('');
+		return false;
+	}
+	var sub_area = area_list[code]['sub'];
+	for(var i in sub_area){
+		var item = sub_area[i].split("\t");
+		if(city == item[0].trim())  {
+	        sub_select += "<option selected value='"+i+':'+item[0]+"'>"+item[0]+"</option>";
+        } else {
+			sub_select += "<option value='"+i+':'+item[0]+"'>"+item[0]+"</option>";
+	    }
+	}
+	sub_select += "</select>";
+	$(obj).parent().find('.sub_area').html(sub_select);
+}
+
+function refreshArea(){
+	var area_value = '';
+	var area_num = '';
+	$('.push_area').each(function(){
+		var sub_id = $(this).attr('id').replace('push_area_', 'push_city_');
+		if ($(this).val() !='') {
+			var item = $(this).find('option:selected').val().split(":");
+			area_value += item[1];
+			area_num += item[2]+','+item[0];
+			if ($('#'+sub_id).val() !='') {
+				var arr = $('#'+sub_id).find('option:selected').val().split(":");
+				area_value += ','+arr[1];
+				area_num += ','+arr[0];
+			}
+			area_value += ';';
+			area_num += ';';
+		}
+	});
+	area_value = area_value.replace(/;$/, '');
+	area_num = area_num.replace(/;$/, '');
+	$('#area_value').val(area_value);
+	$('#area_num').val(area_num);
+}
+var industry_arr = <?php echo json_encode($industry) ?>;
+function show_industry(){
+	var industry_parentid = $('#industry_parentid').val();
+	var option_str = '';
+	var val = '';
+	if(industry_parentid != ''){
+		for(i=0;i<industry_arr.length;i++){
+			if(industry_arr[i]['parentid'] == industry_parentid){
+				val += ','+industry_arr[i]['id'];
+				option_str += "<option value='"+industry_arr[i]['id']+"'>"+industry_arr[i]['name']+"</option>";
+			}
+		}
+	}
+	var option_index = "<option value='"+val+"'>未选择</option>";
+	$('#industryid').html(option_index+option_str);
+}
+
+
+function select_tf_date_type(type){
+	if(type == 1) {
+		$("input[name=end_tm]").hide();
+	}else if(type == 2) {
+		$("input[name=end_tm]").show();
+	}	
+}
+</script>
+
+
+<div class="single_info" style="padding-bottom:70px">
+	{% if materiel['examine_status'] == 3 %}
+	<div class="form_item alert alert-success" >
+	{% if materiel['bh_reason'] is not empty %}
+		驳回理由：
+		{% if materiel['bh_reason'] == 1 %}
+			媒体关键词问题
+		{% elseif materiel['bh_reason'] == 2 %}
+			媒体简介问题
+		{% elseif materiel['bh_reason'] == 3 %}
+			软件包名问题 
+		{% elseif materiel['bh_reason'] == 4 %}
+			下载地址问题
+		{% endif %}
+	{% endif %}	
+	{% if materiel['bh_explain'] is not empty %}
+		<br/>
+		详细说明：{{materiel['bh_explain']}}
+	{% endif %}
+	</div>
+	{% endif %}
+
+<form action="{{url('materiel/write')}}" method="post" enctype="multipart/form-data" class="media_info" id="my_form" onsubmit="return checkForm()">
+	<input type="hidden" name="id" value="{{ id }}"/>	
+	<div class="form_item">
+		<div class="form_label" style="width:92px;text-align: left;">
+			<label class="label_front" style="font-size: 18px;">推广类型：</label>
+		</div>
+		<div class="form_control" style="vertical-align: bottom;height: 46px;">
+			<label class="label_group label_selected">
+				<span class="radio_icon">
+					<span class="radio_inner"></span>
+					<input type="radio" {{ materiel['api_type']==1?"checked='checked'":'' }}  name="api_type" value="1" class="radio_input">
+				</span>
+				<span class="radio_txt" style="font-size: 18px;">通用广告</span>
+			</label>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label" style="width:92px;text-align: left;">
+			<label class="label_front" style="font-size: 18px;">推广目标：</label>
+		</div>
+		<div class="form_control" style="vertical-align: bottom;height: 70px;">
+			<label class="label_group {{ materiel['tf_type']==2?'label_selected':'' }}" style="margin-top: 9px;">
+				<span class="radio_icon">
+					<span class="radio_inner"></span>
+					<input type="radio" {{ materiel['tf_type']==2?"checked='checked'":'' }} onclick="$('#tf_type_desc').text('直接推广Android应用，点击广告位直接下载')" name="tf_type" value="2" class="radio_input">
+				</span>
+				<span class="radio_txt" style="font-size: 18px;">Android应用</span>
+			</label>
+			<label class="label_group {{ materiel['tf_type']==1?'label_selected':'' }}"  style="margin-top: 9px;">
+				<span class="radio_icon">
+					<span class="radio_inner"></span>
+					<input type="radio" {{ materiel['tf_type']==1?"checked='checked'":'' }} onclick="$('#tf_type_desc').text('直接推广网页')" name="tf_type" value="1" class="radio_input" >
+				</span>
+				<span class="radio_txt" style="font-size: 18px;">H5网页</span>
+			</label>
+			<div class="blue" style="margin-top:15px" id="tf_type_desc">
+				{% if materiel['tf_type'] == 2 or materiel['tf_type'] is empty %}
+					直接推广Android应用，点击广告位直接下载
+				{% else %}
+					直接推广网页
+				{% endif %}
+			</div>
+		</div>
+	</div>
+
+	<h3>计划设置</h3>
+	<div class="form_item">
+		<div class="form_label">
+			<font color="red">*</font>
+			<label>名称：</label>
+		</div>
+		<div class="form_control">
+			<input type="text" name="name" id="name" value="{{ materiel['name'] }}" placeholder="请输入广告名称，不超过40字" class="inputtext"/>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label">
+			<font color="red">*</font>
+			<label>日预算：</label>
+		</div>
+		<div class="form_control">
+			<input type="text" name="day_budget" id="day_budget" value="{{ materiel['day_budget']?materiel['day_budget']/100:'' }}" placeholder="此计划内所有广告的每日花销" class="inputtext"/>
+		</div>
+	</div>
+
+	<h3>广告设置</h3>
+	<div class="form_item">
+		<div class="form_label">
+			<label>定向：</label>
+		</div>
+		<div class="form_control">
+			<a href="#" class="blue" data-toggle="modal" style="line-height: 35px;" id="tf_btn" >选择投放条件</a>&nbsp;&nbsp;<span id="tf_clear"></span>
+			<div id="tf_hidden"></div>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label" >
+			<font color="red">*</font>
+			<label>广告样式：</label>
+		</div>
+		<div class="form_control">
+			<input type="hidden" name="t_pid" value="{{ materiel['t_pid'] }}" />
+			<input type="hidden" name="t_id" value="{{ materiel['t_id'] }}" />
+			<input type="text" id="tmp_show"  readonly='true' style="display:none"  placeholder="请选择广告样式："  class="inputtext" value="{{ materiel['tmp_parent_name']?materiel['tmp_parent_name']~' / '~materiel['tmp_sub_name']:'' }} {{materiel['size']?'('~materiel['size']~')':''}}" >
+			<div class="select_table select_table_left" style="display:none" >
+				<ul class="ms_list" id="ms_listt_l" style="border-top:1px solid #e9e9e9">
+				</ul>
+			</div>
+			<div class="select_table select_table_right" style="display:none">
+				<ul class="ms_list" id="ms_listt_r" style="border-top:1px solid #e9e9e9">
+				</ul>
+			</div>
+		</div>
+	</div>
+	<h3>排期与出价</h3>
+	<div class="form_item">
+		<div class="form_label">
+			<font color="red">*</font>
+			<label>投放日期：</label>
+		</div>
+		<div class="form_control">
+			<div class="radio radio-info radio-inline">
+                <input type="radio" id="reject_reason1" value="1" onclick="select_tf_date_type(1)" {{ materiel['tf_date_type']==1 or materiel is empty?"checked='true'":'' }} name="tf_date_type">
+                <label for="reject_reason1">长期投放</label>
+            </div>
+            <div class="radio radio-info radio-inline">
+                <input type="radio" id="reject_reason2" value="2" onclick="select_tf_date_type(2)" {{ materiel['tf_date_type']==2?"checked='true'":'' }} name="tf_date_type">
+                <label for="reject_reason2">指定日期范围</label>
+            </div>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label">
+		</div>
+		<div class="form_control">
+			<input class="inputtext" name="begin_tm" id="begin_tm" onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="{{ materiel['begin_tm']?date('Y-m-d H:i:s', materiel['begin_tm']):timestamp }}" />
+		</div>
+		<div class="form_control">
+			<input {{ materiel['tf_date_type']==1 or materiel is empty?"style='display:none'":"" }} class="inputtext" name="end_tm" id="end_tm" onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" value="{{ materiel['end_tm']?date('Y-m-d H:i:s', materiel['end_tm']):timestamp_7 }}" />
+		</div>
+	</div>
+
+	<div class="form_item">
+		<div class="form_label">
+			<label>出价方式：</label>
+		</div>
+		<div class="form_control" style="line-height: 35px;">
+			<label>CPC</label>
+		</div>
+	</div>
+
+	<div class="form_item">
+		<div class="form_label">
+			<font color="red">*</font>
+			<label>单价：</label>
+		</div>
+		<div class="form_control">
+			<input type="text" name="price" id="price" value="{{ materiel['price']?materiel['price']/100:'' }}" placeholder="建议出价1.2~2.3元/点击" class="inputtext"/>
+		</div>
+	</div>
+
+	<h3>广告创意</h3>
+		<div class="form_item chuangyi_img_div" >
+			<div class="form_label">
+				<label><font color="red">*</font>创意图片：</label>
+			</div>
+			<div class="form_control">
+				<input type="hidden" name="copywriter_img" id="copywriter_img" value="{{materiel['copywriter_img']}}" />
+				<input type="file" name="copywriter_img" id="copywriter_img_cur" onchange="onUploadImgChange(this, 'copywriter_img_cur', 'copywriter_img_div','copywriter_img')" />
+				<span class="chuangyi_size_span"></span>
+				<div style="margin-top:5px">
+					<img id="copywriter_img_div" {% if materiel['copywriter_img'] is not empty %}src="{{ IMG_HOST~materiel['copywriter_img'] }}" style="width:300px;height:200px"{% endif %} class='image' />
+				</div>
+				{% if materiel['copywriter_img'] is not empty %}
+				<button type="button" id="copywriter_img_del" style="margin-top:5px" type="button" onclick="del_img('copywriter_img');">删除</button>
+				{% endif %} 
+			</div>
+		</div>
+		<div class="form_item pinpai_img_div">
+			<div class="form_label">
+				<label><font color="red">*</font>品牌图片：</label>
+			</div>
+			<div class="form_control">
+				<input type="hidden" name="brand_img" id="brand_img" value="{{materiel['brand_img']}}" />
+				<input type="file" name="brand_img" id="brand_img_cur" onchange="onUploadImgChange(this, 'brand_img_cur', 'brand_img_div','brand_img')" />
+				<span class="pinpai_size_span">300px*300px,JPG,PNG（小于100K）</span>
+				<div style="margin-top:5px">
+					<img id="brand_img_div" {% if materiel['brand_img'] is not empty %}src="{{ IMG_HOST~materiel['brand_img'] }}" style="width:300px;height:200px"{% endif %} class='image' />
+				</div>
+				{% if materiel['brand_img'] is not empty %}
+				<button type="button" id="brand_img_del" style="margin-top:5px" type="button" onclick="del_img('brand_img');">删除</button>
+				{% endif %}
+			</div>
+		</div>
+		<div class="form_item wenan_div ">
+			<div class="form_label">
+				<font color="red">*</font>
+				<label>广告文案：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="copywriter_desc" value="{{ materiel['copywriter_desc'] }}" id="copywriter_desc" placeholder="请输入广告文案，不超过25字" class="inputtext"/>
+			</div>
+		</div>
+		<div class="form_item pinpai_div ">
+			<div class="form_label">
+				<font color="red">*</font>
+				<label>广告品牌：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="brand_desc" value="{{ materiel['brand_desc'] }}" id="brand_desc" placeholder="请输入广告品牌，不超过10字" class="inputtext"/>
+			</div>
+		</div>
+		<div class="form_item url_div ">
+			<div class="form_label">
+				<font color="red">*</font>
+				<label>落地页：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="url" value="{{ materiel['url'] }}" id="url" placeholder="请输入落地页地址" class="inputtext"/>
+			</div>
+		</div>
+
+
+<div class="" style="position:fixed;bottom:0;left:14.8%;width:83.7%;padding-top:20px;padding-bottom:20px;background:#fff;border-top:1px solid #E8E8E8;">
+	<div class="form_btn_foot">
+		{% if materiel['examine_status'] == 3 or materiel is empty %}
+		<button class="btn btn_orange" style="margin-right: 80px;">{{ materiel['id']?"修改":'提交' }}</button>
+		{% endif %}
+		<a class="btn btn-default" href="{{url('materiel/list')}}">返回</a>
+	</div>
+</div>
+	
+</form>
+</div>
+
+
+
+
+
+
+<!-- 投放条件弹层 -->
+<div class="modal" id="modal_reject" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">精确投放条件</h4>
+			</div>
+			<div class="modal-body" style="width:100%">
+				<div class="form_item">
+					<div class="form_label">
+						<label>网络环境：</label>
+					</div>
+					<div class="form_control">
+						<label {% if materiel['tf_nettype'] is not empty and materiel['tf_nettype'] == 1 %}class="label_group label_selected"{% else %}class="label_group"{% endif %}>
+							<span class="radio_icon">
+								<span class="radio_inner"></span>
+								<input type="radio" name="nettype" value="1" class="radio_input" {% if materiel['tf_nettype'] is not empty and materiel['tf_nettype'] == 1 %}checked="checked"{% endif %}/>
+							</span>
+							<span class="radio_txt">仅在3G</span>
+						</label>
+						<label {% if materiel['tf_nettype'] is not empty and materiel['tf_nettype'] == 2 %}class="label_group label_selected"{% else %}class="label_group"{% endif %}>
+							<span class="radio_icon">
+								<span class="radio_inner"></span>
+								<input type="radio" name="nettype" value="2" class="radio_input" {% if materiel['tf_nettype'] is not empty and materiel['tf_nettype'] == 2 %}checked="checked"{% endif %}/>
+							</span>
+							<span class="radio_txt">仅在Wifi</span>
+						</label>
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>选择机型：</label>
+					</div>
+					<div class="form_control">
+						<div <?php if(!empty($materiel['tf_mobile']) && in_array(1, $materiel['tf_mobile'])){ ?>class="label_check_group check_selected"<?php }else{ ?>class="label_check_group"<?php } ?>>
+							<span class="checkbox_icon">
+								<span class="checkbox_inner"></span>
+								<input type="checkbox" name="tf_phone" value="1" class="check_input" <?php if(!empty($materiel['tf_mobile']) && in_array(1, $materiel['tf_mobile'])){ ?>checked="checked"<?php } ?>/>
+							</span>
+							<span class="checkbox_txt">高端机型</span>
+						</div>
+						<div <?php if(!empty($materiel['tf_mobile']) && in_array(2, $materiel['tf_mobile'])){ ?>class="label_check_group check_selected"<?php }else{ ?>class="label_check_group"<?php } ?>>
+							<span class="checkbox_icon">
+								<span class="checkbox_inner"></span>
+								<input type="checkbox" name="tf_phone" value="2" class="check_input" <?php if(!empty($materiel['tf_mobile']) && in_array(2, $materiel['tf_mobile'])){ ?>checked="checked"<?php } ?>/>
+							</span>
+							<span class="checkbox_txt">中端机型</span>
+						</div>
+						<div <?php if(!empty($materiel['tf_mobile']) && in_array(3, $materiel['tf_mobile'])){ ?>class="label_check_group check_selected"<?php }else{ ?>class="label_check_group"<?php } ?>>
+							<span class="checkbox_icon">
+								<span class="checkbox_inner"></span>
+								<input type="checkbox" name="tf_phone" value="3" class="check_input" <?php if(!empty($materiel['tf_mobile']) && in_array(3, $materiel['tf_mobile'])){ ?>checked="checked"<?php } ?>/>
+							</span>
+							<span class="checkbox_txt">低端机型</span>
+						</div>
+					</div>
+				</div>
+				<div class="form_item">
+					<div class="form_label">
+						<label>媒体属性：</label>
+					</div>
+					<div class="form_control">
+						<select id="industry_parentid" onchange="show_industry()">
+							<option value=''>一级行业</option>
+							{% for val in industry %}{% if val['parentid'] == 0 %}
+							<option value="{{val['id']}}" {% if materiel['industry_parentid'] is not empty and materiel['industry_parentid'] == val['id'] %}selected="selected"{% endif %}>{{val['name']}}</option>
+							{% endif %}{% endfor %}
+						</select>
+						<select id="industryid">
+							<option value=''>未选择</option>
+						</select>
+					</div>
+				</div>
+				<br>
+				<div class="form_item">
+					<div class="form_label">
+						<label>投放地区：</label>
+					</div>
+					<div class="form_control">
+						<input type="hidden" value="" id="area_num"/>
+						<input type="hidden" value="" id="area_value"/>
+						<button type="button" onclick="addArea()">添加</button>
+						<div id="push_td"></div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer code-footer">
+				<button type="button" class="btn btn_orange" onclick="check_push()">确定</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+var temp_parent_list = {{ temp_parent_list }};
+var temp_sub_list 	 = {{ temp_sub_list }};
+
+function select_pid(pid)
+{
+	var str = '';
+	$(temp_sub_list).each(function(k,v){
+			if(v.parentid == pid){
+				var name;
+				if(pid == 1) {
+					name = "640*100";
+				}else if(pid == 2){
+					name = "600*500";
+				}else if(pid == 3){
+					name = "640*960";
+				}else if(pid == 4){
+					if(v.size == null) {
+						name = v['name'];
+					}else {
+						name = v['name']+'('+v['size']+')';
+					}
+				}
+				str += '<li class="ms_list_mainli_'+v['id']+'" onclick="select_sub(this,'+v['parentid']+','+v['id']+" ,'" +name+"'"+')" >';
+				str += '<h3>'+name+'</h3>';
+				str += '</li>';
+			}
+		})
+	$("#ms_listt_r li").removeClass('li_back_color');
+	$("#ms_listt_l li").removeClass('li_back_color');
+	$(".ms_list_mainli_"+pid).addClass('li_back_color');
+	$('#ms_listt_r').html(str);
+	if(pid){
+		$('.select_table_right').show();
+	}else{
+		$('.select_table_right').hide();
+	}
+	
+	show_chuangyi_bolck(pid, 0);
+}
+
+function show_left_list() {
+ 	var from_key = 1;
+ 	var data = temp_parent_list[from_key];
+ 	var str = '';
+	$(data).each(function(k,v){
+			if(k<4){
+				str += '<li class="ms_list_mainli_'+v['id']+'" onclick="select_pid('+v['id']+')" >';
+				str += '<h3>'+v['name']+'</h3>';
+				str += '</li>';
+			}
+		})
+	$("#ms_listt_l li").removeClass('li_back_color');
+	$('#ms_listt_l').html(str);
+	$('.select_table_left').show();
+	$('.select_table_right').show();
+}
+
+$(function(){
+	var is_val = $("#tmp_show").val();
+	if(is_val == "") {
+		show_left_list();
+	}else{
+		$('.select_table_left').show();
+		$('.select_table_right').show();
+		var parent_id = $("input[name=t_pid]").val();
+		var sub_id 	  = $("input[name=t_id]").val();
+		show_left_list();
+		select_pid(parent_id);
+		$('#ms_listt_r li').removeClass('li_back_color');
+		$(".ms_list_mainli_"+sub_id).addClass('li_back_color');
+	}
+})
+
+var t_pid = "{{ materiel['t_pid'] }}";
+var t_id = "{{ materiel['t_id'] }}";
+show_chuangyi_bolck(t_pid, t_id);
+
+function select_sub(obj, parent_id, sub_id, name)
+{
+	var from_key = 1;
+	var data = temp_parent_list[from_key];
+	var parent_name = "";
+	$(data).each(function(k,v){
+			if(v.id == parent_id) {
+				parent_name = v.name;
+			}
+		})
+	$("#ms_listt_r li").removeClass('li_back_color');
+	$(obj).addClass('li_back_color');
+	$("input[name=t_pid]").val(parent_id);
+	$("input[name=t_id]").val(sub_id);
+	$("#tmp_show").val(parent_name+' / '+name);
+	t_pid = parent_id;
+	t_id = sub_id;
+	show_chuangyi_bolck(t_pid, t_id);
+}
+
+function show_chuangyi_bolck(parent_id, sub_id){
+	if(parent_id == 1) {
+		$(".chuangyi_img_div").show();
+		$(".pinpai_img_div").hide();
+		$(".wenan_div").hide();
+		$(".pinpai_div").hide();
+		$(".url_div").show();
+		$('.chuangyi_size_span').text('640px*100px,JPG/PNG（小于100K）');
+	}else if(parent_id == 3) {
+		$(".chuangyi_img_div").show();
+		$(".pinpai_img_div").hide();
+		$(".wenan_div").hide();
+		$(".pinpai_div").hide();
+		$(".url_div").show();
+		$('.chuangyi_size_span').text('640px*960px,JPG/PNG（小于100K）');
+	}else if(parent_id == 2) {
+		$(".chuangyi_img_div").show();
+		$(".pinpai_img_div").hide();
+		$(".wenan_div").hide();
+		$(".pinpai_div").hide();
+		$(".url_div").show();
+		$('.chuangyi_size_span').text('600px*500px,JPG,PNG（小于100K）');
+	}else if(parent_id == 4) {
+		if(sub_id == 14) {
+			$(".chuangyi_img_div").show();
+			$(".pinpai_img_div").hide();
+			$(".wenan_div").show();
+			$(".pinpai_div").show();
+			$(".url_div").show();
+			$('.chuangyi_size_span').text('1280px*720px,JPG,PNG（小于100K）');
+		}else if(sub_id == 15) {
+			$(".chuangyi_img_div").show();
+			$(".pinpai_img_div").hide();
+			$(".wenan_div").show();
+			$(".pinpai_div").show();
+			$(".url_div").show();
+			$('.chuangyi_size_span').text('1280px*720px,JPG,PNG（小于100K）');
+		}else if(sub_id == 16) {
+			$(".chuangyi_img_div").show();
+			$(".pinpai_img_div").show();
+			$(".wenan_div").show();
+			$(".pinpai_div").show();
+			$(".url_div").show();
+			$('.chuangyi_size_span').text('1200px*800px,JPG,PNG（小于100K）');
+		}else if(sub_id == 17) {
+			$(".chuangyi_img_div").show();
+			$(".pinpai_img_div").hide();
+			$(".wenan_div").hide();
+			$(".pinpai_div").hide();
+			$(".url_div").hide();
+			$('.chuangyi_size_span').text('1280px*720px,JPG,PNG（小于100K）');
+		}
+	}
+}
+
+//图片预览
+ $(function(){
+	$('.image').viewer();
+})
+//图片验证
+function test(file_name){
+	var result = /\.[^\.]+/.exec(file_name);
+	return result;
+}
+function onUploadImgChange(sender,img,obj,del_img){
+	if(!$("#"+img).val()){
+		return false;
+	}
+    if( $("#"+img).val() && !sender.value.match(/.jpg|.gif|.png|.bmp|.jpeg/i) ){
+        alert('图片格式无效！');
+		remove_file(img);
+        return false;
+    }
+    var uid = $('#uid').val();
+	// 图片名称后缀必须为小写，大些报错
+	var b = test(sender.value);
+	if( $("#"+img).val() && b!=".jpg" && b!=".gif" && b!=".png" && b!=".bmp" && b!=".jpeg" ){
+		alert('后缀只支持小写格式！');
+		if(!uid){
+			remove_file(img);
+		}else{
+			var file = $("#"+img);
+			file.after(file.clone().val(""));
+			file.remove();
+		}
+		return false;
+	}
+	$('#'+file).siblings('input[type=hidden]').val('');
+	var imgSrc = check_img(sender);
+    var img_url = imgSrc;
+    var newimg = new Image();
+    newimg.src = img_url;
+    // 加载完成执行
+    newimg.onload = function(){
+		/*var w = newimg.width;
+		var h = newimg.height;
+		if( (img == 'ap_imgurl' || img == 'bg_img' || img == 'bottom_color') && w!=640 ){
+			alert('宽必须640');
+			remove_file(img);
+			return false;
+		}*/
+		var objPreview = document.getElementById(obj);
+		$('#'+del_img+'_del').remove();
+		str = '<button id="'+del_img+'_del" type="button" onclick="del_img(\''+del_img+'\');" >删除</button>';
+		$('#'+obj).closest('img').after(str);
+		var imgs = document.getElementById(img);
+		if( sender.files && sender.files[0] ){
+			objPreview.style.display = 'block';
+			objPreview.style.width = '300px';
+			objPreview.style.height = '200px';
+			objPreview.src = window.URL.createObjectURL(imgs.files[0]);
+		}
+	}	
+} 	
+function del_img(img){
+	if(confirm('是否确认删除？')) {
+		remove_file(img);
+	}
+}
+function remove_file(file){
+	$('#'+file).siblings('input[type=hidden]').val('');
+	$('#'+file+'_div').removeAttr('src').css('display','none');
+	$('#'+file+'_del').remove();
+	 $("#"+file+"_cur").val("");
+	var file = $("#"+file);
+	file.after(file.clone().val(""));
+	file.remove();
+	return false;
+}
+function check_img(obj){
+   	var imgSrc = '';
+  	if( obj.files && obj.files[0] ){
+        if(getOs() == 'Chrome'){
+            imgSrc = window.URL.createObjectURL(obj.files[0]);
+        }else{
+            imgSrc = window.URL.createObjectURL(obj.files[0]);
+        }
+    }else{
+        //IE下，使用滤镜
+        obj.select();
+        //解决IE9下document.selection拒绝访问的错误
+        if( navigator.appName == "Microsoft Internet Explorer" && navigator.appVersion.match(/9./i) == "9." ){
+            obj.blur();
+        }
+        var imgSrc = document.selection.createRange().text;
+        document.selection.empty();
+    }
+	return imgSrc;
+}
+function getOs(){ 
+   	var OsObject = ""; 
+   	if(isIE = navigator.userAgent.indexOf("MSIE") != -1){ 
+        return "MSIE"; 
+   	}
+   	if(isFirefox = navigator.userAgent.indexOf("Firefox") != -1){ 
+        return "Firefox";
+   	}
+   	if(isChrome = navigator.userAgent.indexOf("Chrome") != -1){
+        return "Chrome";
+   	}
+   	if(isSafari = navigator.userAgent.indexOf("Safari") != -1){
+        return "Safari"; 
+   	}
+    if(isOpera = navigator.userAgent.indexOf("Opera") != -1){
+        return "Opera";
+   	} 
+}
+
+
+$(function(){
+    var m_btn = $('#tf_btn');
+    var modal = $('#modal_reject');
+    m_btn.on('click', function(){
+      modal.modal({backdrop: 'static'});
+    });
+    modal.on('shown.bs.modal', function(){
+      var obj = $(this);
+      var modal_dialog = obj.find('.modal-dialog');
+      var m_top = ( $(window).height() - modal_dialog.height() )/2;
+      modal_dialog.css({'margin': m_top + 'px auto'});
+    });
+ });
+</script>

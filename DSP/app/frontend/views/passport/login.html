@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>广告互动平台</title>
+<link type="text/css" href="{{ static_url('css/bootstrap.css?_v=')~assetsVersion }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/style.css?_v=')~assetsVersion }}" rel="stylesheet" />
+<script src="{{ static_url('js/jquery-2.1.0.js?_v=')~assetsVersion }}"></script>
+<style>
+body{
+    background:#f1f1f1;
+}
+.alert-tips{
+	position:fixed;
+	top:0px;
+	width:100%;
+	z-index:1001;
+	text-align: center;
+	display:none;
+}
+</style>
+</head>
+<body>
+<div class="login-box-wrap">
+	<div class="login-box">
+        <h3 class="login-logo">安智广告互动平台</h3>
+		<form action="{{ url('passport/login') }}" method="post" id="login-form">
+			<div class="login-input">
+				
+					<input type="text" placeholder="登录名" name="username" id="username" class="form-control" />
+				
+			</div>
+			<div class="login-input">
+				
+					<input type="password" placeholder="密码" name="password" id="password" class="form-control" />
+			
+			</div>
+			<button type="button" class="btn btn-success" id="login-btn">登录</button>
+		</form>
+	</div>
+</div>
+<div class="alert-tips" id="alert-tips">
+    <?php $this -> flashSession -> output();  ?>
+</div>
+<script>
+$(document).ready(function(){
+	$('#login-btn').bind('click', function(){
+        /*var username = $.trim($('#username').val());
+        var usernamePattern = /^[\w-]{4,20}$/i;
+        if(!usernamePattern.test(username)){
+            alert('用户名由4-20个英文字符、数字、中下划线组成');
+            return false;
+        }
+
+        var password = $.trim($('#password').val());
+        if(password.length < 6 || password.length > 32){
+            alert('密码由6-32个字符组成');
+            return false;
+        }*/
+        $('#login-form').submit();
+    });
+    var alertTips = $.trim($('#alert-tips').html());
+    if(typeof alertTips != 'undefined' && alertTips != null && alertTips){
+        var classname = $('#alert-tips div').attr('class');
+        switch(classname){
+            case 'errorMessage':
+                $('#alert-tips div').addClass('alert').addClass('alert-danger');
+                break;
+            case 'successMessage':
+                $('#alert-tips div').addClass('alert').addClass('alert-success');
+                break;
+            case 'noticeMessage':
+                $('#alert-tips div').addClass('alert').addClass('alert-info');
+                break;
+            case 'warningMessage':
+                $('#alert-tips div').addClass('alert').addClass('alert-warning');
+                break;
+            default:
+                $('#alert-tips div').addClass('alert').addClass('alert-info');
+                break;
+        }
+        $('#alert-tips').slideToggle(0).delay(3000).slideToggle(300);
+    }
+});
+</script>
+</body>
+</html>

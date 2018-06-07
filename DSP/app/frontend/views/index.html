@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+	{{ partial('public/header') }}
+</head>
+<body>
+    <div class="main">
+		<div class="sider">
+			{{ partial('public/left') }}
+		</div>
+		<div class="content">
+			<div class="navigation">
+				{{ partial('public/top') }}
+			</div>
+			<div class="content_inner">
+				{{content()}}
+			</div>
+		</div>
+    </div>
+    {{ partial('public/alert') }}  
+</body>
+</html>

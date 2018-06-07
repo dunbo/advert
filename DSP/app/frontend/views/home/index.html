@@ -1,0 +1,161 @@
+
+<div class="content_inner">
+
+<div class="row">
+	<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+        <div class="tile-stats b brall mb25">
+                <div class="tile-stats-content">
+                    <div class="tile-stats-number">现金账户</div>
+					<div class="tile-stats-text">{{ balance['cash_balance'] is not empty?number_format(balance['cash_balance']):'0.00' }}元</div>
+                </div>
+                <div class="clearfix"></div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+        <div class="tile-stats b brall mb25">
+                <div class="tile-stats-content">
+                    <div class="tile-stats-number">配送账户</div>
+                     <div class="tile-stats-text">{{ balance['rebate_balance'] is not empty?number_format(balance['rebate_balance']):'0.00' }}元</div>
+                </div>
+                <div class="clearfix"></div>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+        <div class="tile-stats b brall mb25">
+                <div class="tile-stats-content">
+                    <div class="tile-stats-number">广告计划</div>
+                    <div class="tile-stats-text">
+                    	<a href="{{ url('materiel/list?status=4') }}">待审核<span class="blue">{{ ad_count[1]?ad_count[1]:0 }}</span></a>
+                    	<a href="{{ url('materiel/list?status=5') }}" style="margin-left:1rem">未通过<span class="blue">{{ ad_count[2]?ad_count[2]:0 }}</span></a>
+                    	<a href="{{ url('materiel/list?status=2') }}" style="margin-left:1rem">投放中<span class="blue">{{ ad_count[3]?ad_count[3]:0 }}</span></a></div>
+                </div>
+                <div class="clearfix"></div>
+        </div>
+    </div>
+ </div>
+
+ <div class="search_box">
+	<div class="row" style="margin-bottom: 10px;padding: 0 1.5rem;">	
+		<div class="form_control pull-right">
+			<select class="inputtext" onchange="select_by_time(this)"  >
+				<option {{ tag==1?"selected":'' }} value="1">今天</option>
+				<option {{ tag==2?"selected":'' }} value="2">昨天</option>
+				<option {{ tag==7?"selected":'' }} value="7">过去7天</option>
+				<option {{ tag==30?"selected":'' }} value="30">过去30天</option>
+			</select>
+		</div>
+		<div class="form_item">
+			<div class="form_control">
+				<h4>整体情况</h4>
+			</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="row">
+		<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+	        <div class="tile-stats b brall mb25">
+	                <div class="tile-stats-content">
+	                    <div class="tile-stats-number">曝光量（次）</div>
+	                    <div class="tile-stats-text">{{ statistics['exposure']?statistics['exposure']:0 }}</div>
+	                </div>
+	                <div class="clearfix"></div>
+	        </div>
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+	        <div class="tile-stats b brall mb25">
+	                <div class="tile-stats-content">
+	                    <div class="tile-stats-number">点击量（次）</div>
+	                    <div class="tile-stats-text">{{ statistics['click_num']?statistics['click_num']:0 }}</div>
+	                </div>
+	                <div class="clearfix"></div>
+	        </div>
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+	        <div class="tile-stats b brall mb25">
+	                <div class="tile-stats-content">
+	                    <div class="tile-stats-number">平均点击率（%）</div>
+	                    <div class="tile-stats-text">{{ statistics['click_rate']?statistics['click_rate']:0 }}</div>
+	                </div>
+	                <div class="clearfix"></div>
+	        </div>
+		</div>
+		<div class="col-lg-3 col-md-3 col-sm-3 col-xs-3">
+	        <div class="tile-stats b brall mb25">
+	                <div class="tile-stats-content">
+	                    <div class="tile-stats-number">花费（元）</div>
+	                    <div class="tile-stats-text">{{ statistics['total']?number_format(statistics['total']):'0.00' }}</div>
+	                </div>
+	                <div class="clearfix"></div>
+	        </div>
+		</div>
+	</div>
+
+	<div id="container" style="max-width:100%;height:400px"></div>
+
+</div>
+
+<script>
+function select_by_time(obj){
+	var tag = $(obj).val();
+	window.location.href="{{ url('home/index?tag=') }}"+tag;
+}
+
+$(function () {
+    $('#container').highcharts({
+    	title: {
+    		text: ''
+		},
+        xAxis: {
+        	categories:{{ chart_data_json['create_date'] }}
+        },
+        yAxis:[{
+            lineWidth : 1,
+            title:{
+                text :'曝光量'
+            }
+        }
+        // {
+        //  	title:{
+        //         text :'点击量'
+        //     },
+            //lineWidth : 1,
+            //opposite:true
+        //}
+        // ,{
+        // 	title:{
+        //         text :'点击率'
+        //     },
+        //     opposite:true
+        // }
+        ,{
+        	title:{
+                text :'消耗'
+            },
+            opposite:true
+        }
+        ],
+        series: [{
+            data: {{ chart_data_json['exposure'] }},
+            name: "曝光量",
+            yAxis:0
+        }, 
+        // {
+        //     data: {{ chart_data_json['click_num'] }},
+        //     yAxis:1,
+        //     name: '点击量',
+        // },
+        //  {
+        // 	data: {{ chart_data_json['click_rate'] }},
+        //     yAxis:2,
+        //     name: '点击率',
+        // },
+        {
+        	data: {{ chart_data_json['total'] }},
+            yAxis:1,
+            name: '消耗',
+        }]
+
+    });
+});
+
+</script>

@@ -1,0 +1,224 @@
+<script>
+function checkForm(){
+	var begin_tm = $.trim($('#begin_tm').val());
+	var end_tm = $.trim($('#end_tm').val());
+	if(begin_tm && end_tm && begin_tm>end_tm){
+		tips_message('开始时间不能大于结束时间');
+		return false;
+	}
+}
+function bytime(num){
+	var url = "{{url('materiel/list')}}";
+	var my_go = '?tag='+num;
+	var materiel_name = $('#materiel_name').val(); //广告计划名称
+	var examine_status = $('#examine_status').val(); //审核状态
+	var status = $('#switch').val(); //广告状态
+	var page = {{paginator.current}};
+	if(page){
+		my_go += '&page='+page;
+	}
+	if(materiel_name){
+		my_go += '&materiel_name='+materiel_name;
+	}
+	if(examine_status){
+		my_go += '&examine_status='+examine_status;
+	}
+	if(status){
+		my_go += '&switch='+status;
+	}
+	window.location.href=url+my_go;
+}
+</script>
+<div class="manage_ad_position">
+	<form method="get" action="{{ url('materiel/list') }}" onsubmit="return checkForm()">
+	<div class="search_box">
+		<div class="form_item">
+			<div class="form_label">
+				<label>广告计划名称：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="materiel_name" id="materiel_name" class="inputtext" {% if materiel_name is not empty %}value="{{materiel_name}}"{%endif%}/>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label>审核状态：</label>
+			</div>
+			<div class="form_control">
+				<select name="examine_status" id="examine_status" class="inputtext">
+					<option value="0">全部</option>
+					<option value="1" {% if examine_status == 1 %}selected="selected"{% endif %}>待审核</option>
+					<option value="2" {% if examine_status == 2 %}selected="selected"{% endif %}>已通过</option>
+					<option value="3" {% if examine_status == 3 %}selected="selected"{% endif %}>未通过</option>
+				</select>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label>广告状态：</label>
+			</div>
+			<div class="form_control">
+				<select name="switch" id="switch" class="inputtext">
+					<option value="0">全部</option>
+					<option value="4" {% if switch == 4 %}selected="selected"{% endif %}>未开始</option>
+					<option value="1" {% if switch == 1 %}selected="selected"{% endif %}>进行中</option>
+					<option value="2" {% if switch == 2 %}selected="selected"{% endif %}>暂停</option>
+					<option value="3" {% if switch == 3 %}selected="selected"{% endif %}>结束</option>
+				</select>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_control">
+				<input class="btn_orange" type="submit" value="搜索" />
+			</div>
+		</div>
+		<a href="{{url('materiel/add')}}" class="btn_orange pull_right">新建广告计划</a>
+		<div class="clear"></div>
+	</div>
+	<div class="table_nav">
+		<div class="form_control pull-right">
+			<input class="inputtext" name="begin_tm" id="begin_tm" {% if begin_tm is not empty %}value="{{begin_tm}}"{%endif%} onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'%y-%M-%d %H:%m:%s'})" />
+			<span class="space">~</span>
+			<input class="inputtext" name="end_tm" id="end_tm" {% if end_tm is not empty %}value="{{end_tm}}"{%endif%} onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'%y-%M-%d %H:%m:%s'})" />
+		</div>
+		<div class="table_nav_a pull-right">
+			<a {% if tag==1 %}class="active"{% endif %} href="javascript:;" onclick="bytime(1);">今天</a>
+			<a {% if tag==2 %}class="active"{% endif %} href="javascript:;" onclick="bytime(2);">昨天</a>
+			<a {% if tag==7 %}class="active"{% endif %} href="javascript:;" onclick="bytime(7);">最近7天</a>
+			<a {% if tag==30 %}class="active"{% endif %} href="javascript:;" onclick="bytime(30);">最近30天</a>
+		</div>	
+	</div>
+	</form>
+	<div class="table_box">
+		<table cellpadding="0" cellspacing="0" class="tables">
+			<thead>
+				<tr>
+					<th width="12%">广告计划名称</th>
+					<th width="12%">广告主名称</th>
+					<th width="8%">曝光量</th>
+					<th width="8%">点击量</th>
+					<th width="10%">消耗(元)</th>
+					<th width="10%">精确投放</th>
+					<th width="8%">日预算</th>
+					<th width="10%">关联创意</th>
+					<th width="10%">审核状态</th>
+					<th width="12%">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% if results is not empty %}
+			{% for val in results %}
+				<tr>
+					<td>{{val['name']}}</td>
+					<td>{{userinfo['ad_name']}}</td>
+					<td>{{val['exposure']}}</td>
+					<td>{{val['click_num']}}</td>
+					<td>{{val['total']/100}}</td>
+					<td><a href="javascript:;" onclick="tf_alert('{{ val['tf_nettype'] }}','{{ val['tf_type'] }}','{{ val['tf_mobile'] }}','{{ val['industry_pname'] }}','{{ val['industry_name'] }}','{{ val['tf_area'] }}')" class="blue">查看</a></td>
+					<td>{{val['day_budget']/100}}</td>
+					<td><a href="{{url('idea/edit?idea_id='~val['idea_id'])}}" class='blue'>{{val['prize_name']}}</a></td>
+					<td>
+						{% if val['examine_status']==1 %}
+						<span style="color:#EAC100">待审核</span>
+						{% elseif val['examine_status']==2 %}
+						<span style="color:#00DB00">已通过</span>
+						{% elseif val['examine_status']==3 %}
+						<span style="color:red">未通过</span>
+						{% else %}
+						-
+						{% endif %}
+					</td>
+					<td>
+						{% if val['examine_status']==3 %} <a href="{{url('materiel/edit?id='~val['id'])}}" class="blue">编辑</a> 
+						{% endif %}
+						{% if val['examine_status']==2 %}
+						{% if val['switch']==1 and val['begin_tm']<now and val['end_tm']>now %} <a href="{{url('materiel/change_status?status=2&id='~val['id'])}}" onclick="return confirm('确定要暂停吗')" class="blue">暂停</a> <a href="{{url('materiel/change_status?status=3&id='~val['id'])}}" onclick="return confirm('结束不可恢复')" class="blue">结束</a> {% endif %}
+						{% if val['switch'] == 2 and val['begin_tm']<now and val['end_tm']>now %} <a href="{{url('materiel/change_status?status=1&id='~val['id'])}}" onclick="return confirm('确定要继续吗')" class="blue">继续</a> {% endif %}
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+			{% else %}
+				<tr>
+	                <td colspan="8">暂无数据</td>
+	            </tr>
+			{% endif %}
+			</tbody>
+		</table>
+		<div class="pagebars">
+			<div class="pagebars_l">
+				<p>每页显示<span>{{pagesize}}</span>条/共<span>{{paginator.total_items}}</span>条</p>
+			</div>
+			<div class="pagebars_r">
+				{% if results is not empty %}
+		            {{ partial('public/paginator') }}
+		        {% endif %}
+	        </div>
+			<div class="clear"></div>
+			
+		</div>
+	</div>	
+</div>
+<!--投放条件弹窗-->
+<div class="modal" id="tf_alert" tabindex="-1" role="dialog" aria-labelledby="modal_reject_colse">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">投放条件</h4>
+			</div>
+			<div class="modal-body modal-reject_cnt" style="width:100%">
+				<div id="tf_div"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+//查看投放条件
+function tf_alert(tf_nettype,tf_type,tf_mobile,industry_pname,industry_name,tf_area){
+	var str = '';
+	str += '网络环境：';
+	if(tf_nettype != ''){
+		if(tf_nettype==1){
+			str += "仅在3G";
+		}else if(tf_nettype==2){
+			str += "仅在WiFi";
+		}
+	}
+	str += '<br>投放平台：';
+	if(tf_type != ''){
+		if(tf_type==1){
+			str += "h5";
+		}else if(tf_type==2){
+			str += "Android";
+		}
+	}
+	str += '<br>选择机型：';
+	if(tf_mobile != ''){
+		if (tf_mobile.indexOf('1') > -1) {
+			str += "高端机型 ";
+		}
+		if (tf_mobile.indexOf('2') > -1) {
+			str += "中端机型 ";
+		}
+		if (tf_mobile.indexOf('3') > -1) {
+			str += "低端机型 ";
+		}
+	}
+	str += "<br>媒体属性：";
+	if(industry_pname != ''){
+		str += industry_pname+' ';
+	}
+	if(industry_name != ''){
+		str += industry_name;
+	}
+	str += '<br>投放地区：';
+	if(tf_area != ''){
+		str += tf_area;
+	}
+	$('#tf_div').html('');
+	$('#tf_div').append(str);
+	$('#tf_alert').modal('show');
+}
+</script>

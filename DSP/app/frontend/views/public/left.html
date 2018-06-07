@@ -1,0 +1,46 @@
+<div class="logo">
+	<a href="{{url('home/index')}}">LOGO</a>
+</div>
+<ul class="menu">
+	<li class="menu_main_item">
+		<ul class="menu_sub">
+			<li {% if prefix == 'home' %}class="selected"{% endif %}><a href="{{url('home/index')}}">首页</a></li>
+		</ul>
+	</li>
+	<li class="menu_main_item">
+		<div class="menu_title">
+			<i class="menu_icon glyphicon glyphicon-random"></i>
+			<span>广告</span>
+		</div>
+		<ul class="menu_sub">
+			<li {% if prefix == 'materiel' %}class="selected"{% endif %}><a href="{{url('materiel/list')}}">广告列表</a></li>
+		</ul>
+	</li>
+	<li class="menu_main_item">
+		<div class="menu_title">
+			<i class="menu_icon glyphicon glyphicon-random"></i>
+			<span>数据</span>
+		</div>
+		<ul class="menu_sub">
+			<li {% if prefix == 'data' %}class="selected"{% endif %}><a href="{{url('data/list')}}">广告数据</a></li>
+		</ul>
+	</li>
+	<li class="menu_main_item">
+		<div class="menu_title">
+			<i class="menu_icon glyphicon glyphicon-random"></i>
+			<span>财务</span>
+		</div>
+		<ul class="menu_sub">
+			<li {% if prefix == 'record' %}class="selected"{% endif %}><a href="{{url('finance/record')}}">财务记录</a></li>
+		</ul>
+	</li>
+	<li class="menu_main_item">
+		<div class="menu_title">
+			<i class="menu_icon glyphicon glyphicon-random"></i>
+			<span>账户</span>
+		</div>
+		<ul class="menu_sub">
+			<li {% if prefix == 'user' %}class="selected"{% endif %}><a href="{{url('user/index')}}">客户信息</a></li>
+		</ul>
+	</li>
+</ul>

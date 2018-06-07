@@ -1,0 +1,77 @@
+<script>
+$(function(){
+	$('.image').viewer();
+})
+</script>
+<div class="single_info account_info">
+	<h3>客户信息</h3>
+	<div class="form_item">
+		<div class="form_label">
+			<label>公司全名：</label>
+		</div>
+		<div class="form_control">
+			<p class="prompt_p">{% if info['company_name'] is not empty %}{{info['company_name']}}{% endif %}</p>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label">
+			<label>公司地址：</label>
+		</div>
+		<div class="form_control">
+			<p class="prompt_p">{% if info['register_address'] is not empty %}{{info['register_address']}}{% endif %}</p>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label">
+			<label>营业执照注册号：</label>
+		</div>
+		<div class="form_control">
+			<p class="prompt_p">{% if info['register_num'] is not empty %}{{info['register_num']}}{% endif %}</p>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label">
+			<label>营业执照照片：</label>
+		</div>
+		<div class="form_control">
+			<p class="prompt_p">
+				{% if info['business_img'] is not empty %}
+				<img src="{{ IMG_HOST~info['business_img'] }}" class='image' />
+				{% endif %}
+			</p>
+		</div>
+	</div>
+	<h3>联系人信息</h3>
+	<div class="form_item">
+		<div class="form_label">
+			<label>联系人姓名：</label>
+		</div>
+		<div class="form_control">
+			<p class="prompt_p">{% if info['contact_name'] is not empty %}{{info['contact_name']}}{% endif %}</p>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label">
+			<label>联系人邮箱：</label>
+		</div>
+		<div class="form_control">
+			<p class="prompt_p">{% if info['contact_email'] is not empty %}{{info['contact_email']}}{% endif %}</p>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label">
+			<label>手机号码：</label>
+		</div>
+		<div class="form_control">
+			<p class="prompt_p">{% if info['contact_phone'] is not empty %}{{info['contact_phone']}}{% endif %}</p>
+		</div>
+	</div>
+	<div class="form_item">
+		<div class="form_label">
+			<label>QQ号码：</label>
+		</div>
+		<div class="form_control">
+			<p class="prompt_p">{% if info['contact_qq'] is not empty %}{{info['contact_qq']}}{% endif %}</p>
+		</div>
+	</div>
+</div>

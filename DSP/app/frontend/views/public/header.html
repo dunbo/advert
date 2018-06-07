@@ -1,0 +1,20 @@
+<meta charset="UTF-8">
+<title>广告互动平台</title>
+<link type="text/css" href="{{ static_url('css/bootstrap.css?_v=')~assetsVersion }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/index.css?_v=')~assetsVersion }}" rel="stylesheet" />
+<link type="text/css" href="{{ static_url('css/viewer.css?_v=')~assetsVersion }}" rel="stylesheet" />
+<!-- <script charset="utf-8" src="{{ static_url('kindeditor/kindeditor-all-min.js?_v=')~assetsVersion }}"></script>
+<script charset="utf-8" src="{{ static_url('kindeditor/lang/zh-CN.js?_v=')~assetsVersion }}"></script>
+ -->
+<script type="text/javascript" src="{{ static_url('js/jquery-2.1.0.js?_v=')~assetsVersion }}"></script>
+<script type="text/javascript" src="{{ static_url('js/public.js?_v=')~assetsVersion }}"></script>
+<script type="text/javascript" src="{{ static_url('js/My97DatePicker/WdatePicker.js?_v=')~assetsVersion }}"></script>
+<script type="text/javascript" src="{{ static_url('js/bootstrap.js?_v=')~assetsVersion }}"></script>
+{% if prefix == 'home' %}
+<script src="{{ static_url('js/highcharts.js') }}"></script>
+{% elseif prefix == 'materiel' %}
+<script type="text/javascript" src="{{ static_url('js/cn_area.js?_v=')~assetsVersion }}"></script>
+<script type="text/javascript" src="{{ static_url('js/viewer.js?_v=')~assetsVersion }}"></script>
+{% elseif prefix == 'user' %}
+<script type="text/javascript" src="{{ static_url('js/viewer.js?_v=')~assetsVersion }}"></script>
+{% endif %}

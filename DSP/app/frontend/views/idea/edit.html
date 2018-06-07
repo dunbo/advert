@@ -1,0 +1,94 @@
+<script>
+KindEditor.ready(function(K) {
+    window.editor = K.create('#prize_desc',{
+		items:[''],
+		readonlyMode:true
+	});
+    window.editor = K.create('#coupon_step',{
+		items:['preview','undo','redo','justifyleft','justifycenter','justifyright','justifyfull','insertunorderedlist','fontname','forecolor','bold','italic','underline','image'],
+		readonlyMode:true
+	});
+	window.editor = K.create('#coupon_rule',{
+		items:[''],
+		readonlyMode:true
+	});
+});
+KindEditor.options.cssData = 'body { font-size: 14px; }';
+</script>
+<div class="content_inner">
+	<div class="single_info account_info">
+		<h3>优惠券信息</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>奖品名称：</label>
+			</div>
+			<div class="form_control">
+				<input readonly="readonly" type="text" {% if list['prize_name'] is not empty %}value="{{list['prize_name']}}"{% endif %} class="inputtext">
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>广告图片1：</label>
+			</div>
+			<div class="form_control">
+				<img id="prize_image_div" {% if list['ad_image'] is not empty %}src="{{ IMG_HOST~list['ad_image'] }}"{% endif %} />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>广告图片2：</label>
+			</div>
+			<div class="form_control">
+				<img id="prize_image2_div" {% if list['ad_image2'] is not empty %}src="{{ IMG_HOST~list['ad_image2'] }}"{% endif %} />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label>优惠券有效期：</label>
+			</div>
+			<div class="form_control">
+				<input readonly="readonly" class="inputtext" {% if list['coupon_term'] is not empty %}value="{{date('Y-m-d H:i:s', list['coupon_term'])}}"{% endif %} />
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>推广链接：</label>
+			</div>
+			<div class="form_control">
+				<input readonly="readonly" type="text" {% if list['push_link'] is not empty %}value="{{list['push_link']}}"{% endif %} class="inputtext" />
+			</div>
+		</div>
+		
+		<h3>优惠券详情</h3>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>奖品说明：</label>
+			</div>
+			<div class="form_control">
+				在广告页面中展示，产品的重要卖点
+				<textarea id="prize_desc" style="width:450px;height:100px;">{% if list['prize_desc'] is not empty %}{{list['prize_desc']}}{% endif %}</textarea>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>使用流程：</label>
+			</div>
+			<div class="form_control">
+				请模拟用户操作，模拟用户的使用流程
+				<textarea id="coupon_step" style="width:450px;height:300px;">{% if list['coupon_step'] is not empty %}{{list['coupon_step']}}{% endif %}</textarea>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_label">
+				<label><font color="red">*</font>使用规则：</label>
+			</div>
+			<div class="form_control">
+				1、用户使用次数限制；2、地域限制；3、该优惠券是否可与其他优惠券叠加使用；4、客服电话
+				<textarea id="coupon_rule" style="width:450px;height:200px;">{% if list['coupon_rule'] is not empty %}{{list['coupon_rule']}}{% endif %}</textarea>
+			</div>
+		</div>
+		<div class="form_btn_foot">
+			<a class="btn btn-default" href="javascript:history.back(-1)">返回</a>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,79 @@
+<script>
+function checkForm(){
+	var begin_tm = $.trim($('#begin_tm').val());
+	var end_tm = $.trim($('#end_tm').val());
+	if(begin_tm && end_tm && begin_tm>end_tm){
+		tips_message('开始时间不能大于结束时间');
+		return false;
+	}
+}
+</script>
+<div class="manage_ad_position">
+	<div class="search_box">
+		<form action="{{ url('finance/record') }}" method="get" id="search_form" onsubmit="return checkForm()">
+			<div class="form_control pull-right">
+				<div class="form_item">
+				<input type='hidden' name="type" value="{{ type }}" />
+				<input class="inputtext" name="begin_tm" id="begin_tm" {% if begin_tm is not empty %}value="{{begin_tm}}"{%endif%} onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'%y-%M-%d %H:%m:%s'})" />
+				<span class="space">~</span>
+				<input class="inputtext" name="end_tm" id="end_tm" {% if end_tm is not empty %}value="{{end_tm}}"{%endif%} onfocus="WdatePicker({readOnly:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'%y-%M-%d %H:%m:%s'})" />
+				</div>
+				<input class="btn_orange" type="submit" value="搜索" />
+			</div>
+			<div class="form_item">
+				<div class="form_control">
+					账户余额：<span style="color:#43ac39;font-size:26px;">{% if balance is not empty %}{{ balance/100 }}{% else %}0{% endif %}</span>元
+				</div>
+			</div>
+			<div class="clear"></div>
+		</form>
+	</div>
+	<div class="table_box">
+		<ul class="nav nav-tabs" style="padding-top:20px">
+	    	<li class="{{ type=='recharge'?'active':'' }}" ><a href="{{ url('finance/record?type=recharge') }}"  aria-expanded="false">存入</a></li>
+	        <li class="{{ type=='audit'?'active':'' }}" ><a href="{{ url('finance/record?type=audit') }}"  aria-expanded="false">消费</a></li>
+	    </ul>
+	    <ul class="tab-content">
+			<li class="tab-pane active">
+	    		<table cellpadding="0" cellspacing="0" class="tables">
+					<thead>
+						<tr>
+							<th>时间</th>
+							{% if type == 'recharge' %}
+							<th>现金(元)</th>
+							<th>配送</th>
+							{% elseif type == 'audit' %}
+							<th>消费金额</th>
+							{% endif %}
+							<th width="50%"></th>
+						</tr>
+					</thead>
+					<tbody>
+						{% if results is not empty %}
+						{% for val in results %}
+							<tr>
+								{% if type == 'recharge' %}
+								<td>{{ val['recharge_time'] }}</td>
+								<td>{{ val['cash_amount']/100 }}</td>
+								<td>{{ val['rebate_amount']/100 }}</td>
+								{% elseif type == 'audit' %}
+								<td>{{ date('Y-m-d', strtotime(val['theday'])) }}</td>
+								<td>{{ val['cost']/100 }}</td>
+								{% endif %}
+								<td></td>
+							</tr>
+						{% endfor %}
+						{% else %}
+							<tr>
+				                <td colspan="4">暂无数据</td>
+				            </tr>
+						{% endif %}
+					</tbody>
+				</table>
+	    	</li>
+	    </ul>
+		{% if results is not empty %}
+		    {{ partial('public/paginator') }}
+		{% endif %}
+	</div>
+</div>

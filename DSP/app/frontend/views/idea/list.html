@@ -1,0 +1,81 @@
+<div class="manage_ad_position">
+	<form method="get" action="{{ url('idea/list') }}">
+	<div class="search_box">
+		<div class="form_item">
+			<div class="form_label">
+				<label>广告创意名称：</label>
+			</div>
+			<div class="form_control">
+				<input type="text" name="prize_name" id="prize_name" class="inputtext" {% if prize_name is not empty %}value="{{prize_name}}"{%endif%}/>
+			</div>
+		</div>
+		<div class="form_item">
+			<div class="form_control">
+				<input class="btn_orange" type="submit" value="搜索" />
+			</div>
+		</div>
+		<a href="{{url('idea/add')}}" class="btn_orange pull_right">新建广告创意</a>
+		<div class="clear"></div>
+	</div>
+	</form>
+	<div class="table_box">
+		<table cellpadding="0" cellspacing="0" class="tables">
+			<thead>
+				<tr>
+					<th width="15%">奖品名称</th>
+					<th width="15%">广告图片1</th>
+					<th width="15%">广告图片2</th>
+					<th width="15%">优惠券有效期</th>
+					<th width="20%">推广链接</th>
+					<th width="10%">审核状态</th>
+					<th width="10%">操作</th>
+				</tr>
+			</thead>
+			<tbody>
+			{% if results is not empty %}
+			{% for val in results %}
+				<tr>
+					<td>{{val['prize_name']}}</td>
+					<td>{% if val['ad_image'] is not empty %}<img src="{{IMG_HOST~val['ad_image']}}" width='120px' height='60px' />{% endif %}</td>
+					<td>{% if val['ad_image2'] is not empty %}<img src="{{IMG_HOST~val['ad_image2']}}" width='120px' height='60px' />{% endif %}</td>
+					<td>{% if val['coupon_term'] is not empty %}{{ date('Y-m-d H:i:s', val['coupon_term']) }}{% endif %}</td>
+					<td>{{val['push_link']}}</td>
+					<td>
+						{% if val['examine_status']==1 %}
+						<span style="color:#EAC100">待审核</span>
+						{% elseif val['examine_status']==2 %}
+						<span style="color:#00DB00">已通过</span>
+						{% elseif val['examine_status']==3 %}
+						<span style="color:red">未通过</span>
+						{% else %}
+						-
+						{% endif %}
+					</td>
+					<td>
+						{% if val['examine_status']==3 %} <a href="{{url('idea/add?idea_id='~val['id'])}}" class="blue">编辑</a> 
+						{% endif %}
+					</td>
+				</tr>
+			{% endfor %}
+			{% else %}
+				<tr>
+	                <td colspan="7">暂无数据</td>
+	            </tr>
+			{% endif %}
+			</tbody>
+		</table>
+		<div class="pagebars">
+			<div class="pagebars_l">
+				<p>每页显示<span>{{pagesize}}</span>条/共<span>{{paginator.total_items}}</span>条</p>
+			</div>
+			<div class="pagebars_r">
+				{% if results is not empty %}
+		            {{ partial('public/paginator') }}
+		        {% endif %}
+	        </div>
+			<div class="clear"></div>
+			
+		</div>
+	</div>
+	
+</div>
